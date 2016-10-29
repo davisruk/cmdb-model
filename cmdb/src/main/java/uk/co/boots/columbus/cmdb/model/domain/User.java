@@ -1,8 +1,17 @@
-package uk.co.boots.columbus.cmdb.model.security;
+package uk.co.boots.columbus.cmdb.model.domain;
 
 import java.io.Serializable;
-import javax.persistence.*;
 import java.util.List;
+import java.util.logging.Logger;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedQuery;
+import javax.persistence.Transient;
 
 
 /**
@@ -11,15 +20,16 @@ import java.util.List;
  */
 @Entity
 @NamedQuery(name="User.findAll", query="SELECT u FROM User u")
-public class User implements Serializable {
+public class User implements Identifiable<Integer>, Serializable {
 	private static final long serialVersionUID = 1L;
+    private static final Logger log = Logger.getLogger(User.class.getName());	
 
 	@Id
-	private int id;
+	private Integer id;
 
 	private String email;
 
-	private byte enabled;
+	private Boolean enabled;
 
 	private String password;
 
@@ -42,11 +52,11 @@ public class User implements Serializable {
 	public User() {
 	}
 
-	public int getId() {
+	public Integer getId() {
 		return this.id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -58,11 +68,11 @@ public class User implements Serializable {
 		this.email = email;
 	}
 
-	public byte getEnabled() {
+	public Boolean getEnabled() {
 		return this.enabled;
 	}
 
-	public void setEnabled(byte enabled) {
+	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
 
@@ -88,6 +98,24 @@ public class User implements Serializable {
 
 	public void setRoles(List<Role> roles) {
 		this.roles = roles;
+	}
+    
+	@Transient
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+
+    @Override
+    public int hashCode() {
+        return identifiableHashBuilder.hash(log, this);
+    }
+
+	@Override
+	public String entityClassName() {
+		return User.class.getSimpleName();
+	}
+
+	@Override
+	public boolean isIdSet() {
+		 return id != null;
 	}
 
 }

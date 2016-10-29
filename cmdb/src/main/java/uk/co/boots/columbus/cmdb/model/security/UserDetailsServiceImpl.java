@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -20,6 +22,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import uk.co.boots.columbus.cmdb.model.domain.Role;
+import uk.co.boots.columbus.cmdb.model.domain.User;
+import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
+import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 
 /**
  * An implementation of Spring Security's {@link UserDetailsService}.
@@ -31,6 +38,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private static final Logger log = LoggerFactory.getLogger(UserDetailsServiceImpl.class);
 
+    @Inject
+    private UserRepository userRepo;
+    @Inject
+    private RoleRepository roleRepo;
+    
     /**
      * Retrieve an account depending on its login this method is not case sensitive.
      *
@@ -38,6 +50,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return a Spring Security userdetails object that matches the username
      * @throws UsernameNotFoundException when the user could not be found
      */
+  /*
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) {
@@ -46,6 +59,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         log.debug("Security verification for user '{}'", username);
 
+        
         if ("user".equals(username)) {
             String password = "user";
             boolean enabled = true;
@@ -68,11 +82,32 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         return null;
     }
+*/
+    @Transactional(readOnly = true)
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        boolean accountNonExpired = true;
+        boolean credentialsNonExpired = true;
+        boolean accountNonLocked = true;
 
-    private Collection<GrantedAuthority> toGrantedAuthorities(List<String> roles) {
+    	if (username == null || username.trim().isEmpty()) {
+            throw new UsernameNotFoundException("Empty username");
+        }
+        log.debug("Security verification for user '{}'", username);
+
+        User user = userRepo.findByUserName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("Username not recognized");
+        }
+        log.debug("Security verification for user '{}'", username);
+
+        return new UserWithId(username, user.getPassword(), user.getEnabled(), accountNonExpired, credentialsNonExpired, accountNonLocked, toGrantedAuthorities(user.getRoles()), null);        
+    }
+
+    private Collection<GrantedAuthority> toGrantedAuthorities(List<Role> roles) {
         List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
-        for (String role : roles) {
-            result.add(new SimpleGrantedAuthority(role));
+        for (Role role : roles) {
+            result.add(new SimpleGrantedAuthority(role.getName()));
         }
         return result;
     }
