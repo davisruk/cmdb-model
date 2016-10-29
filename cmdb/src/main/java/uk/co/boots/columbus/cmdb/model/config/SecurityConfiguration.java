@@ -8,7 +8,6 @@
 package uk.co.boots.columbus.cmdb.model.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,13 +18,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import uk.co.boots.columbus.cmdb.model.security.AjaxAuthenticationFailureHandler;
 import uk.co.boots.columbus.cmdb.model.security.AjaxAuthenticationSuccessHandler;
@@ -59,7 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 antMatchers("/node_modules/**"). //
                 antMatchers("/**/*.{js,html,css}");
     }
-/*
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http. //
@@ -81,11 +75,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 and(). //
                 authorizeRequests(). //
                 antMatchers("/api/authenticated").permitAll().//
+                requestMatchers(CorsUtils::isCorsRequest).permitAll().
                 antMatchers("/**").authenticated().
                 antMatchers("/swagger-ui/index.html").hasAuthority("ROLE_ADMIN");
     }
- */
  
+/* 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.
@@ -116,7 +111,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 and().
                 addFilterBefore(corsFilter().getFilter(), ChannelProcessingFilter.class);
     }
-    
+  
     @Bean
     public FilterRegistrationBean corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -125,7 +120,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         config.addAllowedOrigin("http://localhost");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
-/*
         source.registerCorsConfiguration("/api/server/**", config);
         source.registerCorsConfiguration("/api/environment/**", config);
         source.registerCorsConfiguration("/api/packageInfo/**", config);
@@ -139,11 +133,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/api/releaseDataType/**", config);
         source.registerCorsConfiguration("/api/serverType/**", config);
         source.registerCorsConfiguration("/api/release/**", config);
-*/
         FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
         bean.setOrder(0);
         return bean;
     }
+  */    
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
         return new SecurityEvaluationContextExtension();
