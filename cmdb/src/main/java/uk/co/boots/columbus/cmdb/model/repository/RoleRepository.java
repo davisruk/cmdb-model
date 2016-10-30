@@ -13,7 +13,7 @@ import uk.co.boots.columbus.cmdb.model.domain.Role_;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 	   
-		Role getByName(String name);
+		Role findByName(String name);
 		
 		default List<Role> complete(String query, int maxResults) {
 	        Role probe = new Role();

@@ -1,4 +1,4 @@
-package uk.co.rdavisitservices.columbus.cmdb.model;
+package uk.co.boots.columbus.cmdb.model;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,5 +12,6 @@ public class CmdbApplicationTests {
 	@Test
 	public void contextLoads() {
 	}
+	
 
 }
