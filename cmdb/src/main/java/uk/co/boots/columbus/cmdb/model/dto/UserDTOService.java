@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.domain.Release;
 import uk.co.boots.columbus.cmdb.model.domain.Role;
+import uk.co.boots.columbus.cmdb.model.domain.Server;
+import uk.co.boots.columbus.cmdb.model.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
@@ -65,9 +67,46 @@ public class UserDTOService {
      */
     @Transactional
     public UserDTO save(UserDTO dto) {
-    	return null;
+        if (dto == null) {
+            return null;
+        }
+
+        User user;
+        if (dto.isIdSet()) {
+            user = userRepository.findOne(dto.id);
+        } else {
+            user = new User();
+        }
+
+        user.setEmail(dto.email);
+        user.setEnabled(dto.enabled);
+        user.setPassword(dto.password);
+        user.setRoles(roleDTOService.toEntity(dto.roles, 1));
+      
+
+        if (dto.roles == null) {
+            user.setRoles(null);
+        } else {
+            List<Role> roles = user.getRoles();
+            for (RoleDTO dtoRole: dto.roles){
+            	Role entityRole = extractEntityRole (roles, dtoRole);
+            	if (entityRole == null)
+            		user.addRole(entityRole);
+            }
+        }
+
+        return toDTO(userRepository.save(user));
+    	
     }
-    
+        
+    private  Role extractEntityRole (List<Role> roles, RoleDTO dtoRole){
+        for (Role role: roles){
+        	if (dtoRole.id == role.getId())
+        		return role;
+        }
+        return null;
+
+    }
 
     /**
      * Converts the passed environment to a DTO. The depth is used to control the

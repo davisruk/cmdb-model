@@ -121,4 +121,7 @@ public class User implements Identifiable<Integer>, Serializable {
 		 return id != null;
 	}
 
+	public void addRole(Role role){
+		roles.add(role);
+	}
 }

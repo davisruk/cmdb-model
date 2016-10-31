@@ -1,8 +1,8 @@
 package uk.co.boots.columbus.cmdb.model;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,6 @@ public class RepositoryTests {
     private UserRepository userRepo;
     @Autowired
     private RoleRepository roleRepo;
-
     
     @Test
     public void testUserPersistence() throws Exception {
@@ -68,5 +67,4 @@ public class RepositoryTests {
         assertThat(roles2, hasSize(1));
         assertThat((roles2.get(0)).getName(), is("ROLE_ADMIN"));
     }
-
 }
