@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Role;
+import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
@@ -63,7 +64,47 @@ public class RoleDTOService {
      */
     @Transactional
     public RoleDTO save(RoleDTO dto) {
-    	return null;
+        if (dto == null) {
+            return null;
+        }
+
+        Role role;
+        if (dto.isIdSet()) {
+            role = roleRepository.findOne(dto.id);
+        } else {
+            role = new Role();
+        }
+
+        role.setName(dto.name);
+
+        if (dto.users == null) {
+            role.setUsers(null);
+        } else {
+            List<User> users = role.getUsers();
+            for (UserDTO dtoUser: dto.users){
+            	User entityUser = extractEntityUser (users, dtoUser);
+            	if (entityUser == null){
+            		role.addUser(userDTOService.toEntity(dtoUser));
+            		if (dtoUser.roles == null)
+            			dtoUser.roles = new ArrayList<RoleDTO>();
+            		dtoUser.roles.add(dto);
+            	}
+            }
+        }
+
+        return toDTO(roleRepository.save(role));
+    	
+
+    }
+    
+    private  User extractEntityUser (List<User> users, UserDTO dtoUser){
+        if (users == null || users.size() == 0)
+        	return null;
+    	for (User user: users){
+        	if (dtoUser.id == user.getId())
+        		return user;
+        }
+        return null;
     }
     
     public RoleDTO toDTO(Role role) {

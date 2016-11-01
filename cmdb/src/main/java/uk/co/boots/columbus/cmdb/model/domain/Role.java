@@ -1,6 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -76,5 +77,18 @@ public class Role implements Identifiable<Integer>, Serializable {
 	public boolean isIdSet() {
 		 return id != null;
 	}
+	
+	public void addUser(User user) {
+		if (users == null)
+			users = new ArrayList<User>();
+		users.add(user);
+	}
 
+	@Override
+	public String toString() {
+		return "Role [id=" + id + ", name=" + name + ", users=" + users + ", identifiableHashBuilder="
+				+ identifiableHashBuilder + "]";
+	}
+	
+	
 }

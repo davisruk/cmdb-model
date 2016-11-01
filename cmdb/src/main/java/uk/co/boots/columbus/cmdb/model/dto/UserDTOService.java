@@ -78,29 +78,35 @@ public class UserDTOService {
             user = new User();
         }
 
+        user.setUserName(dto.userName);
         user.setEmail(dto.email);
         user.setEnabled(dto.enabled);
         user.setPassword(dto.password);
-        user.setRoles(roleDTOService.toEntity(dto.roles, 1));
-      
 
         if (dto.roles == null) {
             user.setRoles(null);
         } else {
             List<Role> roles = user.getRoles();
-            for (RoleDTO dtoRole: dto.roles){
+        	for (RoleDTO dtoRole: dto.roles){
             	Role entityRole = extractEntityRole (roles, dtoRole);
-            	if (entityRole == null)
-            		user.addRole(entityRole);
+            	if (entityRole == null){
+            		user.addRole(roleDTOService.toEntity(dtoRole));
+            		if (dtoRole.users == null)
+            			dtoRole.users = new ArrayList<UserDTO>();
+            		dtoRole.users.add(dto);
+            	}
             }
         }
 
+        System.out.println(user);
         return toDTO(userRepository.save(user));
     	
     }
         
     private  Role extractEntityRole (List<Role> roles, RoleDTO dtoRole){
-        for (Role role: roles){
+    	if (roles == null || roles.size() == 0)
+    		return null;
+    	for (Role role: roles){
         	if (dtoRole.id == role.getId())
         		return role;
         }
