@@ -1,8 +1,8 @@
 package uk.co.boots.columbus.cmdb.model;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,67 +60,79 @@ public class RepositoryTests {
     private RoleRepository roleRepo;
     
     @Test
-    public void testUserPersistence() throws Exception {
+    public void testEntityPersistence() throws Exception {
     	// Create a new User
     	User user = new User();
-    	user.setUserName("rich");
-    	user.setEmail("rich@davisfamily.eu");
+    	user.setUserName("TestUser");
+    	user.setEmail("test@davisfamily.eu");
     	user.setEnabled(true);
     	user.setPassword("test");
     	this.entityManager.persist(user);
     	
     	// Create a new Role
     	Role role = new Role();
-    	role.setName("ROLE_ADMIN");
+    	role.setName("ROLE_TEST");
     	this.entityManager.persist(role);
 
         // Add Role to User
     	// Get the User and Role from the DB first
-    	User dbUser = this.userRepo.findByUserName("rich");
+    	User dbUser = this.userRepo.findByUserName("TestUser");
         List<Role> roles = new ArrayList<Role>();
-        Role role2 = this.roleRepo.findByName("ROLE_ADMIN");
+        Role role2 = this.roleRepo.findByName("ROLE_TEST");
         roles.add(role2);
         dbUser.setRoles(roles);
         this.entityManager.persist(dbUser);
         
         
         // Get the User from the DB and retrieve roles through property not repo
-        User dbUser2 = this.userRepo.findByUserName("rich");
+        User dbUser2 = this.userRepo.findByUserName("TestUser");
         List<Role> roles2 = dbUser2.getRoles();
         
         assertThat(roles2, hasSize(1));
-        assertThat((roles2.get(0)).getName(), is("ROLE_ADMIN"));
+        assertThat((roles2.get(0)).getName(), is("ROLE_TEST"));
+        
     }
     
 	 @Test
-	 public void testServices() throws Exception {
+	 public void testServicePersistence() throws Exception {
 	    	// Create a new User
 	    	UserDTO userDTO = new UserDTO();
-	    	userDTO.userName = "rich1";
-	    	userDTO.email = "rich@davisfamily.eu";
+	    	userDTO.userName = "TestUser1";
+	    	userDTO.email = "test1@davisfamily.eu";
 	    	userDTO.enabled = true;
 	    	userDTO.password = "test";
+	    	// Persist the user
 	    	userDTO = userDTOService.save(userDTO);
-	    	System.out.println(userDTO);
+	    	assertNotNull(userDTO);
+	    	assertTrue(userDTO.id > 0);
+	    	
 	    	// Create a new Role
 	    	RoleDTO roleDTO = new RoleDTO();
-	    	roleDTO.name = "ROLE_TEST";
+	    	roleDTO.name = "ROLE_TEST1";
+	    	// Persist the role
 	    	roleDTO = roleDTOService.save(roleDTO);;
-	    	System.out.println(roleDTO);
-	        // Add Role to User
+	    	assertNotNull(roleDTO);
+	    	assertTrue(roleDTO.id > 0);
+	        
+	    	// Add Role to User
 	    	// Get the User and Role from the DB first
 	    	userDTO = userDTOService.findOne(userDTO.id);
 	        roleDTO = roleDTOService.findOne(roleDTO.id);
+	        
+	        // Add the role to the User
+	        // We know the user has no roles
 	        List<RoleDTO> roles = new ArrayList<RoleDTO>();
 	        roles.add(roleDTO);
 	        userDTO.roles = roles;
-	        roleDTO.addUser(userDTO);
-	        List<UserDTO> users = new ArrayList<UserDTO>();
-	        roleDTO.users = users;
-	        userDTO = userDTOService.save(userDTO);
-	        roleDTO = roleDTOService.save(roleDTO);
-	        System.out.println(userDTO);
-	        UserDTO dto2 = userDTOService.findOne(2);
-	        System.out.println(dto2);
+
+	        // Persist again to create the many:many row in USER_ROLE table
+	        userDTOService.save(userDTO);
+	        
+	        // Get the user from the DB again 
+	        UserDTO dto2 = userDTOService.findOne(userDTO.id);
+	        // Roles should not be null and should contain an entry
+	        assertNotNull(dto2.roles);
+	        assertFalse(dto2.roles.isEmpty());
+	        assertThat(dto2.roles.get(0).name, is("ROLE_TEST1"));	        
 	 }
 }

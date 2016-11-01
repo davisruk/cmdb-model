@@ -11,15 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.boots.columbus.cmdb.model.domain.Environment;
-import uk.co.boots.columbus.cmdb.model.domain.Release;
-import uk.co.boots.columbus.cmdb.model.domain.Role;
-import uk.co.boots.columbus.cmdb.model.domain.Server;
-import uk.co.boots.columbus.cmdb.model.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
-import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
 import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 
 @Service
@@ -28,8 +22,6 @@ public class UserDTOService {
     private UserRepository userRepository;
     @Inject
     private RoleDTOService roleDTOService;
-    @Inject
-    private RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
     public UserDTO findOne(Integer id) {
@@ -37,7 +29,7 @@ public class UserDTOService {
     }
 
     @Transactional(readOnly = true)
-    public List<UserDTO> complete(String query, int maxResults) {
+    public List<UserDTO> complete(String query, int maxResults) 	{
         List<User> results = userRepository.complete(query, maxResults);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
@@ -70,50 +62,13 @@ public class UserDTOService {
         if (dto == null) {
             return null;
         }
-
-        User user;
-        if (dto.isIdSet()) {
-            user = userRepository.findOne(dto.id);
-        } else {
-            user = new User();
-        }
-
-        user.setUserName(dto.userName);
-        user.setEmail(dto.email);
-        user.setEnabled(dto.enabled);
-        user.setPassword(dto.password);
-
-        if (dto.roles == null) {
-            user.setRoles(null);
-        } else {
-            List<Role> roles = user.getRoles();
-        	for (RoleDTO dtoRole: dto.roles){
-            	Role entityRole = extractEntityRole (roles, dtoRole);
-            	if (entityRole == null){
-            		user.addRole(roleDTOService.toEntity(dtoRole));
-            		if (dtoRole.users == null)
-            			dtoRole.users = new ArrayList<UserDTO>();
-            		dtoRole.users.add(dto);
-            	}
-            }
-        }
-
-        System.out.println(user);
-        return toDTO(userRepository.save(user));
+        User user = toEntity(dto);
+        user = userRepository.save(user);
+        dto.id = user.getId();
+        return dto;
     	
     }
-        
-    private  Role extractEntityRole (List<Role> roles, RoleDTO dtoRole){
-    	if (roles == null || roles.size() == 0)
-    		return null;
-    	for (Role role: roles){
-        	if (dtoRole.id == role.getId())
-        		return role;
-        }
-        return null;
-
-    }
-
+      
     /**
      * Converts the passed environment to a DTO. The depth is used to control the
      * amount of association you want. It also prevents potential infinite serialization cycles.
@@ -159,8 +114,9 @@ public class UserDTOService {
         return dtoList;
     }
 
-    public User toEntity(UserDTO userDTO) {
-    	return toEntity(userDTO,1);
+    public User toEntity(UserDTO dto) {
+
+    	return toEntity(dto,1);
     }
 
 	public User toEntity(UserDTO dto, int depth) {
@@ -168,7 +124,13 @@ public class UserDTOService {
             return null;
         }
 
-        User user = new User();
+        User user;
+        if (dto.isIdSet()) {
+            // get from database as id exists
+        	user = userRepository.findOne(dto.id);
+        } else {
+            user = new User();
+        }
 
         user.setId(dto.id);
         user.setUserName(dto.userName);

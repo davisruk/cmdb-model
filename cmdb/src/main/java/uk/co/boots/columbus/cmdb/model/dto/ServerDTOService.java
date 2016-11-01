@@ -42,7 +42,7 @@ public class ServerDTOService {
     private EnvironmentDTOService environmentDTOService;
     @Inject
     private EnvironmentRepository environmentRepository;
-
+    
     @Transactional(readOnly = true)
     public ServerDTO findOne(Long id) {
         return toDTO(serverRepository.findOne(id));
@@ -79,7 +79,8 @@ public class ServerDTOService {
      */
     @Transactional
     public ServerDTO save(ServerDTO dto) {
-        if (dto == null) {
+
+    	if (dto == null) {
             return null;
         }
 
