@@ -50,39 +50,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      * @return a Spring Security userdetails object that matches the username
      * @throws UsernameNotFoundException when the user could not be found
      */
-  /*
-    @Transactional(readOnly = true)
-    @Override
-    public UserDetails loadUserByUsername(String username) {
-        if (username == null || username.trim().isEmpty()) {
-            throw new UsernameNotFoundException("Empty username");
-        }
-        log.debug("Security verification for user '{}'", username);
-
-        
-        if ("user".equals(username)) {
-            String password = "user";
-            boolean enabled = true;
-            boolean accountNonExpired = true;
-            boolean credentialsNonExpired = true;
-            boolean accountNonLocked = true;
-            List<String> roles = new ArrayList<String>();
-            roles.add("ROLE_USER");
-            return new UserWithId(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, toGrantedAuthorities(roles), null);
-        }
-        if ("admin".equals(username)) {
-            String password = "admin";
-            boolean enabled = true;
-            boolean accountNonExpired = true;
-            boolean credentialsNonExpired = true;
-            boolean accountNonLocked = true;
-            List<String> roles = new ArrayList<String>();
-            roles.add("ROLE_ADMIN");
-            return new UserWithId(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, toGrantedAuthorities(roles), null);
-        }
-        return null;
-    }
-*/
     @Transactional(readOnly = true)
     @Override
     public UserDetails loadUserByUsername(String username) {
