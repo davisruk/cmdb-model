@@ -7,6 +7,8 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import uk.co.boots.columbus.cmdb.model.domain.Role;
 import uk.co.boots.columbus.cmdb.model.domain.Role_;
@@ -14,6 +16,12 @@ import uk.co.boots.columbus.cmdb.model.domain.Role_;
 public interface RoleRepository extends JpaRepository<Role, Integer> {
 	   
 		Role findByName(String name);
+		List<Role> findAll();
+		/*
+		@Query("select r from Role r where r.id not in"
+				+ "(select ur.role_id from user_role ur where ur.id = :id)")
+		List<Role> findNotAssignedToUser(@Param("id") Integer id);
+		*/
 		
 		default List<Role> complete(String query, int maxResults) {
 	        Role probe = new Role();

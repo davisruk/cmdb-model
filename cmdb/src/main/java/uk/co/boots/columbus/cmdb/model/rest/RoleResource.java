@@ -58,7 +58,7 @@ public class RoleResource {
     }
 
     /**
-    * Find by id Server.
+    * Find by id Role.
     */
     @RequestMapping(value = "/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<RoleDTO> findById(@PathVariable Integer id) throws URISyntaxException {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Role;
+import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
@@ -69,7 +70,15 @@ public class RoleDTOService {
         dto.id = role.getId();
         return dto;
     }
-    
+    @Transactional
+    public List<RoleDTO> findRolesNotInList(List<Role> roles) {
+	    List<Role> results = roleRepository.findAll();        
+	        for (Role role : roles){
+	 		results.remove(role);
+	    }
+	    return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     public RoleDTO toDTO(Role role) {
     	return toDTO (role, 1);
     }

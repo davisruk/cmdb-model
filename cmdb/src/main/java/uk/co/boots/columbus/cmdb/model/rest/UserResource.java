@@ -58,7 +58,7 @@ public class UserResource {
     }
 
     /**
-    * Find by id Server.
+    * Find by id User.
     */
     @RequestMapping(value = "/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> findById(@PathVariable Integer id) throws URISyntaxException {
@@ -70,7 +70,7 @@ public class UserResource {
     }
 
     /**
-     * Update Server.
+     * Update User.
      */
     @RequestMapping(value = "/", method = PUT, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> update(@RequestBody UserDTO userDTO) throws URISyntaxException {

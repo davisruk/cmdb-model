@@ -6,14 +6,18 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.domain.Role;
 import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
 import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 
 @Service
@@ -21,8 +25,13 @@ public class UserDTOService {
     @Inject
     private UserRepository userRepository;
     @Inject
+    private RoleRepository roleRepository;
+   
+    @Inject
     private RoleDTOService roleDTOService;
-
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+    
     @Transactional(readOnly = true)
     public UserDTO findOne(Integer id) {
         return toDTO(userRepository.findOne(id));
@@ -68,7 +77,16 @@ public class UserDTOService {
         return dto;
     	
     }
-      
+    
+    // Gets a list of all the roles not assigned to the user
+    // User domain object owns the Many to Many relationship
+    // so this is the entry point. RoleDTOService does the work. 
+    @Transactional(readOnly = true)
+    public List<RoleDTO> getRolesNotAssignedToUser(Integer id) {
+        User user = userRepository.findOne(id);
+        return roleDTOService.findRolesNotInList(user.getRoles());
+   }
+ 
     /**
      * Converts the passed environment to a DTO. The depth is used to control the
      * amount of association you want. It also prevents potential infinite serialization cycles.
@@ -135,7 +153,14 @@ public class UserDTOService {
         user.setId(dto.id);
         user.setUserName(dto.userName);
         user.setEmail(dto.email);
-        user.setPassword(dto.password);
+        // check passwords are different - if so BCrypt the dto password;
+        String entityPassword = user.getPassword(); 
+        if ( entityPassword == null || !entityPassword.equals(dto.password)){
+        	user.setPassword(passwordEncoder.encode(dto.password));
+        }
+        else {
+         user.setPassword(dto.password);
+        }
         user.setEnabled(dto.enabled);
         
         if (depth-- > 0) {
@@ -157,5 +182,6 @@ public class UserDTOService {
         }
         return userList;
     }
+
 
 }
