@@ -1,8 +1,11 @@
 package uk.co.boots.columbus.cmdb.model;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +19,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.co.boots.columbus.cmdb.model.domain.Role;
 import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.RoleDTO;
 import uk.co.boots.columbus.cmdb.model.dto.RoleDTOService;
+import uk.co.boots.columbus.cmdb.model.dto.ServerConfigDTO;
+import uk.co.boots.columbus.cmdb.model.dto.ServerConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.UserDTO;
 import uk.co.boots.columbus.cmdb.model.dto.UserDTOService;
 import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
@@ -43,6 +50,11 @@ public class RepositoryTests {
        public RoleDTOService roleDTOService(){
     	   return new RoleDTOService();
        }
+       
+	    @Bean(name="passwordEncoder")
+	    public PasswordEncoder passwordEncoder(){
+	    	return new BCryptPasswordEncoder();
+	    }
     }
 
 	@Autowired
@@ -50,6 +62,9 @@ public class RepositoryTests {
 
 	@Autowired
     UserDTOService userDTOService;
+	
+	@Autowired
+	ServerConfigDTOService serverConfigDTOService;
 
 	@Autowired
     private TestEntityManager entityManager;
@@ -58,6 +73,8 @@ public class RepositoryTests {
     private UserRepository userRepo;
     @Autowired
     private RoleRepository roleRepo;
+    @Autowired
+    private PasswordEncoder encoder;
     
     @Test
     public void testEntityPersistence() throws Exception {
@@ -110,7 +127,7 @@ public class RepositoryTests {
 	    	RoleDTO roleDTO = new RoleDTO();
 	    	roleDTO.name = "ROLE_TEST1";
 	    	// Persist the role
-	    	roleDTO = roleDTOService.save(roleDTO);;
+	    	roleDTO = roleDTOService.save(roleDTO);
 	    	assertNotNull(roleDTO);
 	    	assertTrue(roleDTO.id > 0);
 	        
@@ -133,6 +150,9 @@ public class RepositoryTests {
 	        // Roles should not be null and should contain an entry
 	        assertNotNull(dto2.roles);
 	        assertFalse(dto2.roles.isEmpty());
-	        assertThat(dto2.roles.get(0).name, is("ROLE_TEST1"));	        
+	        assertThat(dto2.roles.get(0).name, is("ROLE_TEST1"));
+	        
+	        
+	        List<ServerConfigDTO> serverInfo = serverConfigDTOService.findByServerEnvironmentName("ST1");
 	 }
 }

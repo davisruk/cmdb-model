@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,34 @@ public class ServerConfigDTOService {
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    private void buildHieraAddresses (List<ServerConfig> cl){
+    	String addr;
+    	for (ServerConfig conf: cl){
+        	addr = conf.getHieraAddress();
+        	//find Parameter in Hieara Address and replace with Parametername
+        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+        	//find ServerTypeTag in Hieara Address and replace
+        	addr = addr.replaceAll("\\{ServType\\}", conf.getServer().getServerType().getName());
+        	//find EnvTag in Hieara Address and replace with Env.name
+        	addr = addr.replaceAll("\\{ENVID\\}", conf.getServer().getEnvironment().getName());
+        	conf.setHieraAddress(addr);
+        	System.out.println("ServerConfig:" + conf.getId() + " " + conf.getHieraAddress());
+        }
+    }
+    @Transactional(readOnly = true)
+    public List<ServerConfigDTO> findByServerEnvironmentName(String query) {
+        List<ServerConfig> results = serverConfigRepository.findByServer_Environment_name(query);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ServerConfigDTO> findByServerEnvironmentReleaseName(String envName) {
+        List<ServerConfig> results = serverConfigRepository.findByServer_Environment_Release_name(envName);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public PageResponse<ServerConfigDTO> findAll(PageRequestByExample<ServerConfigDTO> req) {
         Example<ServerConfig> example = null;
@@ -65,6 +94,9 @@ public class ServerConfigDTOService {
         }
 
         List<ServerConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+        findByServerEnvironmentName("XX1");
+        findByServerEnvironmentReleaseName("X.Y.Z");
+        findByServerEnvironmentReleaseName("A.B.C");
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 

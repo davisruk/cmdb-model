@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.*;
 
+import uk.co.boots.columbus.cmdb.model.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.domain.Server;
 import uk.co.boots.columbus.cmdb.model.domain.Server_;
 

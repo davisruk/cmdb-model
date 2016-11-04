@@ -20,6 +20,9 @@ import uk.co.boots.columbus.cmdb.model.domain.EnvironmentConfig_;
 
 public interface EnvironmentConfigRepository extends JpaRepository<EnvironmentConfig, Long> {
 
+    public List<EnvironmentConfig> findByEnvironment_name(String name);
+    public List<EnvironmentConfig> findByEnvironment_Release_name(String name);
+	
     default List<EnvironmentConfig> complete(String query, int maxResults) {
         EnvironmentConfig probe = new EnvironmentConfig();
         probe.setParameter(query);

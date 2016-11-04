@@ -20,7 +20,7 @@ import uk.co.boots.columbus.cmdb.model.domain.Globalconfig_;
 
 public interface GlobalconfigRepository extends JpaRepository<Globalconfig, Long> {
 
-    default List<Globalconfig> complete(String query, int maxResults) {
+	default List<Globalconfig> complete(String query, int maxResults) {
         Globalconfig probe = new Globalconfig();
         probe.setParameter(query);
 

@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import uk.co.boots.columbus.cmdb.model.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
@@ -47,7 +49,9 @@ public class EnvironmentResource {
     private EnvironmentRepository environmentRepository;
     @Inject
     private EnvironmentDTOService environmentDTOService;
-
+    @Inject
+    private HieraDTOService hieraDTOService;
+    
     /**
      * Create a new Environment.
      */
@@ -76,6 +80,16 @@ public class EnvironmentResource {
         return Optional.ofNullable(environmentDTOService.findOne(id)).map(environmentDTO -> new ResponseEntity<>(environmentDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @RequestMapping(value = "/configs/{envName}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByEnvironmentName(@PathVariable String envName) throws URISyntaxException {
+
+        log.debug("Find configs for this environment : {}", envName);
+
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForEnvironment(envName);
+        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
+    }
+
 
     /**
      * Update Environment.

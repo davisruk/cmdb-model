@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.domain.EnvironmentConfig;
+import uk.co.boots.columbus.cmdb.model.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.EnvironmentConfigRepository;
@@ -42,6 +43,32 @@ public class EnvironmentConfigDTOService {
         return toDTO(environmentConfigRepository.findOne(id));
     }
 
+    private void buildHieraAddresses (List<EnvironmentConfig> cl){
+    	String addr;
+    	for (EnvironmentConfig conf: cl){
+        	addr = conf.getHieraAddress();
+        	//find Parameter in Hieara Address and replace with Parametername
+        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+        	//find EnvTag in Hieara Address and replace with Env.name
+        	addr = addr.replaceAll("\\{ENVID\\}", conf.getEnvironment().getName());
+        	conf.setHieraAddress(addr);
+        	System.out.println("EnvConfig:" + conf.getId() + " " + conf.getHieraAddress());
+        }
+    }
+    @Transactional(readOnly = true)
+    public List<EnvironmentConfigDTO> findByEnvironmentName(String envName) {
+        List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_name(envName);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<EnvironmentConfigDTO> findByEnvironmentReleaseName(String relName) {
+        List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_Release_name(relName);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
     @Transactional(readOnly = true)
     public List<EnvironmentConfigDTO> complete(String query, int maxResults) {
         List<EnvironmentConfig> results = environmentConfigRepository.complete(query, maxResults);
@@ -65,6 +92,9 @@ public class EnvironmentConfigDTOService {
         }
 
         List<EnvironmentConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+        
+        findByEnvironmentName("FT2");
+        
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 

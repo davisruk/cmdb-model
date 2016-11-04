@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.GlobalconfigRepository;
@@ -34,6 +35,23 @@ public class GlobalconfigDTOService {
     @Transactional(readOnly = true)
     public GlobalconfigDTO findOne(Long id) {
         return toDTO(globalconfigRepository.findOne(id));
+    }
+
+    private void buildHieraAddresses (List<Globalconfig> cl){
+    	String addr;
+    	for (Globalconfig conf: cl){
+        	addr = conf.getHieraAddress();
+        	//find Parameter in Hieara Address and replace with Parametername
+        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+        	conf.setHieraAddress(addr);
+        	System.out.println("GlobalConfig:" + conf.getId() + " " + conf.getHieraAddress());
+        }
+    }
+    @Transactional(readOnly = true)
+    public List<GlobalconfigDTO> findAllReplaceHiera() {
+        List<Globalconfig> results = globalconfigRepository.findAll();
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -59,6 +77,7 @@ public class GlobalconfigDTOService {
         }
 
         List<GlobalconfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+        findAllReplaceHiera();
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 
