@@ -52,7 +52,6 @@ public class EnvironmentConfigDTOService {
         	//find EnvTag in Hieara Address and replace with Env.name
         	addr = addr.replaceAll("\\{ENVID\\}", conf.getEnvironment().getName());
         	conf.setHieraAddress(addr);
-        	System.out.println("EnvConfig:" + conf.getId() + " " + conf.getHieraAddress());
         }
     }
     @Transactional(readOnly = true)
@@ -92,9 +91,6 @@ public class EnvironmentConfigDTOService {
         }
 
         List<EnvironmentConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-        
-        findByEnvironmentName("FT2");
-        
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 

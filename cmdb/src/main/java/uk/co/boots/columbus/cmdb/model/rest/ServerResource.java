@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.ServerDTO;
 import uk.co.boots.columbus.cmdb.model.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
@@ -47,6 +49,8 @@ public class ServerResource {
     private ServerRepository serverRepository;
     @Inject
     private ServerDTOService serverDTOService;
+    @Inject
+    private HieraDTOService hieraDTOService;
 
     /**
      * Create a new Server.
@@ -76,6 +80,15 @@ public class ServerResource {
         return Optional.ofNullable(serverDTOService.findOne(id)).map(serverDTO -> new ResponseEntity<>(serverDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @RequestMapping(value = "/configs/{envName}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByEnvName(@PathVariable String envName) throws URISyntaxException {
+
+        log.debug("Find configs for this environment : {}", envName);
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForServer(envName);
+        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
+    }
+
 
     /**
      * Update Server.

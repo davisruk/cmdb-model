@@ -60,7 +60,6 @@ public class ServerConfigDTOService {
         	//find EnvTag in Hieara Address and replace with Env.name
         	addr = addr.replaceAll("\\{ENVID\\}", conf.getServer().getEnvironment().getName());
         	conf.setHieraAddress(addr);
-        	System.out.println("ServerConfig:" + conf.getId() + " " + conf.getHieraAddress());
         }
     }
     @Transactional(readOnly = true)
@@ -94,9 +93,6 @@ public class ServerConfigDTOService {
         }
 
         List<ServerConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-        findByServerEnvironmentName("XX1");
-        findByServerEnvironmentReleaseName("X.Y.Z");
-        findByServerEnvironmentReleaseName("A.B.C");
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 

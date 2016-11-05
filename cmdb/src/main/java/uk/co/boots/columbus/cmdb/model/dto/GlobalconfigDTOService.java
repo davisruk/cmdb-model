@@ -44,7 +44,6 @@ public class GlobalconfigDTOService {
         	//find Parameter in Hieara Address and replace with Parametername
         	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
         	conf.setHieraAddress(addr);
-        	System.out.println("GlobalConfig:" + conf.getId() + " " + conf.getHieraAddress());
         }
     }
     @Transactional(readOnly = true)
@@ -77,7 +76,6 @@ public class GlobalconfigDTOService {
         }
 
         List<GlobalconfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-        findAllReplaceHiera();
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
 

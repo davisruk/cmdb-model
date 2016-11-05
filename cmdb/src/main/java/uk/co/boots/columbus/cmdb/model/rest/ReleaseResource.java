@@ -30,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
@@ -47,6 +49,8 @@ public class ReleaseResource {
     private ReleaseRepository releaseRepository;
     @Inject
     private ReleaseDTOService releaseDTOService;
+    @Inject
+    private HieraDTOService hieraDTOService;
 
     /**
      * Create a new Release.
@@ -75,6 +79,15 @@ public class ReleaseResource {
 
         return Optional.ofNullable(releaseDTOService.findOne(id)).map(releaseDTO -> new ResponseEntity<>(releaseDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    
+    @RequestMapping(value = "/configs/{relName}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByEnvironmentName(@PathVariable String relName) throws URISyntaxException {
+
+        log.debug("Find configs for this environment : {}", relName);
+
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForEnvironment(relName);
+        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
     }
 
     /**
