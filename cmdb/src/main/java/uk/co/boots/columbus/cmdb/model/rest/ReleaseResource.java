@@ -81,12 +81,12 @@ public class ReleaseResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    @RequestMapping(value = "/configs/{relName}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<HieraDTO>> findConfigsByEnvironmentName(@PathVariable String relName) throws URISyntaxException {
+    @RequestMapping(value = "/configs/{relName:.*}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByReleaseName(@PathVariable String relName) throws URISyntaxException {
 
-        log.debug("Find configs for this environment : {}", relName);
+        log.debug("Find configs for this Release : {}", relName);
 
-        List<HieraDTO> result = hieraDTOService.findHieraInfoForEnvironment(relName);
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForRelease(relName);
         return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
     }
 
