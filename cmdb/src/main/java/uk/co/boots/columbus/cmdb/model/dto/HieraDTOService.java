@@ -19,45 +19,54 @@ public class HieraDTOService {
 	@Inject
 	private ReleaseConfigDTOService rcService;
 
-
-	public List<HieraDTO> findHieraInfoForEnvironment(String envName){
+	public List<HieraDTO> findHieraInfoForEnvironment(String envName) {
 		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentName(envName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (GlobalconfigDTO gcDTO: gcDTOList){
+		for (GlobalconfigDTO gcDTO : gcDTOList) {
 			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
 		}
-		for (EnvironmentConfigDTO ecDTO: ecDTOList){
+		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
 			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
 		}
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraInfoForServer(String envName){
+	public List<HieraDTO> findHieraInfoForServer(String envName) {
 		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentName(envName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (GlobalconfigDTO gcDTO: gcDTOList){
+		for (GlobalconfigDTO gcDTO : gcDTOList) {
 			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
 		}
 
-		for (ServerConfigDTO scDTO: scDTOList){
+		for (ServerConfigDTO scDTO : scDTOList) {
 			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
 		}
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraInfoForRelease(String relName){
+	public List<HieraDTO> findHieraInfoForRelease(String relName) {
 		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (GlobalconfigDTO gcDTO: gcDTOList){
+		for (GlobalconfigDTO gcDTO : gcDTOList) {
 			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
 		}
-		for (ReleaseConfigDTO rcDTO: rcDTOList){
+		for (ReleaseConfigDTO rcDTO : rcDTOList) {
 			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
 		}
 		return hDTOList;
 	}
 
+	public List<String[]> convertForCSV(List<HieraDTO> list, boolean includeHeaders) {
+
+		List<String[]> result = new ArrayList<String[]>();
+		if (includeHeaders)
+			result.add(new String[] { "Address", "Value" });
+		for (HieraDTO h : list) {
+			result.add(new String[] { h.address, h.value });
+		}
+		return result;
+	}
 }

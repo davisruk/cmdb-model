@@ -13,6 +13,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -28,7 +30,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
 import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
@@ -38,6 +42,7 @@ import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CsvResponse;
 
 @RestController
 @RequestMapping("/api/releases")
@@ -89,7 +94,14 @@ public class ReleaseResource {
         List<HieraDTO> result = hieraDTOService.findHieraInfoForRelease(relName);
         return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
     }
-
+    
+    @RequestMapping(value = "/configdownload/{relName:.*}", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsByReleaseName(@PathVariable String relName) throws IOException {
+    	List<HieraDTO> result = hieraDTOService.findHieraInfoForRelease(relName);
+          return new CsvResponse(result, "HieraData_Release_" + relName + ".csv");
+    }
+    
     /**
      * Update Release.
      */

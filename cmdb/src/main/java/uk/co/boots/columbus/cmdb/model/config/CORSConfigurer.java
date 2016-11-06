@@ -1,4 +1,4 @@
-package uk.co.boots.columbus;
+package uk.co.boots.columbus.cmdb.model.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
