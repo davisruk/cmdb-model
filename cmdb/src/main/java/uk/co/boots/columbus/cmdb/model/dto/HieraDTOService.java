@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.tomcat.jni.Global;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,28 +19,85 @@ public class HieraDTOService {
 	private ServerConfigDTOService scService;
 	@Inject
 	private ReleaseConfigDTOService rcService;
+	@Inject
+	private ComponentConfigDTOService ccService;
+
 
 	public List<HieraDTO> findHieraInfoForEnvironment(String envName) {
-		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentName(envName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (GlobalconfigDTO gcDTO : gcDTOList) {
-			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
-		}
 		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
 			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
 		}
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraInfoForServer(String envName) {
-		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
-		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentName(envName);
+	public List<HieraDTO> findHieraCompleteInfoForRelease(String relName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		
+		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		for (GlobalconfigDTO gcDTO : gcDTOList) {
 			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
 		}
 
+		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
+		for (ReleaseConfigDTO rcDTO : rcDTOList) {
+			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
+		}
+		
+		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentReleaseName(relName);
+		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
+			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
+		}
+	
+		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentReleaseName(relName);
+		for (ServerConfigDTO scDTO : scDTOList) {
+			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
+		}
+
+		List<ComponentConfigDTO> ccDTOList = ccService.findByComponentPackageReleaseName(relName);
+		for (ComponentConfigDTO ccDTO : ccDTOList) {
+			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
+		}
+
+		return hDTOList;
+	}
+	
+	public List<HieraDTO> findHieraCompleteHieraInfo() {
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		
+		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
+		for (GlobalconfigDTO gcDTO : gcDTOList) {
+			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
+		}
+
+		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
+		for (ReleaseConfigDTO rcDTO : rcDTOList) {
+			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
+		}
+		
+		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentReleaseName(relName);
+		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
+			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
+		}
+	
+		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentReleaseName(relName);
+		for (ServerConfigDTO scDTO : scDTOList) {
+			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
+		}
+
+		List<ComponentConfigDTO> ccDTOList = ccService.findByComponentPackageReleaseName(relName);
+		for (ComponentConfigDTO ccDTO : ccDTOList) {
+			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
+		}
+
+		return hDTOList;
+	}
+
+
+	public List<HieraDTO> findHieraInfoForServer(String envName) {
+		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentName(envName);
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		for (ServerConfigDTO scDTO : scDTOList) {
 			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
 		}
@@ -47,14 +105,19 @@ public class HieraDTOService {
 	}
 
 	public List<HieraDTO> findHieraInfoForRelease(String relName) {
-		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
 		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (GlobalconfigDTO gcDTO : gcDTOList) {
-			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
-		}
 		for (ReleaseConfigDTO rcDTO : rcDTOList) {
 			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
+		}
+		return hDTOList;
+	}
+
+	public List<HieraDTO> findHieraInfoForSolutionComponent(Long compId) {
+		List<ComponentConfigDTO> ccDTOList = ccService.findBySolutionComponentId(compId);
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		for (ComponentConfigDTO ccDTO : ccDTOList) {
+			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
 		}
 		return hDTOList;
 	}

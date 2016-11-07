@@ -13,6 +13,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -28,14 +29,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.SolutionComponentDTO;
 import uk.co.boots.columbus.cmdb.model.dto.SolutionComponentDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.SolutionComponentRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CsvResponse;
 
 @RestController
 @RequestMapping("/api/solutionComponents")
@@ -48,6 +53,8 @@ public class SolutionComponentResource {
     @Inject
     private SolutionComponentDTOService solutionComponentDTOService;
 
+    @Inject
+    private HieraDTOService hieraDTOService;
     /**
      * Create a new SolutionComponent.
      */
@@ -77,6 +84,23 @@ public class SolutionComponentResource {
                 .map(solutionComponentDTO -> new ResponseEntity<>(solutionComponentDTO, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
+    @RequestMapping(value = "/configs/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByReleaseName(@PathVariable Long id) throws URISyntaxException {
+
+        log.debug("Find configs for Component : {}", id);
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForSolutionComponent(id);
+        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
+    }
+    
+    @RequestMapping(value = "/configdownload/{id}", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsByReleaseName(@PathVariable Long id) throws IOException {
+    	List<HieraDTO> result = hieraDTOService.findHieraInfoForSolutionComponent(id);
+    	SolutionComponentDTO scDTO = solutionComponentDTOService.findOne(id);
+        return new CsvResponse(result, "HieraData_Component_" + scDTO.name + ".csv");
+    }
+     
+    
     /**
      * Update SolutionComponent.
      */

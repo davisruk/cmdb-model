@@ -36,7 +36,7 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     private String hieraAddress;
 
     // Many to one
-    private SolutionComponent my_component;
+    private SolutionComponent solutionComponent;
 
     @Override
     public String entityClassName() {
@@ -128,19 +128,19 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     @NotNull
     @JoinColumn(name = "ComponentID", nullable = false)
     @ManyToOne
-    public SolutionComponent getMy_component() {
-        return my_component;
+    public SolutionComponent getSolutionComponent() {
+        return solutionComponent;
     }
 
     /**
-     * Set the {@link #my_component} without adding this ComponentConfig instance on the passed {@link #my_component}
+     * Set the {@link #solutionComponent} without adding this ComponentConfig instance on the passed {@link #solutionComponent}
      */
-    public void setMy_component(SolutionComponent my_component) {
-        this.my_component = my_component;
+    public void setSolutionComponent(SolutionComponent solutionComponent) {
+        this.solutionComponent = solutionComponent;
     }
 
-    public ComponentConfig my_component(SolutionComponent my_component) {
-        setMy_component(my_component);
+    public ComponentConfig my_component(SolutionComponent solutionComponent) {
+        setSolutionComponent(solutionComponent);
         return this;
     }
 

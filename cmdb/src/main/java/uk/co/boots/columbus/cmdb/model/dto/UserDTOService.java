@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class UserDTOService {
    
     @Inject
     private RoleDTOService roleDTOService;
+    
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     

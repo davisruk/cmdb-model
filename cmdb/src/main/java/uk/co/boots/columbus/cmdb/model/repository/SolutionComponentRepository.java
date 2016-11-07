@@ -20,7 +20,7 @@ import uk.co.boots.columbus.cmdb.model.domain.SolutionComponent_;
 
 public interface SolutionComponentRepository extends JpaRepository<SolutionComponent, Long> {
 
-    default List<SolutionComponent> complete(String query, int maxResults) {
+	default List<SolutionComponent> complete(String query, int maxResults) {
         SolutionComponent probe = new SolutionComponent();
         probe.setName(query);
 

@@ -53,6 +53,7 @@ public class EnvironmentDTOService {
         Example<Environment> example = null;
         Environment environment = toEntity(req.example);
 
+        environment.getRelease()
         if (environment != null) {
             example = Example.of(environment);
         }

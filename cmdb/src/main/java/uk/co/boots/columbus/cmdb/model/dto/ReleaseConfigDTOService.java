@@ -31,10 +31,12 @@ public class ReleaseConfigDTOService {
         return toDTO(releaseConfigRepository.findOne(id));
     }
 
-    private void buildHieraAddresses (List<ReleaseConfig> cl){
+    private void buildHieraAddresses (List<ReleaseConfig> cl, String relName){
     	String addr;
     	for (ReleaseConfig conf: cl){
         	addr = conf.getHieraAddress();
+        	//find Parameter in Hieara Address and replace with Release Name
+        	addr = addr.replaceAll("\\{Release\\}",relName);
         	//find Parameter in Hieara Address and replace with Parametername
         	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
         	//find EnvTag in Hieara Address and replace with Env.name
@@ -43,9 +45,9 @@ public class ReleaseConfigDTOService {
         }
     }
     @Transactional(readOnly = true)
-    public List<ReleaseConfigDTO> findByReleaseName(String envName) {
-        List<ReleaseConfig> results = releaseConfigRepository.findByRelease_name(envName);
-        buildHieraAddresses (results);
+    public List<ReleaseConfigDTO> findByReleaseName(String relName) {
+        List<ReleaseConfig> results = releaseConfigRepository.findByRelease_name(relName);
+        buildHieraAddresses (results, relName);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 

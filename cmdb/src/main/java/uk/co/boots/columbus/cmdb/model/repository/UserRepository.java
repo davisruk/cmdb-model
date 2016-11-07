@@ -14,6 +14,7 @@ import uk.co.boots.columbus.cmdb.model.domain.User_;
 public interface UserRepository extends JpaRepository<User, Integer> {
 	   
 		User findByUserName(String userName);
+		
 		default List<User> complete(String query, int maxResults) {
 	        User probe = new User();
 	        probe.setUserName(query);

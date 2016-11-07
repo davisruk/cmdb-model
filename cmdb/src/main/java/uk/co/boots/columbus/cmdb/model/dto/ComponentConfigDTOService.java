@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.ComponentConfig;
+import uk.co.boots.columbus.cmdb.model.domain.EnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.domain.SolutionComponent;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
@@ -48,6 +49,37 @@ public class ComponentConfigDTOService {
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ComponentConfigDTO> findBySolutionComponentId(Long id) {
+        List<ComponentConfig> results = componentConfigRepository.findBySolutionComponent_id(id);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ComponentConfigDTO> findByComponentPackageReleaseName(String relName) {
+        List<ComponentConfig> results = componentConfigRepository.findBySolutionComponent_PackageInfo_Release_name(relName);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    
+    private void buildHieraAddresses (List<ComponentConfig> cl){
+    	String addr;
+    	for (ComponentConfig conf: cl){
+        	addr = conf.getHieraAddress();
+        	//find Parameter in Hieara Address and replace with Release
+        	addr = addr.replaceAll("\\{Release\\}",conf.getSolutionComponent().getPackageInfo().getRelease().getName());
+        	//find EnvTag in Hieara Address and replace with ServType
+        	addr = addr.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
+        	//find EnvTag in Hieara Address and replace with Env.name
+        	addr = addr.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
+        	
+        	conf.setHieraAddress(addr);
+        }
+    }
+
+    
     @Transactional(readOnly = true)
     public PageResponse<ComponentConfigDTO> findAll(PageRequestByExample<ComponentConfigDTO> req) {
         Example<ComponentConfig> example = null;
@@ -89,11 +121,11 @@ public class ComponentConfigDTOService {
         componentConfig.setHieraAddress(dto.hieraAddress);
 
         if (dto.my_component == null) {
-            componentConfig.setMy_component(null);
+            componentConfig.setSolutionComponent(null);
         } else {
-            SolutionComponent my_component = componentConfig.getMy_component();
+            SolutionComponent my_component = componentConfig.getSolutionComponent();
             if (my_component == null || (my_component.getId().compareTo(dto.my_component.id) != 0)) {
-                componentConfig.setMy_component(solutionComponentRepository.findOne(dto.my_component.id));
+                componentConfig.setSolutionComponent(solutionComponentRepository.findOne(dto.my_component.id));
             }
         }
 
@@ -128,7 +160,7 @@ public class ComponentConfigDTOService {
         dto.value = componentConfig.getValue();
         dto.hieraAddress = componentConfig.getHieraAddress();
         if (depth-- > 0) {
-            dto.my_component = solutionComponentDTOService.toDTO(componentConfig.getMy_component(), depth);
+            dto.my_component = solutionComponentDTOService.toDTO(componentConfig.getSolutionComponent(), depth);
         }
 
         return dto;
@@ -158,7 +190,7 @@ public class ComponentConfigDTOService {
         componentConfig.setValue(dto.value);
         componentConfig.setHieraAddress(dto.hieraAddress);
         if (depth-- > 0) {
-            componentConfig.setMy_component(solutionComponentDTOService.toEntity(dto.my_component, depth));
+            componentConfig.setSolutionComponent(solutionComponentDTOService.toEntity(dto.my_component, depth));
         }
 
         return componentConfig;

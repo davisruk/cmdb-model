@@ -29,7 +29,7 @@ public interface EnvironmentRepository extends JpaRepository<Environment, Long> 
      */
     Environment getByName(String name);
 
-    default List<Environment> complete(String query, int maxResults) {
+       default List<Environment> complete(String query, int maxResults) {
         Environment probe = new Environment();
         probe.setName(query);
 

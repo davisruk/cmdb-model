@@ -20,7 +20,9 @@ import uk.co.boots.columbus.cmdb.model.domain.ComponentConfig_;
 
 public interface ComponentConfigRepository extends JpaRepository<ComponentConfig, Long> {
 
-    default List<ComponentConfig> complete(String query, int maxResults) {
+	List<ComponentConfig> findBySolutionComponent_id(Long Id);
+	List<ComponentConfig> findBySolutionComponent_PackageInfo_Release_name(String name);
+	default List<ComponentConfig> complete(String query, int maxResults) {
         ComponentConfig probe = new ComponentConfig();
         probe.setParameter(query);
 

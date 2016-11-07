@@ -20,5 +20,5 @@ public abstract class ComponentConfig_ {
     public static volatile SingularAttribute<ComponentConfig, String> hieraAddress;
 
     // Many to one
-    public static volatile SingularAttribute<ComponentConfig, SolutionComponent> my_component;
+    public static volatile SingularAttribute<ComponentConfig, SolutionComponent> solutionComponent;
 }
