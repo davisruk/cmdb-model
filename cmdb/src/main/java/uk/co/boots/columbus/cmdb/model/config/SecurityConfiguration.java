@@ -68,7 +68,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 antMatchers("/*.{js,html}"). //
                 antMatchers("/img/**"). //
                 antMatchers("/node_modules/**"). //
-                antMatchers("/**/*.{js,html,css}");
+                antMatchers("/**/*.{js,html,css}").
+                antMatchers("/api/environments/configdownloadall/");
     }
 /*
     @Override
@@ -120,6 +121,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				authorizeRequests().
                 requestMatchers(CorsUtils::isCorsRequest).permitAll().
                 antMatchers("/api/authenticated").permitAll().//
+                antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
+                antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
                 antMatchers("/**").authenticated().
                 antMatchers("/swagger-ui/index.html").hasAuthority("ROLE_ADMIN").
                 anyRequest().authenticated().

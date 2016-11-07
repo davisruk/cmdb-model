@@ -81,11 +81,11 @@ public class ServerResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     
-    @RequestMapping(value = "/configs/{envName}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<HieraDTO>> findConfigsByEnvName(@PathVariable String envName) throws URISyntaxException {
+    @RequestMapping(value = "/configs/{serverName}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<HieraDTO>> findConfigsByEnvName(@PathVariable String serverName) throws URISyntaxException {
 
-        log.debug("Find configs for this environment : {}", envName);
-        List<HieraDTO> result = hieraDTOService.findHieraInfoForServer(envName);
+        log.debug("Find configs for this Server: {}", serverName);
+        List<HieraDTO> result = hieraDTOService.findHieraInfoForServer(serverName);
         return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
     }
 

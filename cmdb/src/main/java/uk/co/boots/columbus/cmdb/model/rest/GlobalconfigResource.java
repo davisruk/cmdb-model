@@ -13,6 +13,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -28,14 +29,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import uk.co.boots.columbus.cmdb.model.dto.GlobalconfigDTO;
 import uk.co.boots.columbus.cmdb.model.dto.GlobalconfigDTOService;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
+import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CsvResponse;
 
 @RestController
 @RequestMapping("/api/globalconfigs")
@@ -47,7 +52,8 @@ public class GlobalconfigResource {
     private GlobalconfigRepository globalconfigRepository;
     @Inject
     private GlobalconfigDTOService globalconfigDTOService;
-
+    @Inject
+    private HieraDTOService hieraDTOService;
     /**
      * Create a new Globalconfig.
      */
@@ -76,6 +82,13 @@ public class GlobalconfigResource {
         return Optional.ofNullable(globalconfigDTOService.findOne(id)).map(globalconfigDTO -> new ResponseEntity<>(globalconfigDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @RequestMapping(value = "/configdownload", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsByReleaseName() throws IOException {
+    	return new CsvResponse(hieraDTOService.findHieraInfoForGlobalconfig(), "HieraData_Global_Config.csv");
+    }
+
 
     /**
      * Update Globalconfig.

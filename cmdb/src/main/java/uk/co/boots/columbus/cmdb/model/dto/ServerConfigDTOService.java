@@ -62,6 +62,15 @@ public class ServerConfigDTOService {
         	conf.setHieraAddress(addr);
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<ServerConfigDTO> findByServerName(String query) {
+        List<ServerConfig> results = serverConfigRepository.findByServerName(query);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+    
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByServerEnvironmentName(String query) {
         List<ServerConfig> results = serverConfigRepository.findByServer_Environment_name(query);

@@ -49,11 +49,16 @@ public class EnvironmentDTOService {
     }
 
     @Transactional(readOnly = true)
+    public List<EnvironmentDTO> findAllEnvironments() {
+        List<Environment> results = environmentRepository.findAll();
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public PageResponse<EnvironmentDTO> findAll(PageRequestByExample<EnvironmentDTO> req) {
         Example<Environment> example = null;
         Environment environment = toEntity(req.example);
 
-        environment.getRelease()
         if (environment != null) {
             example = Example.of(environment);
         }

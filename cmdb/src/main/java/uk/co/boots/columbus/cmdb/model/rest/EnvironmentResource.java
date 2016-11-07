@@ -96,11 +96,14 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownload/{envName:.*}", method = GET, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsByReleaseName(@PathVariable String envName) throws IOException {
-    	List<HieraDTO> result;
-   		result = hieraDTOService.findHieraInfoForEnvironment(envName);
-    	return new CsvResponse(result, "HieraData_Release_" + envName + ".csv");
+    	return new CsvResponse(hieraDTOService.findHieraInfoForEnvironment(envName), "HieraData_Release_" + envName + ".csv");
     }
     
+    @RequestMapping(value = "/configdownloadall/", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsAll() throws IOException {
+    	return new CsvResponse(hieraDTOService.findAllHiera(), "HieraData_Complete.csv");
+    }
 
     /**
      * Update Environment.

@@ -12,7 +12,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 /**
  * Simple DTO for Globalconfig.
  */
-public class GlobalconfigDTO {
+public class GlobalconfigDTO implements CoreConfigDTO{
+    public Long getId() {
+		return id;
+	}
+
+	public String getParameter() {
+		return parameter;
+	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public String getHieraAddress() {
+		return hieraAddress;
+	}
+
     public Long id;
     public String parameter;
     public String value;

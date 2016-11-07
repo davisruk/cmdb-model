@@ -5,8 +5,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.tomcat.jni.Global;
 import org.springframework.stereotype.Service;
+
+import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
 
 @Service
 public class HieraDTOService {
@@ -21,109 +22,80 @@ public class HieraDTOService {
 	private ReleaseConfigDTOService rcService;
 	@Inject
 	private ComponentConfigDTOService ccService;
+	@Inject
+	private EnvironmentDTOService eDTOService;
 
+
+	// helper function to cope with the poor DTO structure
+	// Each ConfigDTO implements CoreConfigDTO that exposes accessors
+	private List<HieraDTO> addToHieraDTOList(List<HieraDTO> hieraList, List<? extends CoreConfigDTO> fromList){
+		for (CoreConfigDTO cDTO : fromList)
+			hieraList.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress()));
+
+		return hieraList;
+	}
 
 	public List<HieraDTO> findHieraInfoForEnvironment(String envName) {
-		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentName(envName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
-			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
-		}
+		addToHieraDTOList(hDTOList, ecService.findByEnvironmentName(envName));
 		return hDTOList;
 	}
 
+	public List<HieraDTO> findHieraInfoForGlobalconfig() {
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+		return hDTOList;
+	}
+
+	public List<HieraDTO> findAllHiera() {
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+		List<EnvironmentDTO> eList = eDTOService.findAllEnvironments();
+		for (EnvironmentDTO e: eList)
+			getHieraForRelease(hDTOList, e.release.name);
+		return hDTOList;
+	}
+
+	private List<HieraDTO> getHieraForRelease(List<HieraDTO> hDTOList, String relName) {
+		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
+		addToHieraDTOList(hDTOList, ecService.findByEnvironmentReleaseName(relName));
+		addToHieraDTOList(hDTOList, scService.findByServerEnvironmentReleaseName(relName));
+		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(relName));
+		return hDTOList;
+	}
+	
 	public List<HieraDTO> findHieraCompleteInfoForRelease(String relName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		
-		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
-		for (GlobalconfigDTO gcDTO : gcDTOList) {
-			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
-		}
-
-		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
-		for (ReleaseConfigDTO rcDTO : rcDTOList) {
-			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
-		}
-		
-		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentReleaseName(relName);
-		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
-			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
-		}
-	
-		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentReleaseName(relName);
-		for (ServerConfigDTO scDTO : scDTOList) {
-			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
-		}
-
-		List<ComponentConfigDTO> ccDTOList = ccService.findByComponentPackageReleaseName(relName);
-		for (ComponentConfigDTO ccDTO : ccDTOList) {
-			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
-		}
-
+		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+		getHieraForRelease(hDTOList, relName);
 		return hDTOList;
 	}
 	
 	public List<HieraDTO> findHieraCompleteHieraInfo() {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		
-		List<GlobalconfigDTO> gcDTOList = gcService.findAllReplaceHiera();
-		for (GlobalconfigDTO gcDTO : gcDTOList) {
-			hDTOList.add(new HieraDTO(gcDTO.value, gcDTO.hieraAddress));
-		}
-
-		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
-		for (ReleaseConfigDTO rcDTO : rcDTOList) {
-			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
-		}
-		
-		List<EnvironmentConfigDTO> ecDTOList = ecService.findByEnvironmentReleaseName(relName);
-		for (EnvironmentConfigDTO ecDTO : ecDTOList) {
-			hDTOList.add(new HieraDTO(ecDTO.value, ecDTO.hieraAddress));
-		}
-	
-		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentReleaseName(relName);
-		for (ServerConfigDTO scDTO : scDTOList) {
-			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
-		}
-
-		List<ComponentConfigDTO> ccDTOList = ccService.findByComponentPackageReleaseName(relName);
-		for (ComponentConfigDTO ccDTO : ccDTOList) {
-			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
-		}
-
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();	
 		return hDTOList;
 	}
 
 
-	public List<HieraDTO> findHieraInfoForServer(String envName) {
-		List<ServerConfigDTO> scDTOList = scService.findByServerEnvironmentName(envName);
+	public List<HieraDTO> findHieraInfoForServer(String serverName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (ServerConfigDTO scDTO : scDTOList) {
-			hDTOList.add(new HieraDTO(scDTO.value, scDTO.hieraAddress));
-		}
+		addToHieraDTOList(hDTOList, scService.findByServerName(serverName));
 		return hDTOList;
 	}
 
 	public List<HieraDTO> findHieraInfoForRelease(String relName) {
-		List<ReleaseConfigDTO> rcDTOList = rcService.findByReleaseName(relName);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (ReleaseConfigDTO rcDTO : rcDTOList) {
-			hDTOList.add(new HieraDTO(rcDTO.value, rcDTO.hieraAddress));
-		}
+		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
 		return hDTOList;
 	}
 
 	public List<HieraDTO> findHieraInfoForSolutionComponent(Long compId) {
-		List<ComponentConfigDTO> ccDTOList = ccService.findBySolutionComponentId(compId);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		for (ComponentConfigDTO ccDTO : ccDTOList) {
-			hDTOList.add(new HieraDTO(ccDTO.value, ccDTO.hieraAddress));
-		}
+		addToHieraDTOList(hDTOList, ccService.findBySolutionComponentId(compId));
 		return hDTOList;
 	}
 
 	public List<String[]> convertForCSV(List<HieraDTO> list, boolean includeHeaders) {
-
 		List<String[]> result = new ArrayList<String[]>();
 		if (includeHeaders)
 			result.add(new String[] { "Address", "Value" });
