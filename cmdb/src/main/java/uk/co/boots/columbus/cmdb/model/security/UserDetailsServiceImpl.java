@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -68,7 +69,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
         log.debug("Security verification for user '{}'", username);
 
-        return new UserWithId(username, user.getPassword(), user.getEnabled(), accountNonExpired, credentialsNonExpired, accountNonLocked, toGrantedAuthorities(user.getRoles()), null);        
+             
+        UserDetails ud = new UserWithId(username, user.getPassword(), user.getEnabled(), accountNonExpired, credentialsNonExpired, accountNonLocked, toGrantedAuthorities(user.getRoles()), null); 
+        return ud;        
     }
 
     private Collection<GrantedAuthority> toGrantedAuthorities(List<Role> roles) {

@@ -10,17 +10,53 @@ package uk.co.boots.columbus.cmdb.model.rest;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.domain.Role;
+import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 import uk.co.boots.columbus.cmdb.model.security.UserContext;
 
 @RestController
 @RequestMapping("/api")
 public class SecurityResource {
 
-    @RequestMapping(value = "/authenticated", method = GET, produces = APPLICATION_JSON_VALUE)
-    public boolean isAuthenticated() {
-        return UserContext.getId() != null;
-    }
+	@Autowired
+	UserRepository userRepo;
+
+	@RequestMapping(value = "/authenticated", method = GET, produces = APPLICATION_JSON_VALUE)
+	public boolean isAuthenticated() {
+		return UserContext.getId() != null;
+	}
+
+	@RequestMapping(value = "/loggedinuser", method = GET, produces = APPLICATION_JSON_VALUE)
+	public UserDetails getLoggedInUserDetails() {
+		return UserContext.getUserDetails();
+	}
+
+	@RequestMapping(value = "/currentUserAuthorities/{userName}", method = GET, produces = APPLICATION_JSON_VALUE)
+	public Collection<? extends GrantedAuthority> getCurrentUserAuthorities(@PathVariable String userName) {
+		return toGrantedAuthorities(userRepo.findByUserName(userName).getRoles());
+//		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+//		return auth.getAuthorities();
+	}
+
+	private Collection<GrantedAuthority> toGrantedAuthorities(List<Role> roles) {
+		List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
+		for (Role role : roles) {
+			result.add(new SimpleGrantedAuthority(role.getName()));
+		}
+		return result;
+	}
 }

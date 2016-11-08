@@ -123,6 +123,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 antMatchers("/api/authenticated").permitAll().//
                 antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
                 antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
+                antMatchers("/api/currentUserAuthorities").authenticated().//
                 antMatchers("/**").authenticated().
                 antMatchers("/swagger-ui/index.html").hasAuthority("ROLE_ADMIN").
                 anyRequest().authenticated().

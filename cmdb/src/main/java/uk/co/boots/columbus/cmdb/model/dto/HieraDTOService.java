@@ -1,16 +1,15 @@
 package uk.co.boots.columbus.cmdb.model.dto;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
-
 @Service
-public class HieraDTOService {
+public class HieraDTOService implements Comparator <HieraDTO>{
 
 	@Inject
 	private GlobalconfigDTOService gcService;
@@ -53,6 +52,7 @@ public class HieraDTOService {
 		List<EnvironmentDTO> eList = eDTOService.findAllEnvironments();
 		for (EnvironmentDTO e: eList)
 			getHieraForRelease(hDTOList, e.release.name);
+		hDTOList.sort(this);
 		return hDTOList;
 	}
 
@@ -103,5 +103,10 @@ public class HieraDTOService {
 			result.add(new String[] { h.address, h.value });
 		}
 		return result;
+	}
+
+	@Override
+	public int compare(HieraDTO o1, HieraDTO o2) {
+		return o1.address.compareTo(o2.address);
 	}
 }
