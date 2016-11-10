@@ -1,7 +1,6 @@
 package uk.co.boots.columbus.cmdb.model.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,12 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsUtils;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import uk.co.boots.columbus.cmdb.model.security.jwt.JwtAuthenticationEntryPoint;
 import uk.co.boots.columbus.cmdb.model.security.jwt.JwtAuthenticationTokenFilter;
@@ -59,30 +53,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring(). //
-				antMatchers(HttpMethod.OPTIONS, "/**"). //
+				// let all CORS HTTP Option pre-flight messages go
+				// our Filter will still get called though so we
+				// ignore it and pass it on down the chain
+				antMatchers(HttpMethod.OPTIONS, "/**").
 				antMatchers("/"). //
 				antMatchers("/*.{js,html}"). //
 				antMatchers("/img/**"). //
 				antMatchers("/node_modules/**"). //
-				antMatchers("/**/*.{js,html,css}").antMatchers("/api/environments/configdownloadall/");
+				antMatchers("/**/*.{js,html,css}");
 	}
 
-	/*
-	 * @Override protected void configure(HttpSecurity http) throws Exception {
-	 * http. // csrf().disable(). // formLogin(). //
-	 * loginProcessingUrl("/api/login"). // defaultSuccessUrl("/", true). //
-	 * successHandler(ajaxAuthenticationSuccessHandler). //
-	 * failureHandler(ajaxAuthenticationFailureHandler). //
-	 * usernameParameter("j_username"). // passwordParameter("j_password"). //
-	 * permitAll(). // and(). // logout(). // logoutUrl("/api/logout"). //
-	 * logoutSuccessUrl("/"). // deleteCookies("JSESSIONID"). // permitAll(). //
-	 * and(). // authorizeRequests(). //
-	 * antMatchers("/api/authenticated").permitAll().//
-	 * requestMatchers(CorsUtils::isCorsRequest).permitAll().
-	 * antMatchers("/**").authenticated().
-	 * antMatchers("/swagger-ui/index.html").hasAuthority("ROLE_ADMIN"); }
-	 * 
-	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.
@@ -90,42 +71,22 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			exceptionHandling().authenticationEntryPoint(unauthorizedHandler).
 			and().// don't create session
 			sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS). 
-			and().// permit all CORS requests
-			authorizeRequests().requestMatchers(CorsUtils::isCorsRequest).permitAll().
-			antMatchers("/api/authenticated").permitAll().//
-			antMatchers("/api/login").permitAll().
+			and().
+			authorizeRequests().antMatchers("/api/login").permitAll().
+			// allow all login requests
 			antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
 			antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
-			antMatchers("/api/currentUserAuthorities").authenticated().//
-			antMatchers("/**").authenticated().antMatchers("/swagger-ui/index.html").hasAuthority("ROLE_ADMIN")
-			.anyRequest().authenticated().and().httpBasic();
+			antMatchers("/api/users/**").hasRole("ADMIN").
+			antMatchers("/api/roles/**").hasRole("ADMIN").
+			antMatchers("/api/currentUserAuthorities").authenticated(). // ok to use ANONYMOUS here
+			antMatchers("/**").hasRole("USER").
+			antMatchers("/swagger-ui*").permitAll()
+			.anyRequest().hasRole("USER").and().httpBasic();
 
-		http.addFilterBefore(corsFilter().getFilter(), ChannelProcessingFilter.class);
+		// Spring doesn't support JWT yet so we must add our Token check
+		// as a Filter before the rest of the security layer kicks in 
 		http.addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
-
 		// disable page caching
 		http.headers().cacheControl();
 	}
-
-	@Bean
-	public FilterRegistrationBean corsFilter() {
-		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-		CorsConfiguration config = new CorsConfiguration();
-		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost:3000");
-		config.addAllowedHeader("*");
-		config.addAllowedMethod("*");
-		source.registerCorsConfiguration("/users/**", config);
-		source.registerCorsConfiguration("/users/**/roles/**", config);
-		source.registerCorsConfiguration("/users/*/roles/**", config);
-		FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
-		bean.setOrder(0);
-		return bean;
-	}
-/*
-	@Bean
-	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-		return new SecurityEvaluationContextExtension();
-	}
-*/
 }

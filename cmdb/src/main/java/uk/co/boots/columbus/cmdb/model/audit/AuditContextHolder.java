@@ -12,8 +12,6 @@ import static org.apache.commons.lang.StringUtils.trimToNull;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import uk.co.boots.columbus.cmdb.model.security.UserContext;
-
 /**
  * Enable/disable {@link PreUpdate} and {@link PrePersist} actions and/or force the username to be used.
  * Please note that you are in charge of reseting the context properties if you use them directly.
@@ -44,7 +42,7 @@ public final class AuditContextHolder {
      * The username bound to this thread or if it is null the username returned by the {@link UserContext};
      */
     public static String username() {
-        return username.get() == null ? UserContext.getUsername() : username.get();
+        return username.get();
     }
 
     public static void clear() {

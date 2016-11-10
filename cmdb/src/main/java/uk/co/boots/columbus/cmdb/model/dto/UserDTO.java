@@ -54,6 +54,7 @@ public class UserDTO implements UserDetails {
 	}
 
 	@Override
+	@JsonIgnore
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return mapToGrantedAuthorities();
 	}

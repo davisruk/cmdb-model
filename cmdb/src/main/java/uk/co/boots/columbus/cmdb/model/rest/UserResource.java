@@ -29,6 +29,7 @@ import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CORSSupport;
 
 @RestController
 @RequestMapping("/api/users")
@@ -92,7 +93,7 @@ public class UserResource {
     @RequestMapping(value = "/page", method = POST, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<PageResponse<UserDTO>> findAll(@RequestBody PageRequestByExample<UserDTO> prbe) throws URISyntaxException {
         PageResponse<UserDTO> pageResponse = userDTOService.findAll(prbe);
-        return new ResponseEntity<>(pageResponse, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(pageResponse, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
     /**
@@ -103,7 +104,7 @@ public class UserResource {
 
         List<UserDTO> results = userDTOService.complete(acq.query, acq.maxResults);
 
-        return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
     /**

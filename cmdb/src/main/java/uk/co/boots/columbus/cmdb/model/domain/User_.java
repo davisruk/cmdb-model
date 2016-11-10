@@ -1,6 +1,6 @@
 package uk.co.boots.columbus.cmdb.model.domain;
 
-import javax.persistence.metamodel.CollectionAttribute;
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -12,5 +12,5 @@ public abstract class User_ {
     public static volatile SingularAttribute<User, Boolean> enabled;
     public static volatile SingularAttribute<User, String> password;
     public static volatile SingularAttribute<User, String> userName;
-    public static volatile CollectionAttribute<User, Role> roles;
+    public static volatile ListAttribute<User, Role> roles;
 }

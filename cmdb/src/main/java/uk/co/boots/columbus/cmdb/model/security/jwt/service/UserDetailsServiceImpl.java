@@ -5,7 +5,7 @@
  * Need commercial support ? Contact us: info@jaxio.com
  * Template pack-angular:src/main/java/security/UserDetailsServiceImpl.java.p.vm
  */
-package uk.co.boots.columbus.cmdb.model.security;
+package uk.co.boots.columbus.cmdb.model.security.jwt.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,8 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Role;
 import uk.co.boots.columbus.cmdb.model.domain.User;
-import uk.co.boots.columbus.cmdb.model.repository.RoleRepository;
 import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
+import uk.co.boots.columbus.cmdb.model.security.jwt.UserWithId;
 
 /**
  * An implementation of Spring Security's {@link UserDetailsService}.
@@ -41,8 +40,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Inject
     private UserRepository userRepo;
-    @Inject
-    private RoleRepository roleRepo;
     
     /**
      * Retrieve an account depending on its login this method is not case sensitive.
