@@ -65,7 +65,7 @@ public class Role implements Identifiable<Integer>, Serializable {
 	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
     @Override
     public int hashCode() {
-        return identifiableHashBuilder.hash(log, this);
+        return identifiableHashBuilder.hash(log, this, name);
     }
 
 	@Override

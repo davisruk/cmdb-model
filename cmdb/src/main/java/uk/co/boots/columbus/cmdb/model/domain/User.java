@@ -110,7 +110,7 @@ public class User implements Identifiable<Integer>, Serializable {
 
     @Override
     public int hashCode() {
-        return identifiableHashBuilder.hash(log, this);
+        return identifiableHashBuilder.hash(log, this, userName + password);
     }
 
 	@Override

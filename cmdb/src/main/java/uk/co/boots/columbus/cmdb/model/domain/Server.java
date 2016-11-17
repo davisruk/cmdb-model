@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,7 +44,7 @@ public class Server implements Identifiable<Long>, Serializable {
     @ManyToOne
     private ServerType serverType;
     
-	@ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 		name="cm_server_environment"
 		, joinColumns={
@@ -148,6 +147,8 @@ public class Server implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof Server && hashCode() == other.hashCode());
     }
 
+    
+    @Transient
     private volatile int previousHashCode = 0;
 
     @Override

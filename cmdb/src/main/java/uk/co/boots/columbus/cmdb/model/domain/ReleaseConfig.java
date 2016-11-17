@@ -157,7 +157,7 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 
 	@Override
 	public int hashCode() {
-		return identifiableHashBuilder.hash(log, this);
+		return identifiableHashBuilder.hash(log, this, parameter + value + hieraAddress);
 	}
 
 	/**

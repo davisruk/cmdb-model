@@ -134,6 +134,7 @@ public class Environment implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof Environment && hashCode() == other.hashCode());
     }
 
+    @Transient
     private volatile int previousHashCode = 0;
 
     @Override
