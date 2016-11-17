@@ -19,11 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Server;
+import uk.co.boots.columbus.cmdb.model.domain.User;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
-import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.repository.ServerRepository;
-import uk.co.boots.columbus.cmdb.model.repository.ServerTypeRepository;
 
 /**
  * A simple DTO Facility for Server.
@@ -36,11 +35,7 @@ public class ServerDTOService {
     @Inject
     private ServerTypeDTOService serverTypeDTOService;
     @Inject
-    private ServerTypeRepository serverTypeRepository;
-    @Inject
     private EnvironmentDTOService environmentDTOService;
-    @Inject
-    private EnvironmentRepository environmentRepository;
     
     @Transactional(readOnly = true)
     public ServerDTO findOne(Long id) {
@@ -84,6 +79,12 @@ public class ServerDTOService {
         return dto;
     }
 
+    @Transactional(readOnly = true)
+    public List<EnvironmentDTO> getEnvironmentsNotAssignedToServer(Long id) {
+        Server s = serverRepository.findOne(id);
+        return environmentDTOService.findEnvironmentsNotInList(s.getEnvironments());
+   }
+    
     /**
      * Converts the passed server to a DTO.
      */

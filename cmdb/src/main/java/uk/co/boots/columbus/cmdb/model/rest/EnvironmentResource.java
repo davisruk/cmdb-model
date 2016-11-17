@@ -40,6 +40,7 @@ import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CORSSupport;
 import uk.co.boots.columbus.cmdb.model.rest.support.CsvResponse;
 
 @RestController
@@ -103,6 +104,14 @@ public class EnvironmentResource {
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAll() throws IOException {
     	return new CsvResponse(hieraDTOService.findAllHiera(), "HieraData_Complete.csv");
+    }
+
+    @RequestMapping(value = "/list/all", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EnvironmentDTO>> all() throws URISyntaxException {
+
+        List<EnvironmentDTO> results = environmentDTOService.findAllEnvironments();
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
     /**

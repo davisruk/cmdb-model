@@ -20,23 +20,24 @@ import uk.co.boots.columbus.cmdb.model.domain.Environment_;
 
 public interface EnvironmentRepository extends JpaRepository<Environment, Long> {
 
-    /**
-     * Return the persistent instance of {@link Environment} with the given unique property value name,
-     * or null if there is no such persistent instance.
-     *
-     * @param name the unique value
-     * @return the corresponding {@link Environment} persistent instance or null
-     */
-    Environment getByName(String name);
+	/**
+	 * Return the persistent instance of {@link Environment} with the given
+	 * unique property value name, or null if there is no such persistent
+	 * instance.
+	 *
+	 * @param name the unique value
+	 * @return the corresponding {@link Environment} persistent instance or null
+	 */
+	Environment getByName(String name);
 
-       default List<Environment> complete(String query, int maxResults) {
-        Environment probe = new Environment();
-        probe.setName(query);
+	default List<Environment> complete(String query, int maxResults) {
+		Environment probe = new Environment();
+		probe.setName(query);
 
-        ExampleMatcher matcher = ExampleMatcher.matching() //
-                .withMatcher(Environment_.name.getName(), match -> match.ignoreCase().contains());
+		ExampleMatcher matcher = ExampleMatcher.matching() //
+				.withMatcher(Environment_.name.getName(), match -> match.ignoreCase().contains());
 
-        Page<Environment> page = findAll(Example.of(probe, matcher), new PageRequest(0, maxResults));
-        return page.getContent();
-    }
+		Page<Environment> page = findAll(Example.of(probe, matcher), new PageRequest(0, maxResults));
+		return page.getContent();
+	}
 }

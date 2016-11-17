@@ -76,6 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			// allow all login requests
 			antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
 			antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
+			antMatchers("/api/environments/list/all").permitAll(). // needs addressing in prod
 			antMatchers("/api/users/**").hasRole("ADMIN").
 			antMatchers("/api/roles/**").hasRole("ADMIN").
 			antMatchers("/api/currentUserAuthorities").authenticated(). // ok to use ANONYMOUS here

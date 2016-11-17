@@ -29,7 +29,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
      * @return the corresponding {@link Server} persistent instance or null
      */
     Server findByName(String name);
-
+    
     default List<Server> complete(String query, int maxResults) {
         Server probe = new Server();
         probe.setName(query);

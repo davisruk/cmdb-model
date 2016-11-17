@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +32,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.dto.HieraDTO;
 import uk.co.boots.columbus.cmdb.model.dto.HieraDTOService;
+import uk.co.boots.columbus.cmdb.model.dto.RoleDTO;
 import uk.co.boots.columbus.cmdb.model.dto.ServerDTO;
 import uk.co.boots.columbus.cmdb.model.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.ServerRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CORSSupport;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -125,6 +130,16 @@ public class ServerResource {
         List<ServerDTO> results = serverDTOService.complete(acq.query, acq.maxResults);
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/available_environments/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EnvironmentDTO>> findAvailableEnvironments(@PathVariable Long id, HttpServletRequest request, 
+            HttpServletResponse response) throws URISyntaxException {
+
+        log.debug("Find unassigned environments for id Server : {}", id);
+        List<EnvironmentDTO> results = serverDTOService.getEnvironmentsNotAssignedToServer(id);
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
     /**

@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.domain.Release;
+import uk.co.boots.columbus.cmdb.model.domain.Role;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
@@ -105,6 +106,17 @@ public class EnvironmentDTOService {
 
         return toDTO(environmentRepository.save(environment));
     }
+    
+    @Transactional
+    public List<EnvironmentDTO> findEnvironmentsNotInList(List<Environment> envs) {
+	    List<Environment> results = environmentRepository.findAll();        
+        if (envs != null){
+		    for (Environment env : envs){
+		 		results.remove(env);
+		    }
+        }
+	    return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }    
 
     /**
      * Converts the passed environment to a DTO.
