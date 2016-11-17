@@ -28,7 +28,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
      * @param name the unique value
      * @return the corresponding {@link Server} persistent instance or null
      */
-    Server getByName(String name);
+    Server findByName(String name);
 
     default List<Server> complete(String query, int maxResults) {
         Server probe = new Server();

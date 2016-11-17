@@ -7,6 +7,7 @@
  */
 package uk.co.boots.columbus.cmdb.model.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class EnvironmentDTOService {
     private ReleaseDTOService releaseDTOService;
     @Inject
     private ReleaseRepository releaseRepository;
+    @Inject ServerDTOService serverDTOService;
 
     @Transactional(readOnly = true)
     public EnvironmentDTO findOne(Long id) {
@@ -131,6 +133,7 @@ public class EnvironmentDTOService {
         dto.name = environment.getName();
         if (depth-- > 0) {
             dto.release = releaseDTOService.toDTO(environment.getRelease(), depth);
+            dto.servers = serverDTOService.toDTO(environment.getServers(), depth);
         }
 
         return dto;
@@ -159,8 +162,28 @@ public class EnvironmentDTOService {
         environment.setName(dto.name);
         if (depth-- > 0) {
             environment.setRelease(releaseDTOService.toEntity(dto.release, depth));
+            environment.setServers(serverDTOService.toEntity(dto.servers, depth));
         }
 
         return environment;
     }
+    
+    public List<Environment> toEntity(List<EnvironmentDTO> dtoList, int depth) {
+        if (dtoList == null)
+        	return null;
+    	List<Environment> ret = new ArrayList<Environment>();
+    	for (EnvironmentDTO dto : dtoList)
+    		ret.add(toEntity(dto, depth));
+        return ret;
+    }
+
+    public List<EnvironmentDTO> toDTO(List<Environment> envList, int depth) {
+        if (envList == null)
+        	return null;
+    	List<EnvironmentDTO> ret = new ArrayList<EnvironmentDTO>();
+    	for (Environment e : envList)
+    		ret.add(toDTO(e, depth));
+        return ret;
+    }
+
 }

@@ -7,6 +7,7 @@
  */
 package uk.co.boots.columbus.cmdb.model.domain;
 
+import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
@@ -19,4 +20,7 @@ public abstract class Environment_ {
 
     // Many to one
     public static volatile SingularAttribute<Environment, Release> release;
+    
+    //Many to Many
+    public static volatile ListAttribute<Environment, Server> servers;
 }

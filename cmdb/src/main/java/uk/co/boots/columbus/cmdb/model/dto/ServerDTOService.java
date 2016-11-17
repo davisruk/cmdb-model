@@ -7,6 +7,7 @@
  */
 package uk.co.boots.columbus.cmdb.model.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,9 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.boots.columbus.cmdb.model.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.domain.Server;
-import uk.co.boots.columbus.cmdb.model.domain.ServerType;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.EnvironmentRepository;
@@ -79,39 +78,10 @@ public class ServerDTOService {
      */
     @Transactional
     public ServerDTO save(ServerDTO dto) {
-
-    	if (dto == null) {
-            return null;
-        }
-
-        Server server;
-        if (dto.isIdSet()) {
-            server = serverRepository.findOne(dto.id);
-        } else {
-            server = new Server();
-        }
-
-        server.setName(dto.name);
-
-        if (dto.serverType == null) {
-            server.setServerType(null);
-        } else {
-            ServerType serverType = server.getServerType();
-            if (serverType == null || (serverType.getId().compareTo(dto.serverType.id) != 0)) {
-                server.setServerType(serverTypeRepository.findOne(dto.serverType.id));
-            }
-        }
-
-        if (dto.environment == null) {
-            server.setEnvironment(null);
-        } else {
-            Environment environment = server.getEnvironment();
-            if (environment == null || (environment.getId().compareTo(dto.environment.id) != 0)) {
-                server.setEnvironment(environmentRepository.findOne(dto.environment.id));
-            }
-        }
-
-        return toDTO(serverRepository.save(server));
+        Server s = toEntity(dto);
+        s = serverRepository.save(s);
+        dto.id = s.getId();
+        return dto;
     }
 
     /**
@@ -141,7 +111,7 @@ public class ServerDTOService {
         dto.name = server.getName();
         if (depth-- > 0) {
             dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
-            dto.environment = environmentDTOService.toDTO(server.getEnvironment(), depth);
+            dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
         }
 
         return dto;
@@ -160,19 +130,43 @@ public class ServerDTOService {
      * Convenient for query by example.
      */
     public Server toEntity(ServerDTO dto, int depth) {
-        if (dto == null) {
+
+    	if (dto == null) {
             return null;
         }
 
-        Server server = new Server();
+        Server server;
+        if (dto.isIdSet()) {
+            server = serverRepository.findOne(dto.id);
+        } else {
+            server = new Server();
+        }
 
         server.setId(dto.id);
         server.setName(dto.name);
         if (depth-- > 0) {
             server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-            server.setEnvironment(environmentDTOService.toEntity(dto.environment, depth));
+            server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
         }
-
         return server;
     }
+    
+    public List<Server> toEntity(List<ServerDTO> dtoList, int depth) {
+        if (dtoList == null)
+        	return null;
+    	List<Server> ret = new ArrayList<Server>();
+    	for (ServerDTO dto : dtoList)
+    		ret.add(toEntity(dto, depth));
+        return ret;
+    }
+
+    public List<ServerDTO> toDTO(List<Server> serverList, int depth) {
+        if (serverList == null)
+        	return null;
+    	List<ServerDTO> ret = new ArrayList<ServerDTO>();
+    	for (Server s : serverList)
+    		ret.add(toDTO(s, depth));
+        return ret;
+    }
+    
 }

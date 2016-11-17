@@ -29,12 +29,25 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
     private static final Logger log = Logger.getLogger(ServerConfig.class.getName());
 
     // Raw attributes
+    @Column(name = "ServConfigID", precision = 19)
+    @GeneratedValue
+    @Id
     private Long id;
+
+    @Size(max = 50)
+    @Column(name = "ServConfigParameter", length = 50)
     private String parameter;
+
+    @Size(max = 50)
+    @Column(name = "ServConfigValue", length = 50)
     private String value;
+
+    @Size(max = 45)
+    @Column(name = "ServConfigHieraAddress", length = 45)
     private String hieraAddress;
 
-    // Many to one
+    @JoinColumn(name = "ServerID")
+    @ManyToOne
     private Server server;
 
     @Override
@@ -42,12 +55,7 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
         return ServerConfig.class.getSimpleName();
     }
 
-    // -- [id] ------------------------
-
     @Override
-    @Column(name = "ServConfigID", precision = 19)
-    @GeneratedValue
-    @Id
     public Long getId() {
         return id;
     }
@@ -69,8 +77,6 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
     }
     // -- [parameter] ------------------------
 
-    @Size(max = 50)
-    @Column(name = "ServConfigParameter", length = 50)
     public String getParameter() {
         return parameter;
     }
@@ -83,10 +89,7 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
         setParameter(parameter);
         return this;
     }
-    // -- [value] ------------------------
 
-    @Size(max = 50)
-    @Column(name = "ServConfigValue", length = 50)
     public String getValue() {
         return value;
     }
@@ -99,10 +102,7 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
         setValue(value);
         return this;
     }
-    // -- [hieraAddress] ------------------------
 
-    @Size(max = 45)
-    @Column(name = "ServConfigHieraAddress", length = 45)
     public String getHieraAddress() {
         return hieraAddress;
     }
@@ -116,25 +116,15 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
         return this;
     }
 
-    // -----------------------------------------------------------------
-    // Many to One support
-    // -----------------------------------------------------------------
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: ServerConfig.server ==> Server.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    @JoinColumn(name = "ServerID")
-    @ManyToOne
-    public Server getServer() {
-        return server;
-    }
-
     /**
      * Set the {@link #server} without adding this ServerConfig instance on the passed {@link #server}
      */
     public void setServer(Server server) {
         this.server = server;
+    }
+
+    public Server getServer() {
+        return server;
     }
 
     public ServerConfig server(Server server) {
@@ -157,6 +147,7 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof ServerConfig && hashCode() == other.hashCode());
     }
 
+    @Transient
     private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
     @Override

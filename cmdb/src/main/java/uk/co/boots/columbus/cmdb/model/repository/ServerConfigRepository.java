@@ -21,8 +21,8 @@ import uk.co.boots.columbus.cmdb.model.domain.ServerConfig_;
 public interface ServerConfigRepository extends JpaRepository<ServerConfig, Long> {
 
 	List<ServerConfig> findByServerName(String envName);
-	List<ServerConfig> findByServer_Environment_name(String envName);
-    List<ServerConfig> findByServer_Environment_Release_name(String envName);
+	List<ServerConfig> findByServer_environments_name(String envName);
+    List<ServerConfig> findByServer_environments_release_name(String envName);
     
 	default List<ServerConfig> complete(String query, int maxResults) {
         ServerConfig probe = new ServerConfig();

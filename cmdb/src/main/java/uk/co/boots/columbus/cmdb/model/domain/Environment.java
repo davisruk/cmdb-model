@@ -8,13 +8,17 @@
 package uk.co.boots.columbus.cmdb.model.domain;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -32,24 +36,40 @@ public class Environment implements Identifiable<Long>, Serializable {
     private static final Logger log = Logger.getLogger(Environment.class.getName());
 
     // Raw attributes
+    // -- [id] ------------------------
+    @Column(name = "EnvironmentID", precision = 19)
+    @GeneratedValue
+    @Id
     private Long id;
+
+    @NotEmpty
+    @Size(max = 50)
+    @Column(name = "EnvironmentName", nullable = false, unique = true, length = 50)
     private String name;
 
-    // Many to one
+    @JoinColumn(name = "ReleaseID")
+    @ManyToOne
     private Release release;
 
-    @Override
+    @ManyToMany (mappedBy="environments")
+    private List<Server> servers;
+    
+
+	public List<Server> getServers() {
+		return servers;
+	}
+
+	public void setServers(List<Server> servers) {
+		this.servers = servers;
+	}
+
+	@Override
     public String entityClassName() {
         return Environment.class.getSimpleName();
     }
 
-    // -- [id] ------------------------
-
     @Override
-    @Column(name = "EnvironmentID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
+	public Long getId() {
         return id;
     }
 
@@ -70,9 +90,6 @@ public class Environment implements Identifiable<Long>, Serializable {
     }
     // -- [name] ------------------------
 
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "EnvironmentName", nullable = false, unique = true, length = 50)
     public String getName() {
         return name;
     }
@@ -86,16 +103,6 @@ public class Environment implements Identifiable<Long>, Serializable {
         return this;
     }
 
-    // -----------------------------------------------------------------
-    // Many to One support
-    // -----------------------------------------------------------------
-
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: Environment.release ==> Release.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-    @JoinColumn(name = "ReleaseID")
-    @ManyToOne
     public Release getRelease() {
         return release;
     }

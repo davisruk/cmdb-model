@@ -7,6 +7,8 @@
  */
 package uk.co.boots.columbus.cmdb.model.dto;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -16,7 +18,7 @@ public class ServerDTO {
     public Long id;
     public String name;
     public ServerTypeDTO serverType;
-    public EnvironmentDTO environment;
+    public List<EnvironmentDTO> environments;
 
     @JsonIgnore
     public boolean isIdSet() {
