@@ -106,7 +106,7 @@ public class EnvironmentResource {
     	return new CsvResponse(hieraDTOService.findAllHiera(), "HieraData_Complete.csv");
     }
 
-    @RequestMapping(value = "/list/all", method = POST, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnvironmentDTO>> all() throws URISyntaxException {
 
         List<EnvironmentDTO> results = environmentDTOService.findAllEnvironments();
