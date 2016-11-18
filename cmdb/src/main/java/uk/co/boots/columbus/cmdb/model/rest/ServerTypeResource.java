@@ -36,6 +36,7 @@ import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.ServerTypeRepository;
 import uk.co.boots.columbus.cmdb.model.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.rest.support.CORSSupport;
 
 @RestController
 @RequestMapping("/api/serverTypes")
@@ -113,6 +114,15 @@ public class ServerTypeResource {
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ServerTypeDTO>> complete() throws URISyntaxException {
+
+        List<ServerTypeDTO> results = serverTypeDTOService.findAll();
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+
 
     /**
      * Delete by id ${}entity.model.type}.

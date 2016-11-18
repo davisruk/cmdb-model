@@ -42,7 +42,8 @@ public class EnvironmentDTOService {
 
     @Transactional(readOnly = true)
     public EnvironmentDTO findOne(Long id) {
-        return toDTO(environmentRepository.findOne(id));
+        //return toDTO(environmentRepository.findOne(id));
+    	return toDTO(environmentRepository.findOne(id), 2);
     }
 
     @Transactional(readOnly = true)

@@ -7,6 +7,7 @@
  */
 package uk.co.boots.columbus.cmdb.model.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,11 @@ public class ServerTypeDTOService {
         List<ServerTypeDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
     }
+    
+    @Transactional(readOnly = true)
+    public List<ServerTypeDTO> findAll() {
+    	return toDTO(serverTypeRepository.findAll());
+    }
 
     /**
      * Save the passed dto as a new entity or update the corresponding entity if any.
@@ -83,6 +89,13 @@ public class ServerTypeDTOService {
         return toDTO(serverTypeRepository.save(serverType));
     }
 
+    public List<ServerTypeDTO> toDTO(List<ServerType> sl) {
+    	List<ServerTypeDTO> ret = new ArrayList<ServerTypeDTO>();
+    	if (sl != null)
+    		for (ServerType s : sl)
+    			ret.add(toDTO(s, 1));
+    	return ret;	
+    }
     /**
      * Converts the passed serverType to a DTO.
      */
