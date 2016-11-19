@@ -30,144 +30,155 @@ import uk.co.boots.columbus.cmdb.model.repository.ServerRepository;
 @Service
 public class ServerDTOService {
 
-    @Inject
-    private ServerRepository serverRepository;
-    @Inject
-    private ServerTypeDTOService serverTypeDTOService;
-    @Inject
-    private EnvironmentDTOService environmentDTOService;
-    
-    @Transactional(readOnly = true)
-    public ServerDTO findOne(Long id) {
-        return toDTO(serverRepository.findOne(id));
-    }
+	@Inject
+	private ServerRepository serverRepository;
+	@Inject
+	private ServerTypeDTOService serverTypeDTOService;
+	@Inject
+	private EnvironmentDTOService environmentDTOService;
 
-    @Transactional(readOnly = true)
-    public List<ServerDTO> complete(String query, int maxResults) {
-        List<Server> results = serverRepository.complete(query, maxResults);
-        return results.stream().map(this::toDTO).collect(Collectors.toList());
-    }
+	@Transactional(readOnly = true)
+	public ServerDTO findOne(Long id) {
+		return toDTO(serverRepository.findOne(id));
+	}
 
-    @Transactional(readOnly = true)
-    public PageResponse<ServerDTO> findAll(PageRequestByExample<ServerDTO> req) {
-        Example<Server> example = null;
-        Server server = toEntity(req.example);
+	@Transactional(readOnly = true)
+	public List<ServerDTO> complete(String query, int maxResults) {
+		List<Server> results = serverRepository.complete(query, maxResults);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
 
-        if (server != null) {
-            example = Example.of(server);
-        }
+	@Transactional(readOnly = true)
+	public PageResponse<ServerDTO> findAll(PageRequestByExample<ServerDTO> req) {
+		Example<Server> example = null;
+		Server server = toEntity(req.example);
 
-        Page<Server> page;
-        if (example != null) {
-            page = serverRepository.findAll(example, req.toPageable());
-        } else {
-            page = serverRepository.findAll(req.toPageable());
-        }
+		if (server != null) {
+			example = Example.of(server);
+		}
 
-        List<ServerDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-        return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
-    }
+		Page<Server> page;
+		if (example != null) {
+			page = serverRepository.findAll(example, req.toPageable());
+		} else {
+			page = serverRepository.findAll(req.toPageable());
+		}
 
-    /**
-     * Save the passed dto as a new entity or update the corresponding entity if any.
-     */
-    @Transactional
-    public ServerDTO save(ServerDTO dto) {
-        Server s = toEntity(dto);
-        s = serverRepository.save(s);
-        dto.id = s.getId();
-        return dto;
-    }
+		List<ServerDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+	}
 
-    @Transactional(readOnly = true)
-    public List<EnvironmentDTO> getEnvironmentsNotAssignedToServer(Long id) {
-        Server s = serverRepository.findOne(id);
-        return environmentDTOService.findEnvironmentsNotInList(s.getEnvironments());
-   }
-    
-    /**
-     * Converts the passed server to a DTO.
-     */
-    public ServerDTO toDTO(Server server) {
-        return toDTO(server, 1);
-    }
+	/**
+	 * Save the passed dto as a new entity or update the corresponding entity if
+	 * any.
+	 */
+	@Transactional
+	public ServerDTO save(ServerDTO dto) {
+		Server s = toEntity(dto);
+		s = serverRepository.save(s);
+		dto.id = s.getId();
+		return dto;
+	}
 
-    /**
-     * Converts the passed server to a DTO. The depth is used to control the
-     * amount of association you want. It also prevents potential infinite serialization cycles.
-     *
-     * @param server
-     * @param depth the depth of the serialization. A depth equals to 0, means no x-to-one association will be serialized.
-     *              A depth equals to 1 means that xToOne associations will be serialized. 2 means, xToOne associations of
-     *              xToOne associations will be serialized, etc.
-     */
-    public ServerDTO toDTO(Server server, int depth) {
-        if (server == null) {
-            return null;
-        }
+	@Transactional(readOnly = true)
+	public List<EnvironmentDTO> getEnvironmentsNotAssignedToServer(Long id) {
+		Server s = serverRepository.findOne(id);
+		return environmentDTOService.findEnvironmentsNotInList(s.getEnvironments());
+	}
 
-        ServerDTO dto = new ServerDTO();
+	@Transactional(readOnly = true)
+	public List<ServerDTO> getServersNotInList(List<ServerDTO> serverList) {
+		ArrayList<Long> ids = new ArrayList<Long>();
+		for (ServerDTO s : serverList)
+			ids.add(s.id);
+		return toDTO(serverRepository.findByIdNotIn(ids), 2);
+	}
 
-        dto.id = server.getId();
-        dto.name = server.getName();
-        if (depth-- > 0) {
-            dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
-            dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
-        }
+	/**
+	 * Converts the passed server to a DTO.
+	 */
+	public ServerDTO toDTO(Server server) {
+		return toDTO(server, 1);
+	}
 
-        return dto;
-    }
+	/**
+	 * Converts the passed server to a DTO. The depth is used to control the
+	 * amount of association you want. It also prevents potential infinite
+	 * serialization cycles.
+	 *
+	 * @param server
+	 * @param depth
+	 *            the depth of the serialization. A depth equals to 0, means no
+	 *            x-to-one association will be serialized. A depth equals to 1
+	 *            means that xToOne associations will be serialized. 2 means,
+	 *            xToOne associations of xToOne associations will be serialized,
+	 *            etc.
+	 */
+	public ServerDTO toDTO(Server server, int depth) {
+		if (server == null) {
+			return null;
+		}
 
-    /**
-     * Converts the passed dto to a Server.
-     * Convenient for query by example.
-     */
-    public Server toEntity(ServerDTO dto) {
-        return toEntity(dto, 1);
-    }
+		ServerDTO dto = new ServerDTO();
 
-    /**
-     * Converts the passed dto to a Server.
-     * Convenient for query by example.
-     */
-    public Server toEntity(ServerDTO dto, int depth) {
+		dto.id = server.getId();
+		dto.name = server.getName();
+		if (depth-- > 0) {
+			dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
+			dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
+		}
 
-    	if (dto == null) {
-            return null;
-        }
+		return dto;
+	}
 
-        Server server;
-        if (dto.isIdSet()) {
-            server = serverRepository.findOne(dto.id);
-        } else {
-            server = new Server();
-        }
+	/**
+	 * Converts the passed dto to a Server. Convenient for query by example.
+	 */
+	public Server toEntity(ServerDTO dto) {
+		return toEntity(dto, 1);
+	}
 
-        server.setId(dto.id);
-        server.setName(dto.name);
-        if (depth-- > 0) {
-            server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-            server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
-        }
-        return server;
-    }
-    
-    public List<Server> toEntity(List<ServerDTO> dtoList, int depth) {
-        if (dtoList == null)
-        	return null;
-    	List<Server> ret = new ArrayList<Server>();
-    	for (ServerDTO dto : dtoList)
-    		ret.add(toEntity(dto, depth));
-        return ret;
-    }
+	/**
+	 * Converts the passed dto to a Server. Convenient for query by example.
+	 */
+	public Server toEntity(ServerDTO dto, int depth) {
 
-    public List<ServerDTO> toDTO(List<Server> serverList, int depth) {
-        if (serverList == null)
-        	return null;
-    	List<ServerDTO> ret = new ArrayList<ServerDTO>();
-    	for (Server s : serverList)
-    		ret.add(toDTO(s, depth));
-        return ret;
-    }
-    
+		if (dto == null) {
+			return null;
+		}
+
+		Server server;
+		if (dto.isIdSet()) {
+			server = serverRepository.findOne(dto.id);
+		} else {
+			server = new Server();
+		}
+
+		server.setId(dto.id);
+		server.setName(dto.name);
+		if (depth-- > 0) {
+			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
+			server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
+		}
+		return server;
+	}
+
+	public List<Server> toEntity(List<ServerDTO> dtoList, int depth) {
+		if (dtoList == null)
+			return null;
+		List<Server> ret = new ArrayList<Server>();
+		for (ServerDTO dto : dtoList)
+			ret.add(toEntity(dto, depth));
+		return ret;
+	}
+
+	public List<ServerDTO> toDTO(List<Server> serverList, int depth) {
+		if (serverList == null)
+			return null;
+		List<ServerDTO> ret = new ArrayList<ServerDTO>();
+		for (Server s : serverList)
+			ret.add(toDTO(s, depth));
+		return ret;
+	}
+
 }

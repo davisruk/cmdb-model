@@ -168,4 +168,35 @@ public class ServerEnvTests {
 		System.out.println(scl.get(0));
 
 	}
+	
+	@Test
+	public void testServerNotIn() throws Exception {
+		ArrayList<ServerDTO> slist = new ArrayList<ServerDTO>();
+		ServerTypeDTO st = new ServerTypeDTO();
+		st.name = "Test Server Type";
+		st = stService.save(st);
+		ServerDTO s = new ServerDTO();
+		s.name = "TestServer";
+		s.serverType = st;
+		ReleaseDTO r = new ReleaseDTO();
+		r.name = "TEST_RELEASE";
+		r = rService.save(r);
+		EnvironmentDTO e = new EnvironmentDTO();
+		e.name = "Test Environment";
+		e.release = r;
+		e = eService.save(e);
+		List<EnvironmentDTO> envs = new ArrayList<EnvironmentDTO>();
+		envs.add(e);
+		s.environments = envs;
+		s = sService.save(s);
+
+		ServerDTO s1 = new ServerDTO();
+		s1.name = "TestServer_Two";
+		s1.serverType = st;
+		s1 = sService.save(s1);
+		slist.add(s);
+		List<ServerDTO> dtolist = sService.getServersNotInList(slist);
+		System.out.println(dtolist.get(0).name);
+		assertThat(dtolist, hasSize(1));
+	}	
 }

@@ -141,6 +141,17 @@ public class ServerResource {
 
         return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/notin", method = POST, produces = APPLICATION_JSON_VALUE, consumes= APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ServerDTO>> findAvailableEnvironments(@RequestBody List<ServerDTO> servers, HttpServletRequest request, 
+            HttpServletResponse response) throws URISyntaxException {
+
+        log.debug("Find servers not in given list : {}", servers);
+        List<ServerDTO> results = serverDTOService.getServersNotInList(servers);
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+
 
     /**
      * Delete by id ${}entity.model.type}.
