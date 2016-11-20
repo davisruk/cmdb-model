@@ -152,6 +152,15 @@ public class ServerResource {
         return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/all", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ServerDTO>> findAll(HttpServletRequest request, 
+            HttpServletResponse response) throws URISyntaxException {
+
+        log.debug("Find All Servers");
+        List<ServerDTO> results = serverDTOService.getAll();
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
 
     /**
      * Delete by id ${}entity.model.type}.

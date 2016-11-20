@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -44,7 +45,7 @@ public class Server implements Identifiable<Long>, Serializable {
     @ManyToOne
     private ServerType serverType;
     
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(
 		name="cm_server_environment"
 		, joinColumns={
@@ -129,6 +130,12 @@ public class Server implements Identifiable<Long>, Serializable {
     	if (this.environments == null)
     		environments = new ArrayList<Environment>();
     	this.environments.add(environment);
+        return this;
+    }
+
+    public Server removeEnvironment(Environment environment) {
+    	if (this.environments != null)
+    		this.environments.remove(environment);
         return this;
     }
 

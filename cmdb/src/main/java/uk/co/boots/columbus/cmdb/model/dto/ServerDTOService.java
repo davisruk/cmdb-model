@@ -94,6 +94,11 @@ public class ServerDTOService {
 		return toDTO(serverRepository.findByIdNotIn(ids), 2);
 	}
 
+	@Transactional(readOnly = true)
+	public List<ServerDTO> getAll() {
+		return toDTO(serverRepository.findAll(), 2);
+	}
+	
 	/**
 	 * Converts the passed server to a DTO.
 	 */
