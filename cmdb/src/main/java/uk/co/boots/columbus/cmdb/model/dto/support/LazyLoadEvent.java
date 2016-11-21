@@ -7,6 +7,8 @@
  */
 package uk.co.boots.columbus.cmdb.model.dto.support;
 
+import java.util.Map;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,6 +26,7 @@ public class LazyLoadEvent {
 
     public String sortField;
     public int sortOrder;
+    public Map<String,FilterMetadata> filters;
 
     public Pageable toPageable() {
         if (sortField != null) {

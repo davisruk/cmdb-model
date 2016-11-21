@@ -9,17 +9,19 @@ package uk.co.boots.columbus.cmdb.model.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.domain.Server;
-import uk.co.boots.columbus.cmdb.model.domain.User;
+import uk.co.boots.columbus.cmdb.model.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.repository.ServerRepository;
@@ -54,7 +56,18 @@ public class ServerDTOService {
 		Server server = toEntity(req.example);
 
 		if (server != null) {
-			example = Example.of(server);
+			if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null){
+				// build the Matcher for this page request
+				// probably a little overkill but should cope with all use cases
+				for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
+					FilterMetadata filter = entry.getValue();
+					// setup the matcher for contains / starts with or ends with
+					ExampleMatcher matcher = ExampleMatcher.matching().withMatcher(entry.getKey(), match->filter.getMatcher(match));
+					example = Example.of(server, matcher);		
+				}
+			}
+			else
+				example = Example.of(server);
 		}
 
 		Page<Server> page;
