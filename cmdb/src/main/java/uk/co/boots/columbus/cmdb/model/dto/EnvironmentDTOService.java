@@ -125,20 +125,20 @@ public class EnvironmentDTOService {
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
-		for (ServerDTO sDTO : dto.servers) {
-			Optional<Server> optional = servers.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
-			if (!optional.isPresent()) {
-				// Add the server to the environment
-				// We need to do this because Server owns the M:M
-				// relationship
-				// Environment will not persist changes to the join table
-				Server s = serverDTOService.toEntity(sDTO, 1);
-				s.addEnvironment(environment);
-				serverRepo.save(s);
-				environment.getServers().add(s);
+		if (dto.servers != null){
+			for (ServerDTO sDTO : dto.servers) {
+				Optional<Server> optional = servers.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
+				if (!optional.isPresent()) {
+					// Add the server to the environment
+					// We need to do this because Server owns the M:M relationship
+					// Environment will not persist changes to the join table
+					Server s = serverDTOService.toEntity(sDTO, 1);
+					s.addEnvironment(environment);
+					serverRepo.save(s);
+					environment.getServers().add(s);
+				}
 			}
 		}
-
 		// Remove any old servers
 		// Only need to check this if updating
 		if (!inserting) {
@@ -146,8 +146,7 @@ public class EnvironmentDTOService {
 				Server s = it.next();
 				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(s.getId())).findFirst();
 				if (!optional.isPresent()) {
-					// same as above - we need to ensure we persist the M:M
-					// relationships
+					// same as above - we need to ensure we persist the M:M relationships
 					s.removeEnvironment(environment);
 					serverRepo.save(s);
 					it.remove();

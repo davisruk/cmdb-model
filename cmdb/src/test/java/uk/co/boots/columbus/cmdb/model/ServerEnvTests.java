@@ -17,6 +17,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import uk.co.boots.columbus.cmdb.model.domain.Environment;
@@ -135,6 +137,7 @@ public class ServerEnvTests {
 		ServerDTO s = new ServerDTO();
 		s.name = "TestServer";
 		s.serverType = st;
+		s = sService.save(s);
 		ReleaseDTO r = new ReleaseDTO();
 		r.name = "TEST_RELEASE";
 		r = rService.save(r);
@@ -178,6 +181,7 @@ public class ServerEnvTests {
 		ServerDTO s = new ServerDTO();
 		s.name = "TestServer";
 		s.serverType = st;
+		s = sService.save(s);
 		ReleaseDTO r = new ReleaseDTO();
 		r.name = "TEST_RELEASE";
 		r = rService.save(r);
@@ -198,5 +202,18 @@ public class ServerEnvTests {
 		List<ServerDTO> dtolist = sService.getServersNotInList(slist);
 		System.out.println(dtolist.get(0).name);
 		assertThat(dtolist, hasSize(1));
+		
+		ArrayList<Long> al= new ArrayList<Long>();
+		al.add(s.id);
+		PageRequest pr = new PageRequest(0,10);
+		Page<Server> serverPage = serverRepo.findByNameContainsAndIdNotIn(pr, "_Two", al);
+		List<Server> servers = serverPage.getContent();
+		System.out.println(servers.get(0).getName());
+		assertThat(servers, hasSize(1));
+
+		servers = serverRepo.findByNameContainsAndServerType_nameContainsAndIdNotIn(pr, "_Two", "Serv", al).getContent();
+		System.out.println(servers.get(0).getName());
+		assertThat(servers, hasSize(1));
+		
 	}	
 }

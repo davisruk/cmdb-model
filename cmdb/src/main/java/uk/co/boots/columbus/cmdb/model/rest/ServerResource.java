@@ -143,11 +143,20 @@ public class ServerResource {
     }
     
     @RequestMapping(value = "/notin", method = POST, produces = APPLICATION_JSON_VALUE, consumes= APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ServerDTO>> findAvailableEnvironments(@RequestBody List<ServerDTO> servers, HttpServletRequest request, 
+    public ResponseEntity<List<ServerDTO>> findServersNotIn(@RequestBody List<ServerDTO> servers, HttpServletRequest request, 
             HttpServletResponse response) throws URISyntaxException {
 
         log.debug("Find servers not in given list : {}", servers);
         List<ServerDTO> results = serverDTOService.getServersNotInList(servers);
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/notinpageable", method = POST, produces = APPLICATION_JSON_VALUE, consumes= APPLICATION_JSON_VALUE)
+    public ResponseEntity<PageResponse<ServerDTO>> findAndPageAvailableEnvironments(@RequestBody PageRequestByExample<EnvironmentDTO> prbe) throws URISyntaxException {
+
+        log.debug("Find servers not in Environment : {}", prbe);
+        PageResponse<ServerDTO> results = serverDTOService.getServersNotInListForEnvironment(prbe);
 
         return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
