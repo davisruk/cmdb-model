@@ -44,19 +44,30 @@ public class ServerConfigDTOService {
 
     private void buildHieraAddresses (List<ServerConfig> cl){
     	String addr;
+    	String value;
     	for (ServerConfig conf: cl){
         	addr = conf.getHieraAddress();
-        	//find Parameter in Hieara Address and replace with Parametername
-        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-        	//find ServerTypeTag in Hieara Address and replace
-        	addr = addr.replaceAll("\\{ServType\\}", conf.getServer().getServerType().getName());
+        	value = conf.getValue();
+        	if (addr != null){
+	        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+	        	addr = addr.replaceAll("\\{ServType\\}", conf.getServer().getServerType().getName());
+        	}
+        	if (value != null){
+	        	value = value.replaceAll("\\{ServType\\}", conf.getServer().getServerType().getName());
+	        	value = value.replaceAll("\\{ParamName\\}",conf.getParameter());
+        	}
         	// find EnvTag in Hieara Address and replace with Env.name
         	// even though this is many to many servers always have the same configuration
         	// therefore we just take the first environment value in the list
         	List<Environment> envs = conf.getServer().getEnvironments(); 
-        	if (envs != null && !envs.isEmpty())
-        		addr = addr.replaceAll("\\{ENVID\\}", envs.get(0).getName());
+        	if (envs != null && !envs.isEmpty()){
+        		if (addr!=null)
+        			addr = addr.replaceAll("\\{ENVID\\}", envs.get(0).getName());
+        		if (value!=null)
+        			value = value.replaceAll("\\{ENVID\\}", envs.get(0).getName());
+        	}
         	conf.setHieraAddress(addr);
+        	conf.setValue(value);
         }
     }
 

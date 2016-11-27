@@ -45,13 +45,21 @@ public class EnvironmentConfigDTOService {
 
     private void buildHieraAddresses (List<EnvironmentConfig> cl){
     	String addr;
+    	String value;
     	for (EnvironmentConfig conf: cl){
         	addr = conf.getHieraAddress();
+        	value = conf.getValue();
         	//find Parameter in Hieara Address and replace with Parametername
-        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-        	//find EnvTag in Hieara Address and replace with Env.name
-        	addr = addr.replaceAll("\\{ENVID\\}", conf.getEnvironment().getName());
-        	conf.setHieraAddress(addr);
+        	if (addr != null){
+        		addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+        		addr = addr.replaceAll("\\{ENVID\\}", conf.getEnvironment().getName());
+            	conf.setHieraAddress(addr);
+        	}
+        	if (value != null){
+        		value = value.replaceAll("\\{ParamName\\}",conf.getParameter());
+        		value = value.replaceAll("\\{ENVID\\}", conf.getEnvironment().getName());
+        		conf.setValue(value);
+        	}
         }
     }
     @Transactional(readOnly = true)

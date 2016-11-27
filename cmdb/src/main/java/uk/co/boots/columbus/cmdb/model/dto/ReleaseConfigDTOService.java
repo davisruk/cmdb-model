@@ -33,15 +33,22 @@ public class ReleaseConfigDTOService {
 
     private void buildHieraAddresses (List<ReleaseConfig> cl, String relName){
     	String addr;
+    	String value;
     	for (ReleaseConfig conf: cl){
         	addr = conf.getHieraAddress();
-        	//find Parameter in Hieara Address and replace with Release Name
-        	addr = addr.replaceAll("\\{Release\\}",relName);
-        	//find Parameter in Hieara Address and replace with Parametername
-        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-        	//find EnvTag in Hieara Address and replace with Env.name
-        	addr = addr.replaceAll("\\{ENVID\\}", conf.getRelease().getName());
-        	conf.setHieraAddress(addr);
+        	value = conf.getValue();
+        	if (addr != null){
+	        	addr = addr.replaceAll("\\{Release\\}",relName);
+	        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+	        	addr = addr.replaceAll("\\{ENVID\\}", conf.getRelease().getName());
+	        	conf.setHieraAddress(addr);
+        	}
+        	if (value != null){
+	        	value = value.replaceAll("\\{Release\\}",relName);
+	        	value = value.replaceAll("\\{ParamName\\}",conf.getParameter());
+	        	value = value.replaceAll("\\{ENVID\\}",conf.getRelease().getName());
+	        	conf.setValue(value);
+        	}
         }
     }
     @Transactional(readOnly = true)
