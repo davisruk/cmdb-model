@@ -25,10 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 import uk.co.boots.columbus.cmdb.model.security.jwt.JwtAuthenticationRequest;
 import uk.co.boots.columbus.cmdb.model.security.jwt.JwtTokenUtil;
 import uk.co.boots.columbus.cmdb.model.security.jwt.service.JwtAuthenticationResponse;
+import uk.co.boots.columbus.cmdb.model.user.repository.UserRepository;
 
 @RestController
 @RequestMapping("/api")

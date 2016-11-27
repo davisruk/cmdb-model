@@ -21,23 +21,26 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import uk.co.boots.columbus.cmdb.model.domain.Environment;
-import uk.co.boots.columbus.cmdb.model.domain.Release;
-import uk.co.boots.columbus.cmdb.model.domain.Server;
-import uk.co.boots.columbus.cmdb.model.domain.ServerConfig;
-import uk.co.boots.columbus.cmdb.model.domain.ServerType;
-import uk.co.boots.columbus.cmdb.model.dto.EnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.dto.EnvironmentDTOService;
-import uk.co.boots.columbus.cmdb.model.dto.ReleaseDTO;
-import uk.co.boots.columbus.cmdb.model.dto.ReleaseDTOService;
-import uk.co.boots.columbus.cmdb.model.dto.ServerConfigDTO;
-import uk.co.boots.columbus.cmdb.model.dto.ServerConfigDTOService;
-import uk.co.boots.columbus.cmdb.model.dto.ServerDTO;
-import uk.co.boots.columbus.cmdb.model.dto.ServerDTOService;
-import uk.co.boots.columbus.cmdb.model.dto.ServerTypeDTO;
-import uk.co.boots.columbus.cmdb.model.dto.ServerTypeDTOService;
-import uk.co.boots.columbus.cmdb.model.repository.ServerConfigRepository;
-import uk.co.boots.columbus.cmdb.model.repository.ServerRepository;
+import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentType;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentType;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.release.domain.Release;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
+import uk.co.boots.columbus.cmdb.model.server.domain.Server;
+import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
+import uk.co.boots.columbus.cmdb.model.server.domain.ServerType;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTOService;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerTypeDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerTypeDTOService;
+import uk.co.boots.columbus.cmdb.model.server.repository.ServerConfigRepository;
+import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @DataJpaTest
@@ -90,7 +93,7 @@ public class ServerEnvTests {
 	@Autowired
 	private ServerDTOService sService;
 
-	@Test
+	//@Test
 	public void testServerEnvironmentEntityPersistence() throws Exception {
 		ServerType st = new ServerType();
 		st.setName("Test Server Type");
@@ -103,7 +106,6 @@ public class ServerEnvTests {
 		this.entityManager.persist(r);
 		Environment e = new Environment();
 		e.setName("Test Environment");
-		e.setRelease(r);
 		this.entityManager.persist(e);
 		List<Environment> envs = new ArrayList<Environment>();
 		envs.add(e);
@@ -129,7 +131,7 @@ public class ServerEnvTests {
 		System.out.println(scl.get(0));
 	}
 
-	@Test
+	//@Test
 	public void testServerEnvironmentServicePersistence() throws Exception {
 		ServerTypeDTO st = new ServerTypeDTO();
 		st.name = "Test Server Type";
@@ -143,7 +145,6 @@ public class ServerEnvTests {
 		r = rService.save(r);
 		EnvironmentDTO e = new EnvironmentDTO();
 		e.name = "Test Environment";
-		e.release = r;
 		e = eService.save(e);
 		List<EnvironmentDTO> envs = new ArrayList<EnvironmentDTO>();
 		envs.add(e);
@@ -172,7 +173,7 @@ public class ServerEnvTests {
 
 	}
 	
-	@Test
+	//@Test
 	public void testServerNotIn() throws Exception {
 		ArrayList<ServerDTO> slist = new ArrayList<ServerDTO>();
 		ServerTypeDTO st = new ServerTypeDTO();
@@ -187,7 +188,6 @@ public class ServerEnvTests {
 		r = rService.save(r);
 		EnvironmentDTO e = new EnvironmentDTO();
 		e.name = "Test Environment";
-		e.release = r;
 		e = eService.save(e);
 		List<EnvironmentDTO> envs = new ArrayList<EnvironmentDTO>();
 		envs.add(e);
@@ -215,5 +215,55 @@ public class ServerEnvTests {
 		System.out.println(servers.get(0).getName());
 		assertThat(servers, hasSize(1));
 		
-	}	
+	}
+	
+	@Test
+	public void testServerSubEnvironmentEntityPersistence() throws Exception {
+		ServerType st = new ServerType();
+		st.setName("Test Server Type");
+		this.entityManager.persist(st);
+		Server s = new Server();
+		s.setName("TestServer");
+		s.setServerType(st);
+		this.entityManager.persist(s);
+		Release r = new Release();
+		r.setName("TEST_RELEASE");
+		this.entityManager.persist(r);
+		Environment e = new Environment();
+		e.setName("Test Environment");
+		EnvironmentType et = new EnvironmentType();
+		et.setName("PRODUCTION");
+		this.entityManager.persist(et);
+		e.setEnvironmentType(et);
+		this.entityManager.persist(e);
+
+		SubEnvironmentType set = new SubEnvironmentType();
+		set.setName("TestEnvType");
+		this.entityManager.persist(set);
+		SubEnvironment se = new SubEnvironment();
+		se.setEnvironment(e);
+		se.setRelease(r);
+		se.setSubEnvironmentType(set);
+		List<Server> servers = new ArrayList<Server>();
+		servers.add(s);
+		se.setServers(servers);
+		this.entityManager.persist(se);
+
+
+		// try and get a config for a server that is in a particular subenvironment
+		ServerConfig sc = new ServerConfig();
+		sc.setHieraAddress("HIERA_ADDRESS");
+		sc.setParameter("Parameter");
+		sc.setValue("Value");
+		sc.setServer(s);
+		this.entityManager.persist(sc);
+		//List<ServerConfig> scl = scRepo.findByServer_subEnvironments_subEnvironmentType_name("TestEnvType");
+		//List<ServerConfig> scl = scRepo.findByServer_subEnvironments_id(1L);
+		List<ServerConfig> scl = scRepo.findByServer_subEnvironments_release_name("TEST_RELEASE");
+		
+		assertNotNull(scl);
+		assertThat(scl, hasSize(1));
+		System.out.println(scl.get(0));
+	}
+	
 }

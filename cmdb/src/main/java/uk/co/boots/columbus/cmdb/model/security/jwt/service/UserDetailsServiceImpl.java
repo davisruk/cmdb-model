@@ -23,10 +23,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.boots.columbus.cmdb.model.domain.Role;
-import uk.co.boots.columbus.cmdb.model.domain.User;
-import uk.co.boots.columbus.cmdb.model.repository.UserRepository;
 import uk.co.boots.columbus.cmdb.model.security.jwt.UserWithId;
+import uk.co.boots.columbus.cmdb.model.user.domain.Role;
+import uk.co.boots.columbus.cmdb.model.user.domain.User;
+import uk.co.boots.columbus.cmdb.model.user.repository.UserRepository;
 
 /**
  * An implementation of Spring Security's {@link UserDetailsService}.
