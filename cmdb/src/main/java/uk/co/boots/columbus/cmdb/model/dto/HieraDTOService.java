@@ -50,8 +50,11 @@ public class HieraDTOService implements Comparator <HieraDTO>{
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
 		List<EnvironmentDTO> eList = eDTOService.findAllEnvironments();
-		for (EnvironmentDTO e: eList)
-			getHieraForRelease(hDTOList, e.release.name);
+		for (EnvironmentDTO e: eList){
+			if (e.release != null)
+				getHieraForRelease(hDTOList, e.release.name);
+		}
+			
 		hDTOList.sort(this);
 		return hDTOList;
 	}
