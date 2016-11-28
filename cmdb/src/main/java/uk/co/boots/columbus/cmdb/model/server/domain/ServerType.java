@@ -35,7 +35,18 @@ public class ServerType implements Identifiable<Long>, Serializable {
     private Long id;
     private String name;
 
-    @Override
+    
+    public ServerType() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public ServerType(String name) {
+		super();
+		this.name = name;
+	}
+
+	@Override
     public String entityClassName() {
         return ServerType.class.getSimpleName();
     }

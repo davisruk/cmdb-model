@@ -26,7 +26,7 @@ import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
-import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 
 @Entity
 @Table(name = "cm_server")
@@ -49,6 +49,10 @@ public class Server implements Identifiable<Long>, Serializable {
     @ManyToOne
     private ServerType serverType;
     
+    @JoinColumn(name = "NodeID")
+    @ManyToOne
+    private Node node;
+
 	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(
 		name="cm_server_environment"
@@ -62,15 +66,27 @@ public class Server implements Identifiable<Long>, Serializable {
     private List<Environment> environments;
 
 	//bi-directional many-to-many association to SubEnvironment
-	@ManyToMany(mappedBy="servers")
-	private List<SubEnvironment> subEnvironments;
+//	@ManyToMany(mappedBy="servers")
+//	private List<SubEnvironment> subEnvironments;
 
-    @Override
+
+    public Server(String name, ServerType serverType) {
+		super();
+		this.name = name;
+		this.serverType = serverType;
+	}
+	
+	public Server() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
     public String entityClassName() {
         return Server.class.getSimpleName();
     }
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
     @Override
     public Long getId() {
@@ -147,14 +163,24 @@ public class Server implements Identifiable<Long>, Serializable {
         return this;
     }
     
-	public List<SubEnvironment> getSubEnvironments() {
+    public Node getNode() {
+		return node;
+	}
+
+	public void setNode(Node node) {
+		this.node = node;
+	}
+
+    
+/*
+    public List<SubEnvironment> getSubEnvironments() {
 		return subEnvironments;
 	}
 
 	public void setSubEnvironments(List<SubEnvironment> subEnvironments) {
 		this.subEnvironments = subEnvironments;
 	}
-    
+*/    
 
     /**
      * Apply the default values.

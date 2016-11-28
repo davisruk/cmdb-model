@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
@@ -34,8 +37,8 @@ public class Environment implements Identifiable<Long>, Serializable {
 	@Id 
 	private Long id;
 
-//    @NotEmpty
-//    @Size(max = 50)
+    @NotEmpty
+    @Size(max = 50)
     @Column(name = "EnvironmentName", nullable = false, unique = true, length = 50)
 	private String name;
 

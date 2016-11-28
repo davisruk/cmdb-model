@@ -1,11 +1,14 @@
 package uk.co.boots.columbus.cmdb.model.environment.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -20,9 +23,8 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
+import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
-import uk.co.boots.columbus.cmdb.model.server.domain.ServerType;
 
 @Entity
 @Table(name = "cm_subenvironment")
@@ -45,18 +47,18 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	@JoinColumn(name="ReleaseID")
 	private Release release;
 
-	//bi-directional many-to-many association to Server
-	@ManyToMany
+	//bi-directional many-to-many association to Node
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(
-		name="cm_server_subenvironment"
+		name="cm_node_subenvironment"
 		, joinColumns={
 			@JoinColumn(name="SubEnvironmentID")
 			}
 		, inverseJoinColumns={
-			@JoinColumn(name="ServerID")
+			@JoinColumn(name="NodeID")
 			}
 		)
-	private List<Server> servers;
+	private List<Node> nodes;
 
 	//bi-directional many-to-one association to SubEnvironmentType
 	@ManyToOne
@@ -68,6 +70,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	private List<SubEnvironmentConfig> subEnvironmentConfigs;
 
 	public SubEnvironment() {
+		nodes = new ArrayList<Node>();
 	}
 
 	
@@ -104,12 +107,12 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		this.environment = cmEnvironment;
 	}
 
-	public List<Server> getServers() {
-		return this.servers;
+	public List<Node> getNodes() {
+		return this.nodes;
 	}
 
-	public void setServers(List<Server> cmServers) {
-		this.servers = cmServers;
+	public void setNodes(List<Node> nodes) {
+		this.nodes = nodes;
 	}
 
 	public SubEnvironmentType getSubEnvironmentType() {
@@ -141,7 +144,19 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 
 		return cmSubenvironmentconfig;
 	}
-    /**
+	
+	public void addNode(Node node) {
+		nodes.add(node);
+		node.addSubEnvironment(this);
+	}
+
+	public Node removeNode(Node node) {
+		nodes.remove(node);
+		node.removeSubEnvironment(this);
+		return node;
+	}
+
+	/**
      * Apply the default values.
      */
     public SubEnvironment withDefaults() {

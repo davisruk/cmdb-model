@@ -88,9 +88,11 @@ public class ServerConfigDTOService {
 
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByServerEnvironmentReleaseName(String envName) {
-        List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_release_name(envName);
-        buildHieraAddresses (results);
-        return results.stream().map(this::toDTO).collect(Collectors.toList());
+        // Stubbed out for the time being while Node changes are made
+    	//List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_release_name(envName);
+        //buildHieraAddresses (results);
+        //return results.stream().map(this::toDTO).collect(Collectors.toList());
+    	return null;
     }
 
     @Transactional(readOnly = true)

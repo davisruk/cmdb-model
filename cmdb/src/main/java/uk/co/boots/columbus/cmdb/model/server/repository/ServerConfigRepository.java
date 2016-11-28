@@ -22,10 +22,10 @@ public interface ServerConfigRepository extends JpaRepository<ServerConfig, Long
 
 	List<ServerConfig> findByServerName(String envName);
 	List<ServerConfig> findByServer_environments_name(String envName);
-    List<ServerConfig> findByServer_subEnvironments_release_name(String envName);
-    List<ServerConfig> findByServer_subEnvironments_subEnvironmentType_name(String typeName);
+    //List<ServerConfig> findByServer_subEnvironments_release_name(String envName);
+    //List<ServerConfig> findByServer_subEnvironments_subEnvironmentType_name(String typeName);
     List<ServerConfig> findByServer_name(String typeName);
-    List<ServerConfig> findByServer_subEnvironments_id(Long id);
+    //List<ServerConfig> findByServer_subEnvironments_id(Long id);
     
 	default List<ServerConfig> complete(String query, int maxResults) {
         ServerConfig probe = new ServerConfig();

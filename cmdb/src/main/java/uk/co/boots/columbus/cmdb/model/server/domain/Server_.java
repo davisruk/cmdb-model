@@ -12,6 +12,7 @@ import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 
 @StaticMetamodel(Server.class)
 public abstract class Server_ {
@@ -22,6 +23,7 @@ public abstract class Server_ {
 
     // Many to one
     public static volatile SingularAttribute<Server, ServerType> serverType;
+    public static volatile SingularAttribute<Server, Node> nodes;
     
     // Many to Many
     public static volatile ListAttribute<Server, Environment> environments;
