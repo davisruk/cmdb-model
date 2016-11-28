@@ -31,9 +31,7 @@ import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepo
 import uk.co.boots.columbus.cmdb.model.node.domain.IPType;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeIP;
-import uk.co.boots.columbus.cmdb.model.node.domain.NodeRelationship;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeType;
-import uk.co.boots.columbus.cmdb.model.node.domain.Protocol;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;

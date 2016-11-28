@@ -51,6 +51,12 @@ public class NodeRelationship implements Identifiable<Long>, Serializable {
 	@Enumerated(EnumType.STRING)
 	private Protocol protocol;
 
+	
+	public NodeRelationship() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public NodeRelationship(Long startPort, Long endPort, Node publishingNode, Node consumingNode, Protocol protocol) {
 		super();
 		this.startPort = startPort;
@@ -111,4 +117,52 @@ public class NodeRelationship implements Identifiable<Long>, Serializable {
                 .add("type", getId())
                 .toString();
     }
+
+	public Long getStartPort() {
+		return startPort;
+	}
+
+	public void setStartPort(Long startPort) {
+		this.startPort = startPort;
+	}
+
+	public Long getEndPort() {
+		return endPort;
+	}
+
+	public void setEndPort(Long endPort) {
+		this.endPort = endPort;
+	}
+
+	public Node getPublishingNode() {
+		return publishingNode;
+	}
+
+	public void setPublishingNode(Node publishingNode) {
+		this.publishingNode = publishingNode;
+	}
+
+	public Node getConsumingNode() {
+		return consumingNode;
+	}
+
+	public void setConsumingNode(Node consumingNode) {
+		this.consumingNode = consumingNode;
+	}
+
+	public Protocol getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
+	}
+
+	public int getPreviousHashCode() {
+		return previousHashCode;
+	}
+
+	public void setPreviousHashCode(int previousHashCode) {
+		this.previousHashCode = previousHashCode;
+	}
 }

@@ -55,6 +55,7 @@ public class Node implements Identifiable<Long>, Serializable {
 		subEnvironments = new ArrayList<SubEnvironment>();
 		servers = new ArrayList<Server>();
 		relationships = new ArrayList<NodeRelationship>();
+		nodeIPs = new ArrayList<NodeIP>();
 	}
 
 	public Node(NodeType nodeType) {
@@ -63,6 +64,7 @@ public class Node implements Identifiable<Long>, Serializable {
 		subEnvironments = new ArrayList<SubEnvironment>();
 		servers = new ArrayList<Server>();
 		relationships = new ArrayList<NodeRelationship>();
+		nodeIPs = new ArrayList<NodeIP>();
 	}
 
 	public List<NodeIP> getNodeIPs() {
