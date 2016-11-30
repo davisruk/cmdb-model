@@ -171,6 +171,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
         return this == other || (other instanceof SubEnvironment && hashCode() == other.hashCode());
     }
 
+    @Transient
     private volatile int previousHashCode = 0;
 
     @Override

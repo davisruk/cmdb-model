@@ -39,6 +39,10 @@ public class Release implements Identifiable<Long>, Serializable {
     @GeneratedValue
     @Id
     private Long id;
+    
+    @NotEmpty
+    @Size(max = 50)
+    @Column(name = "ReleaseName", nullable = false, unique = true, length = 50)
     private String name;
 
 	//bi-directional many-to-one association to ReleaseConfig
@@ -53,7 +57,10 @@ public class Release implements Identifiable<Long>, Serializable {
 	@OneToMany(mappedBy="release")
 	private List<SubEnvironment> subEnvironments;
 
-    @Override
+    @Transient
+    private volatile int previousHashCode = 0;
+
+	@Override
     public String entityClassName() {
         return Release.class.getSimpleName();
     }
@@ -82,9 +89,6 @@ public class Release implements Identifiable<Long>, Serializable {
     }
     // -- [name] ------------------------
 
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "ReleaseName", nullable = false, unique = true, length = 50)
     public String getName() {
         return name;
     }
@@ -112,8 +116,6 @@ public class Release implements Identifiable<Long>, Serializable {
     public boolean equals(Object other) {
         return this == other || (other instanceof Release && hashCode() == other.hashCode());
     }
-
-    private volatile int previousHashCode = 0;
 
     @Override
     public int hashCode() {

@@ -24,17 +24,15 @@ public class NodeRelationship implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(NodeRelationship.class.getName());
     
-	@Column(name = "NodeRelationshipID", precision = 19)
+    @Column(name = "NodeRelationshipID", precision = 19)
     @GeneratedValue
-    @Id
-	private Long id;
+	@Id
+    private Long id;
 
 	@Column(name = "startPort", precision = 19)
-    @Id
 	private Long startPort;
 
 	@Column(name = "endPort", precision = 19)
-    @Id
 	private Long endPort;
 
 	//many-to-one association to EnvironmentType

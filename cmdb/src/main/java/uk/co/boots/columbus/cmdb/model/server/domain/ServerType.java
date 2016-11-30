@@ -109,6 +109,7 @@ public class ServerType implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof ServerType && hashCode() == other.hashCode());
     }
 
+    @Transient
     private volatile int previousHashCode = 0;
 
     @Override

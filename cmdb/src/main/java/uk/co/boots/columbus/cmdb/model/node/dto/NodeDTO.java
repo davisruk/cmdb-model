@@ -6,14 +6,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeType;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 
 public class NodeDTO {
     public Long id;
     public NodeType nodeType; 
     public List<NodeIPDTO> nodeIPs;
     public List<NodeRelationshipDTO> relationships;
-    public List<Server> servers;
+    public List<ServerDTO> servers;
     public List<SubEnvironmentDTO> subEnvironments;
     
     @JsonIgnore

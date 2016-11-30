@@ -98,6 +98,7 @@ public class PackageType implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof PackageType && hashCode() == other.hashCode());
     }
 
+    @Transient
     private volatile int previousHashCode = 0;
 
     @Override

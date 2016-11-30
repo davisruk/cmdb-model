@@ -48,6 +48,7 @@ public class Environment implements Identifiable<Long>, Serializable {
 	private EnvironmentType environmentType;
 
 	//bi-directional many-to-many association to Server
+/*	
 	@ManyToMany
 	@JoinTable(
 		name="cm_server_environment"
@@ -58,6 +59,8 @@ public class Environment implements Identifiable<Long>, Serializable {
 			@JoinColumn(name="ServerID")
 			}
 		)
+*/
+	@Transient // change this later
 	private List<Server> servers;
 	
 	//bi-directional many-to-one association to EnvironmentConfig

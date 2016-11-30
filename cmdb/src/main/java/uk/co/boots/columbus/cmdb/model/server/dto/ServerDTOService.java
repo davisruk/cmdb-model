@@ -175,7 +175,7 @@ public class ServerDTOService {
 		dto.name = server.getName();
 		if (depth-- > 0) {
 			dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
-			dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
+			//dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
 		}
 
 		return dto;
@@ -208,7 +208,7 @@ public class ServerDTOService {
 		server.setName(dto.name);
 		if (depth-- > 0) {
 			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-			server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
+			//server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
 		}
 		return server;
 	}
