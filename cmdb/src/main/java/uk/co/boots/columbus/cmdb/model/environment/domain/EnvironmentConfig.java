@@ -20,8 +20,8 @@ import com.google.common.base.MoreObjects;
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 
-@Entity
-@Table(name = "cm_environmentconfig")
+//@Entity
+//@Table(name = "cm_environmentconfig")
 public class EnvironmentConfig implements Identifiable<Long>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(EnvironmentConfig.class.getName());

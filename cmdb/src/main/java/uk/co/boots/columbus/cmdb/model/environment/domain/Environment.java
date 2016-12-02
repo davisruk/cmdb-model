@@ -64,8 +64,8 @@ public class Environment implements Identifiable<Long>, Serializable {
 	private List<Server> servers;
 	
 	//bi-directional many-to-one association to EnvironmentConfig
-	@OneToMany(mappedBy="environment")
-	private List<EnvironmentConfig> environmentConfigs;
+	//@OneToMany(mappedBy="environment")
+	//private List<EnvironmentConfig> environmentConfigs;
 
 	//bi-directional many-to-one association to SubEnvironment
 	@OneToMany(mappedBy="environment")
@@ -102,7 +102,7 @@ public class Environment implements Identifiable<Long>, Serializable {
 	public void setServers(List<Server> servers) {
 		this.servers = servers;
 	}
-
+/*
 	public List<EnvironmentConfig> getEnvironmentConfigs() {
 		return environmentConfigs;
 	}
@@ -110,7 +110,7 @@ public class Environment implements Identifiable<Long>, Serializable {
 	public void setEnvironmentConfigs(List<EnvironmentConfig> environmentConfigs) {
 		this.environmentConfigs = environmentConfigs;
 	}
-
+*/
 	public List<SubEnvironment> getSubEnvironments() {
 		return subEnvironments;
 	}
@@ -120,7 +120,7 @@ public class Environment implements Identifiable<Long>, Serializable {
 	}
 
 
-
+/*
 	public EnvironmentConfig addEnvironmentConfig(EnvironmentConfig cmEnvironmentconfig) {
 		getEnvironmentConfigs().add(cmEnvironmentconfig);
 		cmEnvironmentconfig.setEnvironment(this);
@@ -134,7 +134,7 @@ public class Environment implements Identifiable<Long>, Serializable {
 
 		return cmEnvironmentconfig;
 	}
-
+*/
 	public SubEnvironment addSubEnvironment(SubEnvironment cmSubenvironment) {
 		getSubEnvironments().add(cmSubenvironment);
 		cmSubenvironment.setEnvironment(this);

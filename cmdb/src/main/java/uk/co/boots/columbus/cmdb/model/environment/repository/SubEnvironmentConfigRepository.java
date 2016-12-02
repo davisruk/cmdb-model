@@ -1,4 +1,4 @@
-package uk.co.boots.columbus.cmdb.model.environment.rest;
+package uk.co.boots.columbus.cmdb.model.environment.repository;
 
 import java.util.List;
 
@@ -14,7 +14,8 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 public interface SubEnvironmentConfigRepository extends JpaRepository<SubEnvironmentConfig, Long>{
 
 	public List<SubEnvironmentConfig> findBySubEnvironment_id(Long id);
-
+	public List<SubEnvironmentConfig> findBySubEnvironment_subEnvironmentType_nameAndSubEnvironment_environment_name(String typeName, String envName);
+	public List<SubEnvironmentConfig> findBySubEnvironment_Release_name(String relName);
     default List<SubEnvironmentConfig> complete(String query, int maxResults) {
         SubEnvironmentConfig probe = new SubEnvironmentConfig();
         probe.setParameter(query);

@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
-import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerConfigRepository;
@@ -59,12 +59,12 @@ public class ServerConfigDTOService {
         	// find EnvTag in Hieara Address and replace with Env.name
         	// even though this is many to many servers always have the same configuration
         	// therefore we just take the first environment value in the list
-        	List<Environment> envs = conf.getServer().getEnvironments(); 
+        	List<SubEnvironment> envs = conf.getServer().getSubEnvironments(); 
         	if (envs != null && !envs.isEmpty()){
         		if (addr!=null)
-        			addr = addr.replaceAll("\\{ENVID\\}", envs.get(0).getName());
+        			addr = addr.replaceAll("\\{ENVID\\}", envs.get(0).getEnvironment().getName());
         		if (value!=null)
-        			value = value.replaceAll("\\{ENVID\\}", envs.get(0).getName());
+        			value = value.replaceAll("\\{ENVID\\}", envs.get(0).getEnvironment().getName());
         	}
         	conf.setHieraAddress(addr);
         	conf.setValue(value);
@@ -80,19 +80,17 @@ public class ServerConfigDTOService {
     
     
     @Transactional(readOnly = true)
-    public List<ServerConfigDTO> findByServerEnvironmentName(String query) {
-        List<ServerConfig> results = serverConfigRepository.findByServer_environments_name(query);
+    public List<ServerConfigDTO> findByServerSubEnvironmentName(String query) {
+        List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_environment_name(query);
         buildHieraAddresses (results);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public List<ServerConfigDTO> findByServerEnvironmentReleaseName(String envName) {
-        // Stubbed out for the time being while Node changes are made
-    	//List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_release_name(envName);
-        //buildHieraAddresses (results);
-        //return results.stream().map(this::toDTO).collect(Collectors.toList());
-    	return null;
+    public List<ServerConfigDTO> findByServerSubEnvironmentReleaseName(String relName) {
+    	List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_release_name(relName);
+        buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)

@@ -39,6 +39,7 @@ import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentTypeDTO;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTO;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTOService;
@@ -81,9 +82,20 @@ public class EnvironmentResource {
 
         log.debug("Find by id Environment : {}", id);
 
-        return Optional.ofNullable(environmentDTOService.findOne(id)).map(environmentDTO -> new ResponseEntity<>(environmentDTO, HttpStatus.OK))
+        EnvironmentDTO dto = environmentDTOService.findOne(id);
+        return Optional.ofNullable(dto).map(environmentDTO -> new ResponseEntity<>(environmentDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    @RequestMapping(value = "/envTypes", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EnvironmentTypeDTO>> getAllEnvironmentTypes() throws URISyntaxException {
+
+        log.debug("Find all EnvironmentTypes");
+
+        List<EnvironmentTypeDTO> dtoList = environmentDTOService.findAllEnvironmentTypes();
+        return Optional.ofNullable(dtoList).map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
     
     @RequestMapping(value = "/configs/{envName}", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<HieraDTO>> findConfigsByEnvironmentName(@PathVariable String envName) throws URISyntaxException {
@@ -100,6 +112,12 @@ public class EnvironmentResource {
     	return new CsvResponse(hieraDTOService.findHieraInfoForEnvironment(envName), "HieraData_Release_" + envName + ".csv");
     }
     
+    @RequestMapping(value = "/subconfigdownload/{id}", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsByReleaseName(@PathVariable Long id) throws IOException {
+    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id), "HieraData_SubEnv.csv");
+    }
+
     @RequestMapping(value = "/configdownloadall/", method = GET, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAll() throws IOException {

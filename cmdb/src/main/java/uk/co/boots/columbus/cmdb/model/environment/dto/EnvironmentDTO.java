@@ -13,7 +13,9 @@ import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 public class EnvironmentDTO {
     public Long id;
     public String name;
+    public EnvironmentTypeDTO type;
     public List<ServerDTO> servers;
+    public List<SubEnvironmentDTO> subEnvironments;
     
     @JsonIgnore
     public boolean isIdSet() {

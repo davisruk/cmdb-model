@@ -12,12 +12,15 @@ import uk.co.boots.columbus.cmdb.model.component.dto.ComponentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTOService;
 
 @Service
-public class HieraDTOService implements Comparator <HieraDTO>{
+public class HieraDTOService implements Comparator<HieraDTO> {
 
 	@Inject
 	private GlobalconfigDTOService gcService;
@@ -31,11 +34,14 @@ public class HieraDTOService implements Comparator <HieraDTO>{
 	private ComponentConfigDTOService ccService;
 	@Inject
 	private EnvironmentDTOService eDTOService;
-
+	@Inject
+	private SubEnvironmentConfigDTOService secDTOService;
+	@Inject
+	private SubEnvironmentDTOService seDTOService;
 
 	// helper function to cope with the poor DTO structure
 	// Each ConfigDTO implements CoreConfigDTO that exposes accessors
-	private List<HieraDTO> addToHieraDTOList(List<HieraDTO> hieraList, List<? extends CoreConfigDTO> fromList){
+	private List<HieraDTO> addToHieraDTOList(List<HieraDTO> hieraList, List<? extends CoreConfigDTO> fromList) {
 		for (CoreConfigDTO cDTO : fromList)
 			hieraList.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress()));
 
@@ -58,12 +64,10 @@ public class HieraDTOService implements Comparator <HieraDTO>{
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
 		List<EnvironmentDTO> eList = eDTOService.findAllEnvironments();
-		/* Move to SubEnvironment
-		for (EnvironmentDTO e: eList){
-			if (e.release != null)
-				getHieraForRelease(hDTOList, e.release.name);
-		}
-		*/	
+		/*
+		 * Move to SubEnvironment for (EnvironmentDTO e: eList){ if (e.release
+		 * != null) getHieraForRelease(hDTOList, e.release.name); }
+		 */
 		hDTOList.sort(this);
 		return hDTOList;
 	}
@@ -71,23 +75,36 @@ public class HieraDTOService implements Comparator <HieraDTO>{
 	private List<HieraDTO> getHieraForRelease(List<HieraDTO> hDTOList, String relName) {
 		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
 		addToHieraDTOList(hDTOList, ecService.findByEnvironmentReleaseName(relName));
-		addToHieraDTOList(hDTOList, scService.findByServerEnvironmentReleaseName(relName));
+		addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(relName));
 		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(relName));
 		return hDTOList;
 	}
-	
+
 	public List<HieraDTO> findHieraCompleteInfoForRelease(String relName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
 		getHieraForRelease(hDTOList, relName);
 		return hDTOList;
 	}
-	
-	public List<HieraDTO> findHieraCompleteHieraInfo() {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();	
+
+	public List<HieraDTO> findHieraCompleteInfoForSubEnv(Long subEnvId) {
+		SubEnvironmentDTO subEnv = seDTOService.findOne(subEnvId,1);
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+		addToHieraDTOList(hDTOList,
+				secDTOService.findByTypeAndEnvironmentName(subEnv.subEnvironmentType.name, subEnv.environment.name));
+		addToHieraDTOList(hDTOList,
+				rcService.findByReleaseName(subEnv.release.name));
+		addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(subEnv.release.name));
+		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(subEnv.release.name));
+
 		return hDTOList;
 	}
 
+	public List<HieraDTO> findHieraCompleteHieraInfo() {
+		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		return hDTOList;
+	}
 
 	public List<HieraDTO> findHieraInfoForServer(String serverName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();

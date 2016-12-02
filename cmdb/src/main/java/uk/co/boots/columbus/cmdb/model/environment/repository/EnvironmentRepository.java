@@ -16,9 +16,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentType;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment_;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
-import uk.co.boots.columbus.cmdb.model.server.domain.ServerType;
 
 public interface EnvironmentRepository extends JpaRepository<Environment, Long> {
 

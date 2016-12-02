@@ -13,7 +13,6 @@ public class NodeDTO {
     public NodeType nodeType; 
     public List<NodeIPDTO> nodeIPs;
     public List<NodeRelationshipDTO> relationships;
-    public List<ServerDTO> servers;
     public List<SubEnvironmentDTO> subEnvironments;
     
     @JsonIgnore

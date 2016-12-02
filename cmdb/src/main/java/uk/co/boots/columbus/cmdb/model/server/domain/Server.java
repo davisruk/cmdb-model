@@ -10,11 +10,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
@@ -30,15 +30,15 @@ import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 
 @Entity
 @Table(name = "cm_server")
-public class Server implements Identifiable<Long>, Serializable {
+public class Server extends Node implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(Server.class.getName());
 
     // Raw attributes
     @Column(name = "ServerID", precision = 19)
     @GeneratedValue
-    @Id
-    private Long id;
+//    @Id
+	private Long serverId;
  
     @NotEmpty
     @Size(max = 50)
@@ -48,12 +48,17 @@ public class Server implements Identifiable<Long>, Serializable {
     @JoinColumn(name = "ServerTypeID")
     @ManyToOne
     private ServerType serverType;
+
+    @OneToMany(mappedBy="server")
+    private List<ServerConfig> serverConfigs;
     
+/*
     @JoinColumn(name = "NodeID")
     @ManyToOne
     private Node node;
-
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+*/
+/*
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
 	@JoinTable(
 		name="cm_server_environment"
 		, joinColumns={
@@ -64,7 +69,7 @@ public class Server implements Identifiable<Long>, Serializable {
 		}
 	)
     private List<Environment> environments;
-
+*/
 	//bi-directional many-to-many association to SubEnvironment
 //	@ManyToMany(mappedBy="servers")
 //	private List<SubEnvironment> subEnvironments;
@@ -88,14 +93,13 @@ public class Server implements Identifiable<Long>, Serializable {
 
 	// -- [id] ------------------------
 
-    @Override
-    public Long getId() {
-        return id;
+
+    public Long getServerId() {
+        return serverId;
     }
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
+    public void setServerId(Long id) {
+        this.serverId = id;
     }
 
     public Server id(Long id) {
@@ -106,7 +110,7 @@ public class Server implements Identifiable<Long>, Serializable {
     @Override
     @Transient
     public boolean isIdSet() {
-        return id != null;
+        return serverId != null;
     }
     // -- [name] ------------------------
 
@@ -138,14 +142,15 @@ public class Server implements Identifiable<Long>, Serializable {
         setServerType(serverType);
         return this;
     }
-
+/*
     public List<Environment> getEnvironments() {
         return environments;
     }
-
+*/
     /**
      * Set the {@link #environment} without adding this Server instance on the passed {@link #environment}
      */
+/*
     public void setEnvironments(List<Environment> environments) {
         this.environments = environments;
     }
@@ -162,7 +167,8 @@ public class Server implements Identifiable<Long>, Serializable {
     		this.environments.remove(environment);
         return this;
     }
-    
+*/
+/*    
     public Node getNode() {
 		return node;
 	}
@@ -170,7 +176,7 @@ public class Server implements Identifiable<Long>, Serializable {
 	public void setNode(Node node) {
 		this.node = node;
 	}
-
+*/
     
 /*
     public List<SubEnvironment> getSubEnvironments() {

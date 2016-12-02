@@ -128,7 +128,9 @@ public class ServerDTOService {
 	@Transactional(readOnly = true)
 	public List<EnvironmentDTO> getEnvironmentsNotAssignedToServer(Long id) {
 		Server s = serverRepository.findOne(id);
-		return environmentDTOService.findEnvironmentsNotInList(s.getEnvironments());
+		// temp - needs changing to subenvironment
+		return null;
+		//return environmentDTOService.findEnvironmentsNotInList(s.getEnvironments());
 	}
 
 	@Transactional(readOnly = true)

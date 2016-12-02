@@ -121,15 +121,16 @@ public class ServerEnvTests {
 		this.entityManager.persist(e);
 		List<Environment> envs = new ArrayList<Environment>();
 		envs.add(e);
-		s.setEnvironments(envs);
+//		s.setEnvironments(envs);
 		this.entityManager.persist(s);
 		Server s1 = this.serverRepo.findByName("TestServer");
+/*
 		List<Environment> envs1 = s1.getEnvironments();
 		System.out.println(s1);
 		System.out.println(envs1.get(0));
 		assertThat(envs1, hasSize(1));
 		assertThat((envs1.get(0)).getName(), is("Test Environment"));
-
+*/
 		// try and get a config for a server that is in a particular environment
 		ServerConfig sc = new ServerConfig();
 		sc.setHieraAddress("HIERA_ADDRESS");
@@ -137,7 +138,7 @@ public class ServerEnvTests {
 		sc.setValue("Value");
 		sc.setServer(s);
 		this.entityManager.persist(sc);
-		List<ServerConfig> scl = scRepo.findByServer_environments_name("Test Environment");
+		List<ServerConfig> scl = scRepo.findByServer_subEnvironments_environment_name("Test Environment");
 		assertNotNull(scl);
 		assertThat(scl, hasSize(1));
 		System.out.println(scl.get(0));
@@ -178,7 +179,7 @@ public class ServerEnvTests {
 		sc.server = s;
 		sc = scService.save(sc);
 
-		List<ServerConfigDTO> scl = scService.findByServerEnvironmentName("Test Environment");
+		List<ServerConfigDTO> scl = scService.findByServerSubEnvironmentName("Test Environment");
 		assertNotNull(scl);
 		assertThat(scl, hasSize(1));
 		System.out.println(scl.get(0));
@@ -281,60 +282,36 @@ public class ServerEnvTests {
 	@Test
 	public void testNodeEntityPersistence() throws Exception {
 		ServerType st = new ServerType("TEST_SERVERTYPE");
+		this.entityManager.persist(st);
 		Server s =  new Server("TEST_SERVER_1", st);
-		Server s1 =  new Server("TEST_SERVER_2", st);
-		Node n = new Node(NodeType.Server);
-//		Node consNode = new Node(NodeType.Server);
-		s.setNode(n);
-		s1.setNode(n);
-		
+		this.entityManager.persist(s);
 		Release r = createRelease("TEST_RELEASE");
 		this.entityManager.persist(r);
-		EnvironmentType et = createEnvType("Production");
+		SubEnvironmentType set = createSubEnvType("TEST_SUB_ENV");		
+		this.entityManager.persist(set);
+		EnvironmentType et = createEnvType("TEST_ENV_TYPE");
 		this.entityManager.persist(et);
 		Environment e = createEnv(et);
 		this.entityManager.persist(e);
-		SubEnvironmentType set = createSubEnvType("X Leg");
-		SubEnvironment se = createSubEnv (r, set, e);
-		se.addNode(n);
-		NodeIP nodeIP = new NodeIP(IPType.VIRTUAL, "192.168.1.1");
-		n.addNodeIP(nodeIP);
-//		n.addRelationship();
-		n.addServer(s);
-		n.addServer(s1);
-//		NodeRelationship nr = new NodeRelationship(8080L, 8080L, n, consNode, Protocol.HTTP);
-		this.entityManager.persist(nodeIP);
-		this.entityManager.persist(st);
-		this.entityManager.persist(s);
-		this.entityManager.persist(s1);
-		this.entityManager.persist(n);
+		SubEnvironment se = createSubEnv(r, set, e);
 		this.entityManager.persist(se);
-
-		Node n1 = this.nRepo.findOne(1L);
-		assertNotNull(n1);
-		System.out.println(n1);
-
-		SubEnvironment se1 = seRepo.findOne(1L);
-		List<Node> nodes = se1.getNodes();
-		assertThat(nodes, hasSize(1));
-		System.out.println("Environment :" + se1.getEnvironment());
-		System.out.println("Environment Type:" + se1.getEnvironment().getEnvironmentType());
-		System.out.println("Release :" + se1.getRelease());
-		System.out.println("Sub Environment Type:" + se1.getSubEnvironmentType());
-		System.out.println("Nodes " + nodes.get(0));
+		se.addNode(s);
+		s.addSubEnvironment(se);
+		this.entityManager.persist(se);
+		this.entityManager.persist(s);
+		List<Server> servers = serverRepo.findBySubEnvironments_id(1L);
+		
+		System.out.println(servers.size());
+		ServerConfig sc = new ServerConfig();
+		sc.setHieraAddress("HIERA_ADDRESS");
+		sc.setParameter("Parameter");
+		sc.setValue("Value");
+		sc.setServer(servers.get(0));
+		this.entityManager.persist(sc);
+		List<ServerConfig> scl = scRepo.findByServer_name(servers.get(0).getName());
+		System.out.println(scl.size());
 	}
 
-	private ServerType createServerType (String name){
-		ServerType st = new ServerType();
-		st.setName(name);
-		return st;
-	}
-	private Server createServer (String name, ServerType st){
-		Server s = new Server();
-		s.setName(name);
-		return s;
-	}
-	
 	private SubEnvironment createSubEnv (Release r, SubEnvironmentType set, Environment e){
 		SubEnvironment se = new SubEnvironment();
 		se.setEnvironment(e);

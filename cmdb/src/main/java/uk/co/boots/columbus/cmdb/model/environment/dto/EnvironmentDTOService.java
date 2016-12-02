@@ -23,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentType;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
-import uk.co.boots.columbus.cmdb.model.release.domain.Release;
+import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentTypeRepository;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
@@ -41,17 +42,24 @@ public class EnvironmentDTOService {
 	@Inject
 	private EnvironmentRepository environmentRepository;
 	@Inject
+	private EnvironmentTypeRepository environmentTypeRepository;
+
+	@Inject
 	private ReleaseDTOService releaseDTOService;
 	@Inject
 	private ReleaseRepository releaseRepository;
 	@Inject
 	ServerDTOService serverDTOService;
-	private @Inject ServerRepository serverRepo;
+	private @Inject
+	ServerRepository serverRepo;
+	@Inject
+	SubEnvironmentDTOService subEnvironmentDTOService;
+
 
 	@Transactional(readOnly = true)
 	public EnvironmentDTO findOne(Long id) {
 		// return toDTO(environmentRepository.findOne(id));
-		return toDTO(environmentRepository.findOne(id), 2);
+		return toDTO(environmentRepository.findOne(id));
 	}
 
 	@Transactional(readOnly = true)
@@ -65,6 +73,30 @@ public class EnvironmentDTOService {
 		List<Environment> results = environmentRepository.findAll();
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
+
+	@Transactional(readOnly = true)
+	public List<EnvironmentTypeDTO> findAllEnvironmentTypes() {
+		List<EnvironmentType> results = environmentTypeRepository.findAll();
+		return results.stream().map((EnvironmentType et) -> envTypeToDTO(et)).collect(Collectors.toList());
+	}
+	
+	private EnvironmentTypeDTO envTypeToDTO (EnvironmentType et){
+		if (et == null)
+			return null;
+		EnvironmentTypeDTO eDTO = new EnvironmentTypeDTO();
+		eDTO.id = et.getId();
+		eDTO.name = et.getName();
+		return eDTO;
+	}	
+	
+	private EnvironmentType envTypeDTOToEntity (EnvironmentTypeDTO etDTO){
+		if (etDTO == null)
+			return null;
+		EnvironmentType et = new EnvironmentType();
+		et.setId(etDTO.id);
+		et.setName(etDTO.name);
+		return et;
+	}	
 
 	@Transactional(readOnly = true)
 	public PageResponse<EnvironmentDTO> findAll(PageRequestByExample<EnvironmentDTO> req) {
@@ -82,7 +114,7 @@ public class EnvironmentDTOService {
 			page = environmentRepository.findAll(req.toPageable());
 		}
 
-		List<EnvironmentDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+		List<EnvironmentDTO> content = page.getContent().stream().map((Environment e) -> toDTO(e,0)).collect(Collectors.toList());
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
 	}
 
@@ -106,7 +138,7 @@ public class EnvironmentDTOService {
 		}
 
 		environment.setName(dto.name);
-
+		environment.setEnvironmentType(envTypeDTOToEntity(dto.type));
 /* Move to SubEnvironment
 		if (dto.release == null) {
 			environment.setRelease(null);
@@ -137,7 +169,7 @@ public class EnvironmentDTOService {
 					// We need to do this because Server owns the M:M relationship
 					// Environment will not persist changes to the join table
 					Server s = serverDTOService.toEntity(sDTO, 1);
-					s.addEnvironment(environment);
+					//s.addEnvironment(environment);
 					serverRepo.save(s);
 					environment.getServers().add(s);
 				}
@@ -151,7 +183,7 @@ public class EnvironmentDTOService {
 				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(s.getId())).findFirst();
 				if (!optional.isPresent()) {
 					// same as above - we need to ensure we persist the M:M relationships
-					s.removeEnvironment(environment);
+					//s.removeEnvironment(environment);
 					serverRepo.save(s);
 					it.remove();
 				}
@@ -200,10 +232,12 @@ public class EnvironmentDTOService {
 
 		dto.id = environment.getId();
 		dto.name = environment.getName();
+		dto.type = envTypeToDTO(environment.getEnvironmentType());
 		if (depth-- > 0) {
 			// Move to SubEnvironment
 			//dto.release = releaseDTOService.toDTO(environment.getRelease(), depth);
-			dto.servers = serverDTOService.toDTO(environment.getServers(), depth);
+			//dto.servers = serverDTOService.toDTO(environment.getServers(), depth);
+			dto.subEnvironments = subEnvironmentDTOService.toDTO(environment.getSubEnvironments(), depth);
 		}
 
 		return dto;

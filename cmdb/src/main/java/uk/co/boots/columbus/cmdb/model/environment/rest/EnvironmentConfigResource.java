@@ -47,7 +47,6 @@ public class EnvironmentConfigResource {
 
     private final Logger log = LoggerFactory.getLogger(EnvironmentConfigResource.class);
 
-    @Inject
     private EnvironmentConfigRepository environmentConfigRepository;
     @Inject
     private EnvironmentConfigDTOService environmentConfigDTOService;
@@ -129,7 +128,7 @@ public class EnvironmentConfigResource {
         log.debug("Delete by id EnvironmentConfig : {}", id);
 
         try {
-            environmentConfigRepository.delete(id);
+            //environmentConfigRepository.delete(id);
             return ResponseEntity.ok().build();
         } catch (Exception x) {
             // todo: dig exception, most likely org.hibernate.exception.ConstraintViolationException

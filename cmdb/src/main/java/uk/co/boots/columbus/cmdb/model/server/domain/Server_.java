@@ -23,8 +23,8 @@ public abstract class Server_ {
 
     // Many to one
     public static volatile SingularAttribute<Server, ServerType> serverType;
-    public static volatile SingularAttribute<Server, Node> nodes;
-    
-    // Many to Many
-    public static volatile ListAttribute<Server, Environment> environments;
+ 
+    // One to Many
+    public static volatile ListAttribute<Server, ServerConfig> serverConfigs;
+     
 }

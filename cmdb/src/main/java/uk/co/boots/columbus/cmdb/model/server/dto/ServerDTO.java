@@ -12,17 +12,16 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.node.domain.Node;
+import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
 
 /**
  * Simple DTO for Server.
  */
-public class ServerDTO {
+public class ServerDTO extends NodeDTO {
     public Long id;
     public String name;
     public ServerTypeDTO serverType;
     public List<EnvironmentDTO> environments;
-    public Node node;
 
     @JsonIgnore
     public boolean isIdSet() {

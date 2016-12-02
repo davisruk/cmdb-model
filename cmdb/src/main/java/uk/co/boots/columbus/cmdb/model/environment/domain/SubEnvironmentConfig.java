@@ -48,6 +48,9 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	@JoinColumn(name = "SubEnvironmentID")
 	private SubEnvironment subEnvironment;
 
+	@Transient
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+
 	public SubEnvironmentConfig() {
 	}
 
@@ -117,8 +120,6 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	public boolean equals(Object other) {
 		return this == other || (other instanceof SubEnvironmentConfig && hashCode() == other.hashCode());
 	}
-
-	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
 	@Override
 	public int hashCode() {

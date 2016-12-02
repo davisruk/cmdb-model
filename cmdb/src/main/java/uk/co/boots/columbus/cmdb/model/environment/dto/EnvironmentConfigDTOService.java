@@ -31,7 +31,6 @@ import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 @Service
 public class EnvironmentConfigDTOService {
 
-    @Inject
     private EnvironmentConfigRepository environmentConfigRepository;
     @Inject
     private EnvironmentDTOService environmentDTOService;
@@ -40,7 +39,8 @@ public class EnvironmentConfigDTOService {
 
     @Transactional(readOnly = true)
     public EnvironmentConfigDTO findOne(Long id) {
-        return toDTO(environmentConfigRepository.findOne(id));
+        //return toDTO(environmentConfigRepository.findOne(id));
+    	return null;
     }
 
     private void buildHieraAddresses (List<EnvironmentConfig> cl){
@@ -62,14 +62,17 @@ public class EnvironmentConfigDTOService {
         	}
         }
     }
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public List<EnvironmentConfigDTO> findByEnvironmentName(String envName) {
-        List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_name(envName);
+    /*
+    	List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_name(envName);
         buildHieraAddresses (results);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
+        */
+    	return null;
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public List<EnvironmentConfigDTO> findByEnvironmentReleaseName(String relName) {
         //List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_Release_name(relName);
         //buildHieraAddresses (results);
@@ -77,15 +80,20 @@ public class EnvironmentConfigDTOService {
     	return null;
     }
     
-    @Transactional(readOnly = true)
+ //   @Transactional(readOnly = true)
     public List<EnvironmentConfigDTO> complete(String query, int maxResults) {
-        List<EnvironmentConfig> results = environmentConfigRepository.complete(query, maxResults);
+    	/*
+    	List<EnvironmentConfig> results = environmentConfigRepository.complete(query, maxResults);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
+                */
+    	return null;
+
     }
 
-    @Transactional(readOnly = true)
+//    @Transactional(readOnly = true)
     public PageResponse<EnvironmentConfigDTO> findAll(PageRequestByExample<EnvironmentConfigDTO> req) {
-        Example<EnvironmentConfig> example = null;
+/*
+    	Example<EnvironmentConfig> example = null;
         EnvironmentConfig environmentConfig = toEntity(req.example);
 
         if (environmentConfig != null) {
@@ -101,14 +109,18 @@ public class EnvironmentConfigDTOService {
 
         List<EnvironmentConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
         return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+            */
+    	return null;
+
     }
 
     /**
      * Save the passed dto as a new entity or update the corresponding entity if any.
      */
-    @Transactional
+//    @Transactional
     public EnvironmentConfigDTO save(EnvironmentConfigDTO dto) {
-        if (dto == null) {
+/*
+    	if (dto == null) {
             return null;
         }
 
@@ -133,6 +145,9 @@ public class EnvironmentConfigDTOService {
         }
 
         return toDTO(environmentConfigRepository.save(environmentConfig));
+                */
+    	return null;
+
     }
 
     /**

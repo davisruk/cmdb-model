@@ -75,6 +75,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			authorizeRequests().antMatchers("/api/login").permitAll().
 			// allow all login requests
 			antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
+			antMatchers("/api/**/subconfigdownload/**").permitAll(). // temp fix for download buttons
 			antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
 			antMatchers("/api/users/**").hasRole("ADMIN").
 			antMatchers("/api/roles/**").hasRole("ADMIN").

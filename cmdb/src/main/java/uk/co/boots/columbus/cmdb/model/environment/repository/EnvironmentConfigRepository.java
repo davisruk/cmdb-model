@@ -19,7 +19,7 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentConfig_;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 
-public interface EnvironmentConfigRepository extends JpaRepository<EnvironmentConfig, Long> {
+public interface EnvironmentConfigRepository /*extends JpaRepository<EnvironmentConfig, Long> {
 
     public List<EnvironmentConfig> findByEnvironment_name(String name);
     //public List<EnvironmentConfig> findByEnvironment_Release_name(String name);
@@ -34,4 +34,6 @@ public interface EnvironmentConfigRepository extends JpaRepository<EnvironmentCo
         Page<EnvironmentConfig> page = findAll(Example.of(probe, matcher), new PageRequest(0, maxResults));
         return page.getContent();
     }
+    */
+{
 }

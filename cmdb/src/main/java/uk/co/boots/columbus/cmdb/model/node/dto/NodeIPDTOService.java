@@ -12,6 +12,7 @@ import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeIP;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeIPRepository;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
+import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 
 @Service
 public class NodeIPDTOService {
@@ -112,7 +113,7 @@ public class NodeIPDTOService {
 		nodeIP.setIPType(dto.ipType);
 
 		if (depth-- > 0) {
-			nodeIP.setNode(nodeDTOService.toEntity(dto.node, depth));
+			nodeIP.setNode(nodeDTOService.toEntity(dto.node, depth, new Server())); // MUST change this!!
 		}
 
 		return nodeIP;

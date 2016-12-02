@@ -12,6 +12,7 @@ import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeRelationship;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRelationshipRepository;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
+import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 
 @Service
 public class NodeRelationshipDTOService {
@@ -123,8 +124,8 @@ public class NodeRelationshipDTOService {
 		nodeRelationship.setEndPort(dto.startPort);
 
 		if (depth-- > 0) {
-			nodeRelationship.setPublishingNode(nodeDTOService.toEntity(dto.publishingNode, depth));
-			nodeRelationship.setConsumingNode(nodeDTOService.toEntity(dto.consumingNode, depth));
+			nodeRelationship.setPublishingNode(nodeDTOService.toEntity(dto.publishingNode, depth, new Server())); // MUST change new Server
+			nodeRelationship.setConsumingNode(nodeDTOService.toEntity(dto.consumingNode, depth, new Server()));// to actual NODE type
 		}
 
 		return nodeRelationship;

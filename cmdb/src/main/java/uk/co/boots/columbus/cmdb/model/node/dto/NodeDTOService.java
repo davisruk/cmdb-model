@@ -10,7 +10,9 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeRelationship;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
@@ -33,6 +35,7 @@ public class NodeDTOService {
 	@Inject 
 	private ServerRepository serverRepo;
 	
+/*
 	@Transactional
 	public NodeDTO save(NodeDTO dto) {
 		boolean inserting = false;
@@ -73,39 +76,9 @@ public class NodeDTOService {
 			inserting=true;
 		}
 
-		// This is slow and clunky but if we are to remain stateless
-		// there's no real alternative
-		// Add any new servers
-		if (dto.servers != null){
-			for (ServerDTO sDTO : dto.servers) {
-				Optional<Server> optional = servers.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
-				if (!optional.isPresent()) {
-					// Add the server to the environment
-					// We need to do this because Server owns the M:M relationship
-					// Environment will not persist changes to the join table
-					Server s = serverDTOService.toEntity(sDTO, 1);
-					s.setNode(node);
-					serverRepo.save(s);
-				}
-			}
-		}
-		// Remove any old servers
-		// Only need to check this if updating
-		if (!inserting) {
-			for (Iterator<Server> it = servers.iterator(); it.hasNext();) {
-				Server s = it.next();
-				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(s.getId())).findFirst();
-				if (!optional.isPresent()) {
-					// same as above - we need to ensure we persist the M:M relationships
-					s.setNode(node);
-					serverRepo.save(s);
-					it.remove();
-				}
-			}
-		}
 		return toDTO(node, 2);
 	}	
-	
+*/	
 	public NodeDTO toDTO(Node node) {
 		return toDTO(node, 1);
 	}
@@ -123,6 +96,7 @@ public class NodeDTOService {
 	 *            xToOne associations of xToOne associations will be serialized,
 	 *            etc.
 	 */
+
 	public NodeDTO toDTO(Node node, int depth) {
 		if (node == null) {
 			return null;
@@ -131,7 +105,6 @@ public class NodeDTOService {
 		NodeDTO dto = new NodeDTO();
 
 		dto.id = node.getId();
-		dto.nodeType = node.getNodeType();
 
 		if (depth-- > 0) {
 			dto.relationships = nodeRelationshipDTOService.toDTO(node.getRelationships(), depth);
@@ -145,23 +118,21 @@ public class NodeDTOService {
 	 * Converts the passed dto to a PackageInfo. Convenient for query by
 	 * example.
 	 */
-	public Node toEntity(NodeDTO dto) {
+/*	public Node toEntity(NodeDTO dto) {
 		return toEntity(dto, 1);
 	}
-
+*/
 	/**
 	 * Converts the passed dto to a PackageInfo. Convenient for query by
 	 * example.
 	 */
-	public Node toEntity(NodeDTO dto, int depth) {
+	public Node toEntity(NodeDTO dto, int depth, Node node) {
 		if (dto == null) {
 			return null;
 		}
 
-		Node node = new Node();
-
 		node.setId(dto.id);
-		node.setNodeType(dto.nodeType);
+
 
 		if (depth-- > 0) {
 			node.setRelationships(nodeRelationshipDTOService.toEntity(dto.relationships, depth));
@@ -169,6 +140,23 @@ public class NodeDTOService {
 		}
 
 		return node;
+	}
+	public List<Node> toEntity(List<NodeDTO> dtoList, int depth) {
+		if (dtoList == null)
+			return null;
+		List<Node> ret = new ArrayList<Node>();
+		for (NodeDTO dto : dtoList)
+			ret.add(toEntity(dto, depth,  new Server())); // FIX THIS - it needs to be generic!
+		return ret;
+	}
+
+	public List<NodeDTO> toDTO(List<Node> nodeList, int depth) {
+		if (nodeList == null)
+			return null;
+		List<NodeDTO> ret = new ArrayList<NodeDTO>();
+		for (Node n : nodeList)
+			ret.add(toDTO(n, depth));
+		return ret;
 	}
 
 }

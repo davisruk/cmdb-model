@@ -7,11 +7,14 @@ import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -25,7 +28,9 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 @Entity
 @Table(name = "cm_node")
-public class Node implements Identifiable<Long>, Serializable {
+@Inheritance(strategy=InheritanceType.JOINED)
+@DiscriminatorColumn(name="NodeType")
+public abstract class Node implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(Node.class.getName());
     
@@ -34,18 +39,16 @@ public class Node implements Identifiable<Long>, Serializable {
     @Id
 	private Long id;
 
+/*	
 	@Column (name = "NodeType")
 	@Enumerated(EnumType.STRING)
 	private NodeType nodeType;
-	
+*/	
 	@OneToMany(mappedBy="node")
 	private List<NodeIP> nodeIPs;
 	
 	@OneToMany(mappedBy="publishingNode")
 	private List<NodeRelationship> relationships;
-
-	@OneToMany(mappedBy="node")
-	private List<Server> servers;
 
 	@ManyToMany (mappedBy="nodes", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private List<SubEnvironment> subEnvironments;
@@ -53,16 +56,14 @@ public class Node implements Identifiable<Long>, Serializable {
 	public Node() {
 		super();
 		subEnvironments = new ArrayList<SubEnvironment>();
-		servers = new ArrayList<Server>();
 		relationships = new ArrayList<NodeRelationship>();
 		nodeIPs = new ArrayList<NodeIP>();
 	}
 
 	public Node(NodeType nodeType) {
 		super();
-		this.nodeType = nodeType;
+//		this.nodeType = nodeType;
 		subEnvironments = new ArrayList<SubEnvironment>();
-		servers = new ArrayList<Server>();
 		relationships = new ArrayList<NodeRelationship>();
 		nodeIPs = new ArrayList<NodeIP>();
 	}
@@ -81,14 +82,6 @@ public class Node implements Identifiable<Long>, Serializable {
 
 	public void setRelationships(List<NodeRelationship> relationships) {
 		this.relationships = relationships;
-	}
-
-	public List<Server> getServers() {
-		return servers;
-	}
-
-	public void setServers(List<Server> servers) {
-		this.servers = servers;
 	}
 
 	public List<SubEnvironment> getSubEnvironments() {
@@ -116,28 +109,20 @@ public class Node implements Identifiable<Long>, Serializable {
 		this.id = id;
 	}
 
-	public NodeType getNodeType() {
+/*	public NodeType getNodeType() {
 		return nodeType;
 	}
 
 	public void setNodeType(NodeType nodeType) {
 		this.nodeType = nodeType;
 	}
-
+*/
 	public void addSubEnvironment (SubEnvironment se){
 		subEnvironments.add(se);
 	}
 
 	public void removeSubEnvironment (SubEnvironment se){
 		subEnvironments.remove(se);
-	}
-
-	public void addServer (Server s){
-		servers.add(s);
-	}
-
-	public void removeServer (Server s){
-		servers.remove(s);
 	}
 
 	public void addRelationship (NodeRelationship rel){
@@ -194,7 +179,7 @@ public class Node implements Identifiable<Long>, Serializable {
     public String toString() {
         return MoreObjects.toStringHelper(this) //
                 .add("id", getId())
-                .add("type", getNodeType())
+//                .add("type", getNodeType())
                 .toString();
     }
 }

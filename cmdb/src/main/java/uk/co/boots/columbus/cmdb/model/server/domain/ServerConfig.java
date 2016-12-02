@@ -42,6 +42,7 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
     @Column(name = "ServConfigHieraAddress", length = 45)
     private String hieraAddress;
 
+    //@JoinColumn(name = "NodeID")
     @JoinColumn(name = "ServerID")
     @ManyToOne
     private Server server;
