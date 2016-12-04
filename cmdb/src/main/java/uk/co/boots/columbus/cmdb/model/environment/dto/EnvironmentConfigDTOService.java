@@ -62,17 +62,8 @@ public class EnvironmentConfigDTOService {
         	}
         }
     }
-//    @Transactional(readOnly = true)
-    public List<EnvironmentConfigDTO> findByEnvironmentName(String envName) {
-    /*
-    	List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_name(envName);
-        buildHieraAddresses (results);
-        return results.stream().map(this::toDTO).collect(Collectors.toList());
-        */
-    	return null;
-    }
 
-//    @Transactional(readOnly = true)
+    //    @Transactional(readOnly = true)
     public List<EnvironmentConfigDTO> findByEnvironmentReleaseName(String relName) {
         //List<EnvironmentConfig> results = environmentConfigRepository.findByEnvironment_Release_name(relName);
         //buildHieraAddresses (results);

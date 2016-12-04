@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
@@ -85,6 +86,23 @@ public class SubEnvironmentDTOService {
 
 		List<SubEnvironmentDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+	}
+
+	@Transactional(readOnly = true)
+	public PageResponse<SubEnvironmentDTO> getSubEnvsNotInListForEnvironment(PageRequestByExample<EnvironmentDTO> req) {
+		Page<SubEnvironment> page = null;
+		ArrayList<Long> ids = new ArrayList<Long>();
+		if (req == null || req.example == null)
+			return null;
+
+		for (SubEnvironmentDTO s : req.example.subEnvironments)
+			ids.add(s.id);
+		page = subEnvironmentRepository.findBySubEnvironmentType_IdNotIn(req.toPageable(), ids);
+
+		List<SubEnvironmentDTO> content = page.getContent().stream().map((SubEnvironment s) -> toDTO(s, 0)).collect(Collectors.toList()); 
+
+		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+			
 	}
 
 	/**

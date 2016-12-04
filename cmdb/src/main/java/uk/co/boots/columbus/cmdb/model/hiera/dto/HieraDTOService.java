@@ -48,12 +48,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		return hieraList;
 	}
 
-	public List<HieraDTO> findHieraInfoForEnvironment(String envName) {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, ecService.findByEnvironmentName(envName));
-		return hDTOList;
-	}
-
 	public List<HieraDTO> findHieraInfoForGlobalconfig() {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());

@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
@@ -118,6 +119,7 @@ public class EnvironmentDTOService {
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
 	}
 
+	
 	/**
 	 * Save the passed dto as a new entity or update the corresponding entity if
 	 * any.
