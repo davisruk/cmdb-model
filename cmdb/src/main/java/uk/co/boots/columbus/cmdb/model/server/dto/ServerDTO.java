@@ -18,7 +18,7 @@ import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
  * Simple DTO for Server.
  */
 public class ServerDTO extends NodeDTO {
-    public Long id;
+    public Long serverId;
     public String name;
     public ServerTypeDTO serverType;
     public List<EnvironmentDTO> environments;

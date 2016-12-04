@@ -37,12 +37,12 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTO;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
-import uk.co.boots.columbus.cmdb.model.user.dto.RoleDTO;
 
 @RestController
 @RequestMapping("/api/servers")
@@ -153,10 +153,10 @@ public class ServerResource {
     }
 
     @RequestMapping(value = "/notinpageable", method = POST, produces = APPLICATION_JSON_VALUE, consumes= APPLICATION_JSON_VALUE)
-    public ResponseEntity<PageResponse<ServerDTO>> findAndPageAvailableEnvironments(@RequestBody PageRequestByExample<EnvironmentDTO> prbe) throws URISyntaxException {
+    public ResponseEntity<PageResponse<ServerDTO>> findAndPageAvailableEnvironments(@RequestBody PageRequestByExample<SubEnvironmentDTO> prbe) throws URISyntaxException {
 
-        log.debug("Find servers not in Environment : {}", prbe);
-        PageResponse<ServerDTO> results = serverDTOService.getServersNotInListForEnvironment(prbe);
+        log.debug("Find servers not in SubEnvironment : {}", prbe);
+        PageResponse<ServerDTO> results = serverDTOService.getServersNotInListForSubEnvironment(prbe);
 
         return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }

@@ -1,20 +1,13 @@
 package uk.co.boots.columbus.cmdb.model.node.dto;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
-import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
-import uk.co.boots.columbus.cmdb.model.node.domain.NodeRelationship;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
@@ -156,6 +149,16 @@ public class NodeDTOService {
 		List<NodeDTO> ret = new ArrayList<NodeDTO>();
 		for (Node n : nodeList)
 			ret.add(toDTO(n, depth));
+		return ret;
+	}
+	
+	public List<ServerDTO> getServerDTOList(List<Node> nodeList, int depth) {
+		if (nodeList == null)
+			return null;
+		List<ServerDTO> ret = new ArrayList<ServerDTO>();
+		for (Node s : nodeList)
+			if (s instanceof Server)
+				ret.add(serverDTOService.toDTO((Server)s, depth));
 		return ret;
 	}
 

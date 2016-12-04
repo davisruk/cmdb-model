@@ -150,22 +150,18 @@ public class SubEnvironmentDTOService {
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
-		if (dto.nodes != null){
-			for (NodeDTO nDTO : dto.nodes) {
-				Optional<Node> optional = nodes.stream().filter(x -> x.getId().equals(nDTO.id)).findFirst();
+		if (dto.servers != null){
+			for (ServerDTO sDTO : dto.servers) {
+				Optional<Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
 				if (!optional.isPresent()) {
 					// Add the node to the subEnvironment
 					// We need to do this because node owns the M:M relationship
 					// SubEnvironment will not persist changes to the join table
 					// if JPA inheritance works - create abstract to entity method
-					if (nDTO instanceof ServerDTO){
-						ServerDTO sDTO = (ServerDTO)nDTO;
-						Server s = serverDTOService.toEntity(sDTO, 1);
-						s.addSubEnvironment(subEnvironment);
-						serverRepo.save(s);
-						subEnvironment.getNodes().add(s);
-					}
-					
+					Server s = serverDTOService.toEntity(sDTO, 1);
+					s.addSubEnvironment(subEnvironment);
+					serverRepo.save(s);
+					subEnvironment.getNodes().add(s);
 				}
 			}
 		}
@@ -174,14 +170,12 @@ public class SubEnvironmentDTOService {
 		if (!inserting) {
 			for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
 				Node n = it.next();
-				Optional<NodeDTO> optional = dto.nodes.stream().filter(x -> x.id.equals(n.getId())).findFirst();
+				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(n.getId())).findFirst();
 				if (!optional.isPresent()) {
 					// same as above - we need to ensure we persist the M:M relationships
-					if (n instanceof Server){
 						((Server)n).removeSubEnvironment(subEnvironment);
 						serverRepo.save((Server)n);
 						it.remove();
-					}
 				}
 			}
 		}
@@ -234,7 +228,7 @@ public class SubEnvironmentDTOService {
 			// Move to SubSubEnvironment
 			dto.environment = envDTOService.toDTO(subEnvironment.getEnvironment());
 			dto.release = releaseDTOService.toDTO(subEnvironment.getRelease(), depth);
-			dto.nodes = nodeDTOService.toDTO(subEnvironment.getNodes(), depth);
+			dto.servers = nodeDTOService.getServerDTOList(subEnvironment.getNodes(), depth);
 		}
 
 		return dto;

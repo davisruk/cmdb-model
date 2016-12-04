@@ -18,6 +18,9 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.node.domain.Node;
+import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
@@ -77,11 +80,13 @@ public class ServerDTOService {
 	}
 
 	@Transactional(readOnly = true)
-	public PageResponse<ServerDTO> getServersNotInListForEnvironment(PageRequestByExample<EnvironmentDTO> req) {
+	public PageResponse<ServerDTO> getServersNotInListForSubEnvironment(PageRequestByExample<SubEnvironmentDTO> req) {
 		Page<Server> page = null;
 		ArrayList<Long> ids = new ArrayList<Long>();
-		for (ServerDTO s : req.example.servers)
-			ids.add(s.id);
+		for (NodeDTO s : req.example.servers){
+				ids.add(s.id);
+		}
+			
 
 		if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null){
 			
@@ -174,6 +179,7 @@ public class ServerDTOService {
 		ServerDTO dto = new ServerDTO();
 
 		dto.id = server.getId();
+		dto.serverId = server.getServerId();
 		dto.name = server.getName();
 		if (depth-- > 0) {
 			dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
@@ -227,10 +233,10 @@ public class ServerDTOService {
 	public List<ServerDTO> toDTO(List<Server> serverList, int depth) {
 		if (serverList == null)
 			return null;
-		List<ServerDTO> ret = new ArrayList<ServerDTO>();
-		for (Server s : serverList)
-			ret.add(toDTO(s, depth));
-		return ret;
+		List<Server> servers = new ArrayList<Server>();
+		for (Server s : serverList){
+			servers.add(s);
+		}
+		return toDTO(servers, depth);
 	}
-
 }

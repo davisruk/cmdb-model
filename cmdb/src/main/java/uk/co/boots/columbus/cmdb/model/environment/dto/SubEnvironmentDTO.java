@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 
 public class SubEnvironmentDTO {
     public Long id;
@@ -13,7 +13,7 @@ public class SubEnvironmentDTO {
     public SubEnvironmentTypeDTO subEnvironmentType;
     public EnvironmentDTO environment;
     public List<SubEnvironmentConfigDTO> subEnvironmentConfigs;
-    public List<NodeDTO> nodes;
+    public List<ServerDTO> servers;
 
     @JsonIgnore
     public boolean isIdSet() {
