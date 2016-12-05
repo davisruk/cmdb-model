@@ -51,28 +51,26 @@ public class ServerDTOService {
 	@Transactional(readOnly = true)
 	public PageResponse<ServerDTO> findAll(PageRequestByExample<ServerDTO> req) {
 		Example<Server> example = null;
-		Server server = toEntity(req.example);
-
-		if (server != null) {
-			if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null){
-				// build the Matcher for this page request
-				// probably a little overkill but should cope with all use cases
-				for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
-					FilterMetadata filter = entry.getValue();
-					// setup the matcher for contains / starts with or ends with
-					ExampleMatcher matcher = ExampleMatcher.matching().withMatcher(entry.getKey(), match->filter.getMatcher(match));
-					example = Example.of(server, matcher);		
+		Page<Server> page;
+		if (req.example == null)
+			page = serverRepository.findAll(req.toPageable());
+		else
+		{
+			Server server = toEntity(req.example);
+			example = Example.of(server);			
+			if (server != null) {
+				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null){
+					// build the Matcher for this page request
+					// probably a little overkill but should cope with all use cases
+					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
+						FilterMetadata filter = entry.getValue();
+						// setup the matcher for contains / starts with or ends with
+						ExampleMatcher matcher = ExampleMatcher.matching().withMatcher(entry.getKey(), match->filter.getMatcher(match));
+						example = Example.of(server, matcher);		
+					}
 				}
 			}
-			else
-				example = Example.of(server);
-		}
-
-		Page<Server> page;
-		if (example != null) {
 			page = serverRepository.findAll(example, req.toPageable());
-		} else {
-			page = serverRepository.findAll(req.toPageable());
 		}
 
 		List<ServerDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
