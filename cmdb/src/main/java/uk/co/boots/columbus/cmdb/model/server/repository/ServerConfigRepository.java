@@ -25,7 +25,8 @@ public interface ServerConfigRepository extends JpaRepository<ServerConfig, Long
     //List<ServerConfig> findByServer_subEnvironments_release_name(String envName);
     List<ServerConfig> findByServer_subEnvironments_subEnvironmentType_name(String typeName);
     List<ServerConfig>findByServer_subEnvironments_environment_name(String name);
-    List<ServerConfig>findByServer_subEnvironments_release_name(String name);
+    List<ServerConfig>findByServer_subEnvironments_id(Long id);
+    List<ServerConfig>findDistinctByServer_subEnvironments_environment_id(Long id);
     List<ServerConfig> findByServer_name(String typeName);
     //List<ServerConfig> findByServer_subEnvironments_id(Long id);
     

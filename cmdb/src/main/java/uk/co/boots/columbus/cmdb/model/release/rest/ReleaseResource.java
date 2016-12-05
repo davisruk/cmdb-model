@@ -95,10 +95,11 @@ public class ReleaseResource {
         return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
     }
     
-    @RequestMapping(value = "/configdownloadall/{relName:.*}", method = GET, produces = "text/csv")
+    @RequestMapping(value = "/configdownloadall", method = GET, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadAllConfigsForRelease(@PathVariable String relName) throws IOException {
-        return new CsvResponse(hieraDTOService.findHieraCompleteInfoForRelease(relName), "HieraData_Release_Complete" + relName + ".csv");
+        return null;
+    	//return new CsvResponse(hieraDTOService.findHieraForAllReleases(), "HieraData_Release_Complete" + relName + ".csv");
     }
 
 

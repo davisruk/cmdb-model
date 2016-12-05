@@ -31,22 +31,22 @@ public class ReleaseConfigDTOService {
         return toDTO(releaseConfigRepository.findOne(id));
     }
 
-    private void buildHieraAddresses (List<ReleaseConfig> cl, String relName){
+    private void buildHieraAddresses (List<ReleaseConfig> cl, String envName){
     	String addr;
     	String value;
     	for (ReleaseConfig conf: cl){
         	addr = conf.getHieraAddress();
         	value = conf.getValue();
         	if (addr != null){
-	        	addr = addr.replaceAll("\\{Release\\}",relName);
+	        	addr = addr.replaceAll("\\{Release\\}",conf.getRelease().getName());
 	        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-	        	addr = addr.replaceAll("\\{ENVID\\}", conf.getRelease().getName());
+	        	addr = addr.replaceAll("\\{ENVID\\}", envName);
 	        	conf.setHieraAddress(addr);
         	}
         	if (value != null){
-	        	value = value.replaceAll("\\{Release\\}",relName);
+	        	value = value.replaceAll("\\{Release\\}",conf.getRelease().getName());
 	        	value = value.replaceAll("\\{ParamName\\}",conf.getParameter());
-	        	value = value.replaceAll("\\{ENVID\\}",conf.getRelease().getName());
+	        	value = value.replaceAll("\\{ENVID\\}",envName);
 	        	conf.setValue(value);
         	}
         }
@@ -58,7 +58,13 @@ public class ReleaseConfigDTOService {
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-   
+    public List<ReleaseConfigDTO> getDistinctConfigsForEnv(String envName) {
+        List<ReleaseConfig> results = releaseConfigRepository.findDistinctByRelease_subEnvironments_environment_name(envName);
+        buildHieraAddresses (results, envName);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+    
+
     @Transactional(readOnly = true)
     public List<ReleaseConfigDTO> complete(String query, int maxResults) {
         List<ReleaseConfig> results = releaseConfigRepository.complete(query, maxResults);

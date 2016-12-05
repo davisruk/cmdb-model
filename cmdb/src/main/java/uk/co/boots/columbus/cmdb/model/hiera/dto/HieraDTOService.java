@@ -16,7 +16,9 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOSe
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTOService;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTO;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTOService;
 
 @Service
@@ -68,35 +70,53 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 
 	private List<HieraDTO> getHieraForRelease(List<HieraDTO> hDTOList, String relName) {
 		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
-		addToHieraDTOList(hDTOList, ecService.findByEnvironmentReleaseName(relName));
-		addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(relName));
+		// addToHieraDTOList(hDTOList,
+		// secDTOService.findBySubEnvironmentReleaseName(relName, true));
+		//addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(relName));
 		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(relName));
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraCompleteInfoForRelease(String relName) {
+	public List<HieraDTO> findHieraCompleteInfoForSubEnv(Long subEnvId, boolean includeGlobal) {
+		SubEnvironmentDTO subEnv = seDTOService.findOne(subEnvId, 1);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-		getHieraForRelease(hDTOList, relName);
+		if (includeGlobal)
+			addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+
+		if (subEnv.subEnvironmentType != null)
+			addToHieraDTOList(hDTOList, secDTOService.findByTypeAndEnvironmentName(subEnv.subEnvironmentType.name,
+					subEnv.environment.name));
+		if (subEnv.release != null) {
+			addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(subEnv.release.name));
+		}
+		
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraCompleteInfoForSubEnv(Long subEnvId) {
-		SubEnvironmentDTO subEnv = seDTOService.findOne(subEnvId,1);
+	public List<HieraDTO> findHieraCompleteInfoForEnv(Long EnvId, boolean includeGlobal) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-		addToHieraDTOList(hDTOList,
-				secDTOService.findByTypeAndEnvironmentName(subEnv.subEnvironmentType.name, subEnv.environment.name));
-		addToHieraDTOList(hDTOList,
-				rcService.findByReleaseName(subEnv.release.name));
-		addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(subEnv.release.name));
-		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(subEnv.release.name));
+		if (includeGlobal)
+			addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
 
+		EnvironmentDTO dto = eDTOService.findOne(EnvId);
+		List<ReleaseConfigDTO> relDTOs = rcService.getDistinctConfigsForEnv(dto.name);
+		// Check recursive flag and add to list for releases
+		addToHieraDTOList(hDTOList, relDTOs);
+		for (SubEnvironmentDTO seDTO : dto.subEnvironments) {
+			hDTOList.addAll(findHieraCompleteInfoForSubEnv(seDTO.id, false));
+		}
+		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
+		addToHieraDTOList(hDTOList, serverConfDTOs);
 		return hDTOList;
 	}
-
-	public List<HieraDTO> findHieraCompleteHieraInfo() {
+	
+	public List<HieraDTO> findHieraCompleteInfoForAllEnvs() {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
+		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
+		List<EnvironmentDTO> dtoList = eDTOService.findAllEnvironments();
+		for (EnvironmentDTO dto:dtoList){
+			hDTOList.addAll(findHieraCompleteInfoForEnv(dto.id, false));
+		}
 		return hDTOList;
 	}
 

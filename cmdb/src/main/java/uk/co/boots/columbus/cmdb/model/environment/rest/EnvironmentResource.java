@@ -95,14 +95,20 @@ public class EnvironmentResource {
 
     @RequestMapping(value = "/subconfigdownload/{id}", method = GET, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsByReleaseName(@PathVariable Long id) throws IOException {
-    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id), "HieraData_SubEnv.csv");
+    public CsvResponse downloadConfigsBySubEnv(@PathVariable Long id) throws IOException {
+    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id, true), "HieraData_SubEnv.csv");
     }
 
-    @RequestMapping(value = "/configdownloadall/", method = GET, produces = "text/csv")
+    @RequestMapping(value = "/configdownloadall/{id}", method = GET, produces = "text/csv")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public CsvResponse downloadConfigsAll(@PathVariable Long id) throws IOException {
+    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForEnv(id, true), "HieraData_Complete.csv");
+    }
+
+    @RequestMapping(value = "/configdownloadall", method = GET, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAll() throws IOException {
-    	return new CsvResponse(hieraDTOService.findAllHiera(), "HieraData_Complete.csv");
+    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForAllEnvs(), "HieraData_Complete.csv");
     }
 
     @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)

@@ -87,8 +87,8 @@ public class ServerConfigDTOService {
     }
 
     @Transactional(readOnly = true)
-    public List<ServerConfigDTO> findByServerSubEnvironmentReleaseName(String relName) {
-    	List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_release_name(relName);
+    public List<ServerConfigDTO> findByDistinctServerSubEnvironmentEnvironment(Long envId) {
+    	List<ServerConfig> results = serverConfigRepository.findDistinctByServer_subEnvironments_environment_id(envId);
         buildHieraAddresses (results);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
