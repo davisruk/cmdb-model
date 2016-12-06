@@ -90,12 +90,22 @@ public class SubEnvironmentResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/subEnvTypesAvailableForEnv", method = POST, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<SubEnvironmentTypeDTO>> getSubEnvironmentTypesNotInEnv(@RequestBody SubEnvironmentDTO subEnvironmentDTO) throws URISyntaxException {
+    @RequestMapping(value = "/subEnvTypesAvailableForEnvWithSubEnv", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubEnvironmentTypeDTO>> getAvailableSubEnvTypesForEnvWith(@RequestBody SubEnvironmentDTO subEnvironmentDTO) throws URISyntaxException {
 
         log.debug("Find all SubEnvironmentTypes");
 
-        List<SubEnvironmentTypeDTO> dtoList = subEnvironmentDTOService.findAllSubEnvironmentTypesAvailableForEnvWithSubTypeId(subEnvironmentDTO);
+        List<SubEnvironmentTypeDTO> dtoList = subEnvironmentDTOService.findAllSubEnvironmentTypesAvailableForEnvWithSubEnv(subEnvironmentDTO);
+        return Optional.ofNullable(dtoList).map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/subEnvTypesAvailableForEnv", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubEnvironmentTypeDTO>> subEnvTypesAvailableForEnv(@RequestBody EnvironmentDTO environmentDTO) throws URISyntaxException {
+
+        log.debug("Find all SubEnvironmentTypes");
+
+        List<SubEnvironmentTypeDTO> dtoList = subEnvironmentDTOService.findAllSubEnvironmentTypesAvailableForEnv(environmentDTO);
         return Optional.ofNullable(dtoList).map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }

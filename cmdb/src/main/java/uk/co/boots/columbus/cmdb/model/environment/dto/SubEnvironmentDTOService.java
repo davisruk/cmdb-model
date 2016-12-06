@@ -211,7 +211,7 @@ public class SubEnvironmentDTOService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnvWithSubTypeId(SubEnvironmentDTO seDTO) {
+	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnvWithSubEnv(SubEnvironmentDTO seDTO) {
 		List<SubEnvironmentType> results;
 		List<Long> idList = new ArrayList<Long>();
 		Environment e = environmentRepository.findOne(seDTO.environment.id);
@@ -225,9 +225,29 @@ public class SubEnvironmentDTOService {
 		}
 		// get the subenvironmenttypes not in the list
 		results = subEnvironmentTypeRepository.findByIdNotIn(idList);
-		// add in the subenvironment type that we're checking
-		results.add(subEnvironmentTypeRepository.findOne(seDTO.subEnvironmentType.id));
+		// add in the subenvironment type that we're checking - could be null if new
+		 if (seDTO.subEnvironmentType != null)
+			 results.add(subEnvironmentTypeRepository.findOne(seDTO.subEnvironmentType.id));
 		
+		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
+	}
+	
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnv(EnvironmentDTO eDTO) {
+		List<SubEnvironmentType> results;
+		List<Long> idList = new ArrayList<Long>();
+		Environment e = environmentRepository.findOne(eDTO.id);
+		// if env has no sub environments then all sub env types are available
+		if (e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
+			return findAllSubEnvironmentTypes();
+
+		// otherwise we need to build a list of unavailable sub environment types 
+		for (SubEnvironment se : e.getSubEnvironments()){
+			idList.add(se.getSubEnvironmentType().getId());
+		}
+		// get the subenvironmenttypes not in the list
+		results = subEnvironmentTypeRepository.findByIdNotIn(idList);
+	
 		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
 	}
 
