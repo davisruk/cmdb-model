@@ -18,6 +18,7 @@ public interface SubEnvironmentRepository extends JpaRepository<SubEnvironment, 
 	
 	Page<SubEnvironment>findBySubEnvironmentType_nameContainsAndIdNotIn(Pageable pageRequest, String name, List<Long> idList);
 	Page<SubEnvironment>findBySubEnvironmentType_IdNotIn(Pageable pageRequest, List<Long> idList);
+	
 	default List<SubEnvironment> complete(Long query, int maxResults) {
 		SubEnvironment probe = new SubEnvironment();
 		probe.setId(query);

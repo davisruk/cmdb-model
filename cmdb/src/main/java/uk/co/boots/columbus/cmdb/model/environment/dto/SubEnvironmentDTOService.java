@@ -17,10 +17,10 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
-import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentType;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
-import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentTypeRepository;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTOService;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
@@ -35,6 +35,8 @@ import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 public class SubEnvironmentDTOService {
 	@Inject
 	private SubEnvironmentRepository subEnvironmentRepository;
+	@Inject
+	private SubEnvironmentTypeRepository subEnvironmentTypeRepository;
 	@Inject
 	private ReleaseDTOService releaseDTOService;
 	@Inject
@@ -134,6 +136,15 @@ public class SubEnvironmentDTOService {
 			}
 		}
 		
+		if (dto.subEnvironmentType == null) {
+			subEnvironment.setSubEnvironmentType(null);
+		} else {
+			SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
+			if (set == null || (set.getId().compareTo(dto.subEnvironmentType.id) != 0)) {
+				subEnvironment.setSubEnvironmentType(subEnvironmentTypeRepository.findOne(dto.subEnvironmentType.id));
+			}
+		}
+
 		if (dto.environment == null) {
 			subEnvironment.setEnvironment(null);
 		} else {
@@ -193,6 +204,41 @@ public class SubEnvironmentDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypes() {
+		List<SubEnvironmentType> results = subEnvironmentTypeRepository.findAll();
+		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnvWithSubTypeId(SubEnvironmentDTO seDTO) {
+		List<SubEnvironmentType> results;
+		List<Long> idList = new ArrayList<Long>();
+		Environment e = environmentRepository.findOne(seDTO.environment.id);
+		// if env has no sub environments then all sub env types are available
+		if (e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
+			return findAllSubEnvironmentTypes();
+
+		// otherwise we need to build a list of unavailable sub environment types 
+		for (SubEnvironment se : e.getSubEnvironments()){
+			idList.add(se.getSubEnvironmentType().getId());
+		}
+		// get the subenvironmenttypes not in the list
+		results = subEnvironmentTypeRepository.findByIdNotIn(idList);
+		// add in the subenvironment type that we're checking
+		results.add(subEnvironmentTypeRepository.findOne(seDTO.subEnvironmentType.id));
+		
+		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
+	}
+
+	private SubEnvironmentTypeDTO subEnvTypeToDTO (SubEnvironmentType set){
+		if (set == null)
+			return null;
+		SubEnvironmentTypeDTO setDTO = new SubEnvironmentTypeDTO();
+		setDTO.id = set.getId();
+		setDTO.name = set.getName();
+		return setDTO;
+	}	
 	/**
 	 * Converts the passed subEnvironment to a DTO.
 	 */
