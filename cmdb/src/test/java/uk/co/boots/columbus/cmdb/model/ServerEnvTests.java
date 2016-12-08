@@ -295,7 +295,7 @@ public class ServerEnvTests {
 		this.entityManager.persist(e);
 		SubEnvironment se = createSubEnv(r, set, e);
 		this.entityManager.persist(se);
-		se.addNode(s);
+		se.addNode(s, false);
 		s.addSubEnvironment(se);
 		this.entityManager.persist(se);
 		this.entityManager.persist(s);

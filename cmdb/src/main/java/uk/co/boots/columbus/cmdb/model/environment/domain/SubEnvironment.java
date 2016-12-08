@@ -2,6 +2,7 @@ package uk.co.boots.columbus.cmdb.model.environment.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -27,7 +28,6 @@ import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeType;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 
 @Entity
 @Table(name = "cm_subenvironment")
@@ -154,14 +154,16 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		return cmSubenvironmentconfig;
 	}
 	
-	public void addNode(Node node) {
+	public void addNode(Node node, boolean isDeep) {
 		nodes.add(node);
-		node.addSubEnvironment(this);
+		if (isDeep)
+			node.addSubEnvironment(this);
 	}
 
-	public Node removeNode(Node node) {
+	public Node removeNode(Node node, boolean isDeep) {
 		nodes.remove(node);
-		node.removeSubEnvironment(this);
+		if (isDeep)
+			node.removeSubEnvironment(this);
 		return node;
 	}
 

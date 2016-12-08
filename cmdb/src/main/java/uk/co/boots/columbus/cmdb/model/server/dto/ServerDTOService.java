@@ -128,10 +128,55 @@ public class ServerDTOService {
 	 */
 	@Transactional
 	public ServerDTO save(ServerDTO dto) {
+
+		Server server;
 		
-		Server s = toEntity(dto);
-		s = serverRepository.save(s);
-		dto.id = s.getId();
+		if (dto.isIdSet()) {
+			server = serverRepository.findOne(dto.id);
+		} else {
+			server = new Server();
+		}
+
+		server.setName(dto.name);
+		server.setServerType(serverTypeDTOService.toEntity(dto.serverType));
+		server = serverRepository.save(server);
+		List<SubEnvironment> seList = null;
+
+		seList = server.getSubEnvironments();
+		if (dto.subEnvironments == null && dto.subEnvironments.size() == 0)
+			server.setSubEnvironments(null);
+		else{
+			for (SubEnvironmentDTO seDTO : dto.subEnvironments){
+				Optional<SubEnvironment> optional = seList.stream().filter(x -> x.getId().equals(seDTO.id)).findFirst();
+				if (!optional.isPresent()){
+					// this is a new sub env for the server 
+					SubEnvironment se = seRepository.findOne(seDTO.id);
+					se.addNode(server, true);
+					seList.add(se);
+					// SubEnv owns the relationship so we must make it persist
+					if (dto.isIdSet())
+						seRepository.save(se);
+				}
+			}
+		}
+
+		// Remove any old subEnvs
+		// Only need to check this if updating and we already have subenvs
+		if (dto.isIdSet() && seList != null && seList.size() > 0) {
+			for (Iterator<SubEnvironment> it = seList.iterator(); it.hasNext();) {
+				SubEnvironment se = it.next();
+				Optional<SubEnvironmentDTO> optional = dto.subEnvironments.stream().filter(x -> x.id.equals(se.getId())).findFirst();
+				if (!optional.isPresent()) {
+					// the DTO is not present so the relationship has been removed
+					se.removeNode(server, false);
+					// SubEnv owns the relationship so we must make it persist
+					seRepository.save(se);
+					it.remove();
+				}
+			}
+		}
+
+		dto.id = server.getId();
 		return dto;
 	}
 
@@ -205,45 +250,15 @@ public class ServerDTOService {
 	 * Converts the passed dto to a Server. Convenient for query by example.
 	 */
 	public Server toEntity(ServerDTO dto, int depth) {
-
 		if (dto == null) {
 			return null;
 		}
-
-		Server server;
-		if (dto.isIdSet()) {
-			server = serverRepository.findOne(dto.id);
-		} else {
-			server = new Server();
-		}
-
+		Server server = new Server();
+		server.setId(dto.id);
 		server.setName(dto.name);
 		if (depth-- > 0) {
 			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-			List<SubEnvironment> seList = server.getSubEnvironments();
-			if (dto.subEnvironments == null && dto.subEnvironments.size() == 0)
-				server.setSubEnvironments(null);
-			else{
-				for (SubEnvironmentDTO seDTO : dto.subEnvironments){
-					Optional<SubEnvironment> optional = seList.stream().filter(x -> x.getId().equals(seDTO.id)).findFirst();
-					if (!optional.isPresent()){
-						// this is a new sub env for the server 
-						seList.add(seRepository.findOne(seDTO.id));
-					}
-				}
-			}
-			// Remove any old subEnvs
-			// Only need to check this if updating
-			if (dto.isIdSet()) {
-				for (Iterator<SubEnvironment> it = seList.iterator(); it.hasNext();) {
-					SubEnvironment se = it.next();
-					Optional<SubEnvironmentDTO> optional = dto.subEnvironments.stream().filter(x -> x.id.equals(se.getId())).findFirst();
-					if (!optional.isPresent()) {
-						// the DTO is not present so the relationship has been removed
-						it.remove();
-					}
-				}
-			}
+			server.setSubEnvironments(subEnvironmentDTOService.toEntity(dto.subEnvironments, depth));
 		}
 		return server;
 	}
