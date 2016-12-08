@@ -110,7 +110,9 @@ public class ReleaseConfigDTOService {
         releaseConfig.setParameter(dto.parameter);
         releaseConfig.setValue(dto.value);
         releaseConfig.setHieraAddress(dto.hieraAddress);
-
+        releaseConfig.setRecurseByEnv(dto.recurseByEnv);
+        releaseConfig.setRecurseBySubEnv(dto.recurseBySubEnv);
+        
         if (dto.release == null) {
             releaseConfig.setRelease(null);
         } else {
@@ -150,6 +152,9 @@ public class ReleaseConfigDTOService {
         dto.parameter = releaseConfig.getParameter();
         dto.value = releaseConfig.getValue();
         dto.hieraAddress = releaseConfig.getHieraAddress();
+        dto.recurseByEnv = releaseConfig.isRecurseByEnv();
+        dto.recurseBySubEnv = releaseConfig.isRecurseBySubEnv();
+
         if (depth-- > 0) {
             dto.release = releaseDTOService.toDTO(releaseConfig.getRelease(), depth);
         }
@@ -180,6 +185,9 @@ public class ReleaseConfigDTOService {
         releaseConfig.setParameter(dto.parameter);
         releaseConfig.setValue(dto.value);
         releaseConfig.setHieraAddress(dto.hieraAddress);
+        releaseConfig.setRecurseByEnv(dto.recurseByEnv);
+        releaseConfig.setRecurseBySubEnv(dto.recurseBySubEnv);
+        
         if (depth-- > 0) {
             releaseConfig.setRelease(releaseDTOService.toEntity(dto.release, depth));
         }

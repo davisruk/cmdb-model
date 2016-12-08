@@ -11,7 +11,8 @@ public abstract class ReleaseConfig_ {
     public static volatile SingularAttribute<ReleaseConfig, String> parameter;
     public static volatile SingularAttribute<ReleaseConfig, String> value;
     public static volatile SingularAttribute<ReleaseConfig, String> hieraAddress;
-
+    public static volatile SingularAttribute<ReleaseConfig, Boolean> recurseByEnv;
+    public static volatile SingularAttribute<ReleaseConfig, Boolean> recurseBySubEnv;
     // Many to one
     public static volatile SingularAttribute<ReleaseConfig, Release> my_release;
 }

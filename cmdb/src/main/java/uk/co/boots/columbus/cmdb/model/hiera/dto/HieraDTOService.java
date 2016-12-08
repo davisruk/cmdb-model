@@ -97,13 +97,14 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		if (includeGlobal)
 			addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-
 		EnvironmentDTO dto = eDTOService.findOne(EnvId);
 		List<ReleaseConfigDTO> relDTOs = rcService.getDistinctConfigsForEnv(dto.name);
 		// Check recursive flag and add to list for releases
 		addToHieraDTOList(hDTOList, relDTOs);
 		for (SubEnvironmentDTO seDTO : dto.subEnvironments) {
 			hDTOList.addAll(findHieraCompleteInfoForSubEnv(seDTO.id, false));
+			// add in recursive release config items here
+			addToHieraDTOList(hDTOList, secDTOService.getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(seDTO, relDTOs));
 		}
 		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
 		addToHieraDTOList(hDTOList, serverConfDTOs);

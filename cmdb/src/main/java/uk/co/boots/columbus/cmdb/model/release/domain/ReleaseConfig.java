@@ -30,7 +30,9 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	private String parameter;
 	private String value;
 	private String hieraAddress;
-
+	private Boolean recurseByEnv;
+	private Boolean recurseBySubEnv;
+	
 	// Many to one
 	private Release release;
 
@@ -177,5 +179,23 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 				.add("value", getValue()) //
 				.add("hieraAddress", getHieraAddress()) //
 				.toString();
+	}
+
+	@Column(name = "RecursiveByEnv")
+	public Boolean isRecurseByEnv() {
+		return recurseByEnv;
+	}
+
+	public void setRecurseByEnv(Boolean recurseByEnv) {
+		this.recurseByEnv = recurseByEnv;
+	}
+
+	@Column(name = "RecursiveBySubEnv")
+	public Boolean isRecurseBySubEnv() {
+		return recurseBySubEnv;
+	}
+
+	public void setRecurseBySubEnv(Boolean recurseBySubEnv) {
+		this.recurseBySubEnv = recurseBySubEnv;
 	}
 }
