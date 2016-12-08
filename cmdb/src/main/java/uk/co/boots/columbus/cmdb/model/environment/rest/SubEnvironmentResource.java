@@ -21,11 +21,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentTypeDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentTypeDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 
 @RestController
 @RequestMapping("/api/subenvironments")
@@ -108,6 +109,29 @@ public class SubEnvironmentResource {
         List<SubEnvironmentTypeDTO> dtoList = subEnvironmentDTOService.findAllSubEnvironmentTypesAvailableForEnv(environmentDTO);
         return Optional.ofNullable(dtoList).map(dto -> new ResponseEntity<>(dto, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+    @RequestMapping(value = "/all", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubEnvironmentDTO>> findSubEnvironments() throws URISyntaxException {
+
+        log.debug("Find all Sub Environments");
+        List<SubEnvironmentDTO> results = subEnvironmentDTOService.findAllSubEnvironments();
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/withoutServer", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubEnvironmentDTO>> findSubEnvironmentsWithoutServer(@RequestBody ServerDTO serverDTO) throws URISyntaxException {
+
+        log.debug("Find all Sub Environments");
+        List<SubEnvironmentDTO> results = subEnvironmentDTOService.findSubEnvironmentsWithoutServer(serverDTO);
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = "/withServer", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SubEnvironmentDTO>> findSubEnvironmentsWithServer(@RequestBody ServerDTO serverDTO) throws URISyntaxException {
+
+        log.debug("Find all Sub Environments");
+        List<SubEnvironmentDTO> results = subEnvironmentDTOService.findSubEnvironmentsWithServer(serverDTO);
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 
 }

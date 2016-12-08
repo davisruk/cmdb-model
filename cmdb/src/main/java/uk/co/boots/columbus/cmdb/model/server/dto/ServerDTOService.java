@@ -1,8 +1,10 @@
 package uk.co.boots.columbus.cmdb.model.server.dto;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -16,10 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.node.domain.Node;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
@@ -35,8 +38,11 @@ public class ServerDTOService {
 	@Inject
 	private ServerTypeDTOService serverTypeDTOService;
 	@Inject
-	private EnvironmentDTOService environmentDTOService;
+	private SubEnvironmentDTOService subEnvironmentDTOService;
+	@Inject
+	private SubEnvironmentRepository seRepository;
 
+	
 	@Transactional(readOnly = true)
 	public ServerDTO findOne(Long id) {
 		return toDTO(serverRepository.findOne(id));
@@ -122,6 +128,7 @@ public class ServerDTOService {
 	 */
 	@Transactional
 	public ServerDTO save(ServerDTO dto) {
+		
 		Server s = toEntity(dto);
 		s = serverRepository.save(s);
 		dto.id = s.getId();
@@ -181,7 +188,7 @@ public class ServerDTOService {
 		dto.name = server.getName();
 		if (depth-- > 0) {
 			dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
-			//dto.environments = environmentDTOService.toDTO(server.getEnvironments(), depth);
+			dto.subEnvironments = subEnvironmentDTOService.toDTO(server.getSubEnvironments(), depth);
 		}
 
 		return dto;
@@ -210,11 +217,33 @@ public class ServerDTOService {
 			server = new Server();
 		}
 
-		server.setId(dto.id);
 		server.setName(dto.name);
 		if (depth-- > 0) {
 			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-			//server.setEnvironments(environmentDTOService.toEntity(dto.environments, depth));
+			List<SubEnvironment> seList = server.getSubEnvironments();
+			if (dto.subEnvironments == null && dto.subEnvironments.size() == 0)
+				server.setSubEnvironments(null);
+			else{
+				for (SubEnvironmentDTO seDTO : dto.subEnvironments){
+					Optional<SubEnvironment> optional = seList.stream().filter(x -> x.getId().equals(seDTO.id)).findFirst();
+					if (!optional.isPresent()){
+						// this is a new sub env for the server 
+						seList.add(seRepository.findOne(seDTO.id));
+					}
+				}
+			}
+			// Remove any old subEnvs
+			// Only need to check this if updating
+			if (dto.isIdSet()) {
+				for (Iterator<SubEnvironment> it = seList.iterator(); it.hasNext();) {
+					SubEnvironment se = it.next();
+					Optional<SubEnvironmentDTO> optional = dto.subEnvironments.stream().filter(x -> x.id.equals(se.getId())).findFirst();
+					if (!optional.isPresent()) {
+						// the DTO is not present so the relationship has been removed
+						it.remove();
+					}
+				}
+			}
 		}
 		return server;
 	}

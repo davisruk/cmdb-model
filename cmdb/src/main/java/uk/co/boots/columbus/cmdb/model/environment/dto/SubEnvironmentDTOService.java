@@ -64,6 +64,26 @@ public class SubEnvironmentDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
+	
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentDTO> findSubEnvironmentsWithoutServer(ServerDTO serverDTO) {
+		List<SubEnvironment> results = subEnvironmentRepository.findSubEnvsOfServer(serverDTO.id);
+		List<Long> idList = new ArrayList<Long>();
+		for (SubEnvironment se : results)
+			idList.add(se.getId());
+		if (idList.isEmpty())
+			results = subEnvironmentRepository.findAll();
+		else
+			results = subEnvironmentRepository.findByIdNotIn(idList);
+		//results = subEnvironmentRepository.findSubEnvsWithoutServer(serverDTO.id);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentDTO> findSubEnvironmentsWithServer(ServerDTO serverDTO) {
+		List<SubEnvironment> results = subEnvironmentRepository.findSubEnvsOfServer(serverDTO.id);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
 	@Transactional(readOnly = true)
 	public List<SubEnvironmentDTO> findAllSubEnvironments() {
 		List<SubEnvironment> results = subEnvironmentRepository.findAll();
@@ -288,6 +308,10 @@ public class SubEnvironmentDTOService {
 
 		dto.id = subEnvironment.getId();
 		dto.subEnvironmentType = new SubEnvironmentTypeDTO();
+		SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
+		if (set == null){
+			System.out.println("SET is NULL for SE:" + subEnvironment.getId());
+		}
 		dto.subEnvironmentType.id = subEnvironment.getSubEnvironmentType().getId();
 		dto.subEnvironmentType.name = subEnvironment.getSubEnvironmentType().getName();
 		if (depth-- > 0) {
