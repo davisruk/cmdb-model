@@ -176,8 +176,6 @@ public class SubEnvironmentDTOService {
 			}
 		}
 
-		subEnvironmentRepository.save(subEnvironment);
-		
 		Set<Node> nodes = subEnvironment.getNodes();
 		
 		// This is slow and clunky but if we are to remain stateless
@@ -187,14 +185,10 @@ public class SubEnvironmentDTOService {
 			for (ServerDTO sDTO : dto.servers) {
 				Optional<Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
 				if (!optional.isPresent()) {
-					// Add the node to the subEnvironment
-					// We need to do this because node owns the M:M relationship
-					// SubEnvironment will not persist changes to the join table
-					// if JPA inheritance works - create abstract to entity method
 					Server s = serverDTOService.toEntity(sDTO, 1);
-					s.addSubEnvironment(subEnvironment);
-					serverRepo.save(s);
-					subEnvironment.getNodes().add(s);
+					// add to both sides of the M:M
+					// subenv owns the relationship
+					subEnvironment.addNode(s,true);
 				}
 			}
 		}
@@ -205,13 +199,14 @@ public class SubEnvironmentDTOService {
 				Node n = it.next();
 				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(n.getId())).findFirst();
 				if (!optional.isPresent()) {
-					// same as above - we need to ensure we persist the M:M relationships
+						// same as above - ensure correct M:M persistence
+						// by removing from both sides
 						((Server)n).removeSubEnvironment(subEnvironment);
-						serverRepo.save((Server)n);
 						it.remove();
 				}
 			}
 		}
+		subEnvironmentRepository.save(subEnvironment);
 		return toDTO(subEnvironment, 2);
 	}
 
