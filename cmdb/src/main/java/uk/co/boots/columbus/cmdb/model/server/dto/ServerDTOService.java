@@ -151,8 +151,14 @@ public class ServerDTOService {
 				if (!optional.isPresent()){
 					// this is a new sub env for the server 
 					SubEnvironment se = seRepository.findOne(seDTO.id);
+					// add server to sub env
+					// as sub env owns the persistence relationship
+					// it also takes ownership of adding to both
+					// sides of the collection i.e. we don't
+					// need to add it to server, the subenv will
+					// do it for us - if isDeep is true
 					se.addNode(server, true);
-					seList.add(se);
+					
 					// SubEnv owns the relationship so we must make it persist
 					if (dto.isIdSet())
 						seRepository.save(se);

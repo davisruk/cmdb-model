@@ -9,8 +9,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
@@ -25,7 +23,6 @@ import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 @Entity
 @Table(name = "cm_node")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -39,11 +36,6 @@ public abstract class Node implements Identifiable<Long>, Serializable {
     @Id
 	private Long id;
 
-/*	
-	@Column (name = "NodeType")
-	@Enumerated(EnumType.STRING)
-	private NodeType nodeType;
-*/	
 	@OneToMany(mappedBy="node")
 	private List<NodeIP> nodeIPs;
 	
