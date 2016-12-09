@@ -2,7 +2,9 @@ package uk.co.boots.columbus.cmdb.model.node.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
@@ -43,11 +45,11 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 	private List<NodeRelationship> relationships;
 
 	@ManyToMany (mappedBy="nodes", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    private List<SubEnvironment> subEnvironments;
+    private Set<SubEnvironment> subEnvironments;
 
 	public Node() {
 		super();
-		subEnvironments = new ArrayList<SubEnvironment>();
+		subEnvironments = new HashSet<SubEnvironment>();
 		relationships = new ArrayList<NodeRelationship>();
 		nodeIPs = new ArrayList<NodeIP>();
 	}
@@ -55,7 +57,7 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 	public Node(NodeType nodeType) {
 		super();
 //		this.nodeType = nodeType;
-		subEnvironments = new ArrayList<SubEnvironment>();
+		subEnvironments = new HashSet<SubEnvironment>();
 		relationships = new ArrayList<NodeRelationship>();
 		nodeIPs = new ArrayList<NodeIP>();
 	}
@@ -76,11 +78,11 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 		this.relationships = relationships;
 	}
 
-	public List<SubEnvironment> getSubEnvironments() {
+	public Set<SubEnvironment> getSubEnvironments() {
 		return subEnvironments;
 	}
 
-	public void setSubEnvironments(List<SubEnvironment> subEnvironments) {
+	public void setSubEnvironments(Set<SubEnvironment> subEnvironments) {
 		this.subEnvironments = subEnvironments;
 	}
 

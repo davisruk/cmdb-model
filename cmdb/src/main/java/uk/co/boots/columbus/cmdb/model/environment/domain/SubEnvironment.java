@@ -1,10 +1,10 @@
 package uk.co.boots.columbus.cmdb.model.environment.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.persistence.CascadeType;
@@ -61,7 +61,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 			@JoinColumn(name="NodeID")
 			}
 		)
-	private List<Node> nodes;
+	private Set<Node> nodes;
 
 	//bi-directional many-to-one association to SubEnvironmentType
 	@ManyToOne
@@ -73,7 +73,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	private List<SubEnvironmentConfig> subEnvironmentConfigs;
 
 	public SubEnvironment() {
-		nodes = new ArrayList<Node>();
+		nodes = new HashSet<Node>();
 	}
 
 	
@@ -110,7 +110,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		this.environment = cmEnvironment;
 	}
 
-	public List<Node> getNodes() {
+	public Set<Node> getNodes() {
 		return this.nodes;
 	}
 
@@ -120,7 +120,7 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		return opt.isPresent() ? opt.get() : null;
 	}
 
-	public void setNodes(List<Node> nodes) {
+	public void setNodes(Set<Node> nodes) {
 		this.nodes = nodes;
 	}
 

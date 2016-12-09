@@ -1,6 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.server.dto;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -59,12 +60,12 @@ public class ServerConfigDTOService {
         	// find EnvTag in Hieara Address and replace with Env.name
         	// even though this is many to many servers always have the same configuration
         	// therefore we just take the first environment value in the list
-        	List<SubEnvironment> envs = conf.getServer().getSubEnvironments(); 
+        	Set<SubEnvironment> envs = conf.getServer().getSubEnvironments(); 
         	if (envs != null && !envs.isEmpty()){
         		if (addr!=null)
-        			addr = addr.replaceAll("\\{ENVID\\}", envs.get(0).getEnvironment().getName());
+        			addr = addr.replaceAll("\\{ENVID\\}", envs.iterator().next().getEnvironment().getName());
         		if (value!=null)
-        			value = value.replaceAll("\\{ENVID\\}", envs.get(0).getEnvironment().getName());
+        			value = value.replaceAll("\\{ENVID\\}", envs.iterator().next().getEnvironment().getName());
         	}
         	conf.setHieraAddress(addr);
         	conf.setValue(value);

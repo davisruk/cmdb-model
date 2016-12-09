@@ -1,9 +1,11 @@
 package uk.co.boots.columbus.cmdb.model.environment.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -176,7 +178,7 @@ public class SubEnvironmentDTOService {
 
 		subEnvironmentRepository.save(subEnvironment);
 		
-		List<Node> nodes = subEnvironment.getNodes();
+		Set<Node> nodes = subEnvironment.getNodes();
 		
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
@@ -353,12 +355,21 @@ public class SubEnvironmentDTOService {
 		return subEnvironment;
 	}
 
-	public List<SubEnvironment> toEntity(List<SubEnvironmentDTO> dtoList, int depth) {
+	public Set<SubEnvironment> toEntity(List<SubEnvironmentDTO> dtoList, int depth) {
 		if (dtoList == null)
 			return null;
-		List<SubEnvironment> ret = new ArrayList<SubEnvironment>();
+		Set<SubEnvironment> ret = new HashSet<SubEnvironment>();
 		for (SubEnvironmentDTO dto : dtoList)
 			ret.add(toEntity(dto, depth));
+		return ret;
+	}
+
+	public List<SubEnvironmentDTO> toDTO(Set<SubEnvironment> envList, int depth) {
+		if (envList == null)
+			return null;
+		List<SubEnvironmentDTO> ret = new ArrayList<SubEnvironmentDTO>();
+		for (SubEnvironment e : envList)
+			ret.add(toDTO(e, depth));
 		return ret;
 	}
 
@@ -370,6 +381,5 @@ public class SubEnvironmentDTOService {
 			ret.add(toDTO(e, depth));
 		return ret;
 	}
-
 	
 }

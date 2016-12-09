@@ -1,6 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.server.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
@@ -30,6 +31,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     Page<Server>findByServerType_nameContainsAndIdNotIn(Pageable pageRequest, String type, List<Long> idList);
     Page<Server>findByIdNotIn(Pageable pageRequest, List<Long> idList);
     List<Server> findBySubEnvironments_id(Long id);
+
     default List<Server> complete(String query, int maxResults) {
         Server probe = new Server();
         probe.setName(query);

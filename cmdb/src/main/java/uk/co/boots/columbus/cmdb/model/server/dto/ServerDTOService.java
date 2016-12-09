@@ -1,10 +1,12 @@
 package uk.co.boots.columbus.cmdb.model.server.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -140,9 +142,9 @@ public class ServerDTOService {
 		server.setName(dto.name);
 		server.setServerType(serverTypeDTOService.toEntity(dto.serverType));
 		server = serverRepository.save(server);
-		List<SubEnvironment> seList = null;
+		Set<SubEnvironment> seList = server.getSubEnvironments();
 
-		seList = server.getSubEnvironments();
+
 		if (dto.subEnvironments == null && dto.subEnvironments.size() == 0)
 			server.setSubEnvironments(null);
 		else{
@@ -269,22 +271,32 @@ public class ServerDTOService {
 		return server;
 	}
 
-	public List<Server> toEntity(List<ServerDTO> dtoList, int depth) {
+	public Set<Server> toEntity(List<ServerDTO> dtoList, int depth) {
 		if (dtoList == null)
 			return null;
-		List<Server> ret = new ArrayList<Server>();
+		Set<Server> ret = new HashSet<Server>();
 		for (ServerDTO dto : dtoList)
 			ret.add(toEntity(dto, depth));
 		return ret;
 	}
 
+	public List<ServerDTO> toDTO(Set<Server> serverList, int depth) {
+		if (serverList == null)
+			return null;
+		List<ServerDTO> servers = new ArrayList<ServerDTO>();
+		for (Server s : serverList){
+			servers.add(toDTO(s, depth));
+		}
+		return servers;
+	}
+	
 	public List<ServerDTO> toDTO(List<Server> serverList, int depth) {
 		if (serverList == null)
 			return null;
-		List<Server> servers = new ArrayList<Server>();
+		List<ServerDTO> servers = new ArrayList<ServerDTO>();
 		for (Server s : serverList){
-			servers.add(s);
+			servers.add(toDTO(s, depth));
 		}
-		return toDTO(servers, depth);
+		return servers;
 	}
 }

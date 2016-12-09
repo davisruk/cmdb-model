@@ -2,6 +2,7 @@ package uk.co.boots.columbus.cmdb.model.node.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -152,7 +153,7 @@ public class NodeDTOService {
 		return ret;
 	}
 	
-	public List<ServerDTO> getServerDTOList(List<Node> nodeList, int depth) {
+	public List<ServerDTO> getServerDTOList(Set<Node> nodeList, int depth) {
 		if (nodeList == null)
 			return null;
 		List<ServerDTO> ret = new ArrayList<ServerDTO>();
