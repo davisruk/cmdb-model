@@ -263,6 +263,7 @@ public class ServerDTOService {
 		}
 		Server server = new Server();
 		server.setId(dto.id);
+		server.setServerId(dto.serverId);
 		server.setName(dto.name);
 		if (depth-- > 0) {
 			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));

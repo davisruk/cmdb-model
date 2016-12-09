@@ -185,7 +185,7 @@ public class SubEnvironmentDTOService {
 			for (ServerDTO sDTO : dto.servers) {
 				Optional<Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
 				if (!optional.isPresent()) {
-					Server s = serverDTOService.toEntity(sDTO, 1);
+					Server s = serverRepo.findOne(sDTO.id);
 					// add to both sides of the M:M
 					// subenv owns the relationship
 					subEnvironment.addNode(s,true);
@@ -207,7 +207,7 @@ public class SubEnvironmentDTOService {
 			}
 		}
 		subEnvironmentRepository.save(subEnvironment);
-		return toDTO(subEnvironment, 2);
+		return dto;
 	}
 
 	@Transactional
@@ -306,13 +306,13 @@ public class SubEnvironmentDTOService {
 		dto.id = subEnvironment.getId();
 		dto.subEnvironmentType = new SubEnvironmentTypeDTO();
 		SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
-		if (set == null){
-			System.out.println("SET is NULL for SE:" + subEnvironment.getId());
+		// type could be null if we are in depth situation > 1
+		if (set != null){
+			dto.subEnvironmentType.id = subEnvironment.getSubEnvironmentType().getId();
+			dto.subEnvironmentType.name = subEnvironment.getSubEnvironmentType().getName();
 		}
-		dto.subEnvironmentType.id = subEnvironment.getSubEnvironmentType().getId();
-		dto.subEnvironmentType.name = subEnvironment.getSubEnvironmentType().getName();
+		
 		if (depth-- > 0) {
-			// Move to SubSubEnvironment
 			dto.environment = envDTOService.toDTO(subEnvironment.getEnvironment());
 			dto.release = releaseDTOService.toDTO(subEnvironment.getRelease(), depth);
 			dto.servers = nodeDTOService.getServerDTOList(subEnvironment.getNodes(), depth);
