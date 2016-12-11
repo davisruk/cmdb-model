@@ -1,13 +1,11 @@
 package uk.co.boots.columbus.cmdb.model.node.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -15,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -24,7 +21,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
-import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+
 @Entity
 @Table(name = "cm_node")
 @Inheritance(strategy=InheritanceType.JOINED)
@@ -38,52 +35,34 @@ public abstract class Node implements Identifiable<Long>, Serializable {
     @Id
 	private Long id;
 
-	@OneToMany(mappedBy="node")
-	private List<NodeIP> nodeIPs;
 	
 	@OneToMany(mappedBy="publishingNode")
-	private List<NodeRelationship> relationships;
+	private Set<NodeRelationship> relationships;
 
-	@ManyToMany (mappedBy="nodes", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    private Set<SubEnvironment> subEnvironments;
+	//bi-directional many-to-one association to NodeSubEnvironment
+	@OneToMany(mappedBy="node")
+	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
+	@OneToMany(mappedBy="node")
+	private Set<VIP> vips;
+	
 	public Node() {
 		super();
-		subEnvironments = new HashSet<SubEnvironment>();
-		relationships = new ArrayList<NodeRelationship>();
-		nodeIPs = new ArrayList<NodeIP>();
+		relationships = new HashSet<NodeRelationship>();
 	}
 
 	public Node(NodeType nodeType) {
 		super();
 //		this.nodeType = nodeType;
-		subEnvironments = new HashSet<SubEnvironment>();
-		relationships = new ArrayList<NodeRelationship>();
-		nodeIPs = new ArrayList<NodeIP>();
+		relationships = new HashSet<NodeRelationship>();
 	}
 
-	public List<NodeIP> getNodeIPs() {
-		return nodeIPs;
-	}
-
-	public void setNodeIPs(List<NodeIP> nodeIPs) {
-		this.nodeIPs = nodeIPs;
-	}
-
-	public List<NodeRelationship> getRelationships() {
+	public Set<NodeRelationship> getRelationships() {
 		return relationships;
 	}
 
-	public void setRelationships(List<NodeRelationship> relationships) {
+	public void setRelationships(Set<NodeRelationship> relationships) {
 		this.relationships = relationships;
-	}
-
-	public Set<SubEnvironment> getSubEnvironments() {
-		return subEnvironments;
-	}
-
-	public void setSubEnvironments(Set<SubEnvironment> subEnvironments) {
-		this.subEnvironments = subEnvironments;
 	}
 
 	public Node withDefaults() {
@@ -111,30 +90,12 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 		this.nodeType = nodeType;
 	}
 */
-	public void addSubEnvironment (SubEnvironment se){
-		subEnvironments.add(se);
-	}
-
-	public void removeSubEnvironment (SubEnvironment se){
-		subEnvironments.remove(se);
-	}
-
 	public void addRelationship (NodeRelationship rel){
 		relationships.add(rel);
 	}
 
 	public void removeRelationship (NodeRelationship nodeRel){
 		relationships.remove(nodeRel);
-	}
-
-	public void addNodeIP(NodeIP nodeIP){
-		nodeIPs.add(nodeIP);
-		nodeIP.setNode(this);
-	}
-
-	public void removeNodeIP (NodeIP nodeIP){
-		nodeIPs.remove(nodeIP);
-		nodeIP.setNode(null);
 	}
 
 	@Override
@@ -176,4 +137,33 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 //                .add("type", getNodeType())
                 .toString();
     }
+
+	public Set<VIP> getVips() {
+		return vips;
+	}
+
+	public void setVips(Set<VIP> vips) {
+		this.vips = vips;
+	}
+	
+	
+	public VIP removeVIP(VIP vip){
+		this.vips.remove(vip);
+		vip.setNode(null);
+		return vip;
+	}
+
+	public VIP addVIP(VIP vip){
+		this.vips.add(vip);
+		vip.setNode(this);
+		return vip;
+	}
+	
+	public Node addNodeSubEnvironment(NodeSubEnvironment nse){
+		nse.setNode(this);
+		if (this.nodeSubEnvironments == null)
+			this.nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
+		this.nodeSubEnvironments.add(nse);
+		return this;
+	}
 }

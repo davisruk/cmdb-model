@@ -5,6 +5,7 @@ import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
+import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 
 public class SubEnvironment_ {
@@ -20,5 +21,5 @@ public class SubEnvironment_ {
     public static volatile ListAttribute<SubEnvironment, SubEnvironmentConfig> subEnvironmentConfigs;
     
     //Many to Many
-    public static volatile SetAttribute<SubEnvironment, Node> nodes;
+    public static volatile SetAttribute<NodeSubEnvironment, Node> nodeSubEnvironments;
 }

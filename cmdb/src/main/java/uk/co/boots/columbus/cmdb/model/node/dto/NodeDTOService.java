@@ -18,8 +18,8 @@ import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 @Service
 public class NodeDTOService {
 
-	@Inject 
-	private NodeIPDTOService nodeIPDTOService;
+//	@Inject 
+//	private VIPDTOService vipDTOService;
 	@Inject 
 	private NodeRelationshipDTOService nodeRelationshipDTOService;
 	@Inject 
@@ -29,50 +29,6 @@ public class NodeDTOService {
 	@Inject 
 	private ServerRepository serverRepo;
 	
-/*
-	@Transactional
-	public NodeDTO save(NodeDTO dto) {
-		boolean inserting = false;
-
-		if (dto == null) {
-			return null;
-		}
-
-		Node node;
-		if (dto.isIdSet()) {
-			node = nodeRepository.findOne(dto.id);
-		} else {
-			node = new Node();
-		}
-
-		node.setNodeType(dto.nodeType);
-
-		if (dto.relationships == null) {
-			node.setRelationships(null);
-		} else {
-			List<NodeRelationship> relationships = node.getRelationships();
-			// compare relationships with dto relationships and determine what needs persisting 
-		}
-	
-		if (dto.subEnvironments == null) {
-			node.setSubEnvironments(null);
-		} else {
-			List<SubEnvironment> subEnvironments = node.getSubEnvironments();
-			// compare subEnvironments with dto subEnvironments and determine what needs persisting 
-		}
-
-		nodeRepository.save(node);
-		
-		List<Server> servers = node.getServers();
-		if (servers == null) {
-			servers = new ArrayList<>();
-			node.setServers(servers);
-			inserting=true;
-		}
-
-		return toDTO(node, 2);
-	}	
-*/	
 	public NodeDTO toDTO(Node node) {
 		return toDTO(node, 1);
 	}
@@ -102,7 +58,8 @@ public class NodeDTOService {
 
 		if (depth-- > 0) {
 			dto.relationships = nodeRelationshipDTOService.toDTO(node.getRelationships(), depth);
-			dto.nodeIPs = nodeIPDTOService.toDTO(node.getNodeIPs(), depth);
+			//dto.nodeIPs = nodeIPDTOService.toDTO(node.getNodeIPs(), depth);
+			//dto.vips = vipDTOService.toDTO(node.getVIPs(), depth);
 		}
 
 		return dto;
@@ -130,7 +87,8 @@ public class NodeDTOService {
 
 		if (depth-- > 0) {
 			node.setRelationships(nodeRelationshipDTOService.toEntity(dto.relationships, depth));
-			node.setNodeIPs(nodeIPDTOService.toEntity(dto.nodeIPs, depth));
+			//node.setNodeIPs(nodeIPDTOService.toEntity(dto.nodeIPs, depth));
+			//node.setVIPs(vipDTOService.toEntity(dto.vips, depth));
 		}
 
 		return node;
@@ -153,7 +111,7 @@ public class NodeDTOService {
 		return ret;
 	}
 	
-	public List<ServerDTO> getServerDTOList(Set<Node> nodeList, int depth) {
+	public List<ServerDTO> getServerDTOList(Set<? extends Node> nodeList, int depth) {
 		if (nodeList == null)
 			return null;
 		List<ServerDTO> ret = new ArrayList<ServerDTO>();

@@ -21,7 +21,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
+
 
 @Entity
 @Table(name = "cm_nodeip")
@@ -44,7 +44,12 @@ public class NodeIP implements Identifiable<Long>, Serializable {
     @Column(name = "NodeIPAddress", nullable = false, unique = true, length = 50)
 	private String ipAddress;
 	
-	public NodeIP(IPType ipType, String ipAddress) {
+	//bi-directional many-to-one association to NodeSubEnvironment
+	@ManyToOne
+	@JoinColumn(name="NodeSubID")
+	private NodeSubEnvironment nodeSubEnvironment;
+
+    public NodeIP(IPType ipType, String ipAddress) {
 		super();
 		this.ipType = ipType;
 		this.ipAddress = ipAddress;
@@ -147,4 +152,12 @@ public class NodeIP implements Identifiable<Long>, Serializable {
                 .add("type", getId())
                 .toString();
     }
+
+	public NodeSubEnvironment getNodeSubEnvironment() {
+		return nodeSubEnvironment;
+	}
+
+	public void setNodeSubEnvironment(NodeSubEnvironment nodeSubEnvironment) {
+		this.nodeSubEnvironment = nodeSubEnvironment;
+	}
 }

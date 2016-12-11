@@ -120,7 +120,7 @@ CREATE TABLE `cm_environmenttype` (
 
 LOCK TABLES `cm_environmenttype` WRITE;
 /*!40000 ALTER TABLE `cm_environmenttype` DISABLE KEYS */;
-INSERT INTO `cm_environmenttype` VALUES (1,'Functional Test'),(2,'Integration Test'),(4,'Performance Testing'),(7,'Prod Support'),(3,'Production'),(5,'Training'),(6,'Unit Testing');
+INSERT INTO `cm_environmenttype` VALUES (1,'Functional Test'),(2,'Integration Test'),(4,'Performance Testing'),(7,'Prod Support'),(3,'Production'),(5,'Training'),(6,'User Acceptance');
 /*!40000 ALTER TABLE `cm_environmenttype` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -162,9 +162,9 @@ DROP TABLE IF EXISTS `cm_node`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `cm_node` (
   `NodeID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `NodeType` enum('Server','Router','Switch','Load Balancer','TBC') NOT NULL,
+  `NodeType` enum('Server','Router','Switch','Load Balancer','VIP','TBC') NOT NULL,
   PRIMARY KEY (`NodeID`)
-) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=140 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -173,7 +173,7 @@ CREATE TABLE `cm_node` (
 
 LOCK TABLES `cm_node` WRITE;
 /*!40000 ALTER TABLE `cm_node` DISABLE KEYS */;
-INSERT INTO `cm_node` VALUES (1,'Server'),(2,'Server'),(3,'Server'),(4,'Server'),(5,'Server'),(6,'Server'),(7,'Server'),(8,'Server'),(9,'Server'),(10,'Server'),(11,'Server'),(12,'Server'),(13,'Server'),(14,'Server'),(15,'Server'),(16,'Server'),(17,'Server'),(18,'Server'),(19,'Server'),(20,'Server'),(21,'Server'),(22,'Server'),(23,'Server'),(24,'Server'),(25,'Server'),(26,'Server'),(27,'Server'),(28,'Server'),(29,'Server'),(30,'Server'),(31,'Server'),(32,'Server'),(33,'Server'),(34,'Server'),(35,'Server'),(36,'Server'),(37,'Server'),(38,'Server'),(39,'Server'),(40,'Server'),(41,'Server'),(42,'Server'),(43,'Server'),(44,'Server'),(45,'Server'),(46,'Server'),(47,'Server'),(48,'Server'),(49,'Server'),(50,'Server'),(51,'Server'),(52,'Server'),(53,'Server'),(54,'Server'),(55,'Server'),(56,'Server'),(57,'Server'),(58,'Server'),(59,'Server'),(60,'Server'),(61,'Server'),(62,'Server'),(63,'Server'),(64,'Server'),(65,'Server'),(66,'Server'),(67,'Server'),(68,'Server'),(69,'Server'),(70,'Server'),(71,'Server'),(72,'Server'),(73,'Server'),(74,'Server'),(75,'Server'),(76,'Server'),(77,'Server'),(78,'Server'),(79,'Server'),(80,'Server'),(81,'Server'),(82,'Server'),(83,'Server'),(84,'Server'),(85,'Server'),(86,'Server'),(87,'Server'),(88,'Server'),(89,'Server'),(90,'Server'),(91,'Server'),(92,'Server'),(93,'Server'),(94,'Server'),(95,'Server'),(96,'Server'),(97,'Server'),(98,'Server'),(99,'Server'),(100,'Server'),(101,'Server'),(102,'Server'),(103,'Server'),(104,'Server'),(105,'Server'),(106,'Server'),(107,'Server'),(108,'Server'),(109,'Server'),(110,'Server'),(111,'Server'),(112,'Server'),(113,'Server'),(114,'Server'),(115,'Server'),(116,'Server'),(117,'Server'),(118,'Server'),(119,'Server'),(120,'Server'),(121,'Server'),(122,'Server'),(123,'Server'),(124,'Server'),(125,'Server'),(126,'Server'),(127,'Server'),(128,'Server'),(129,'Server'),(130,'Server'),(131,'Server'),(132,'Server'),(133,'Server');
+INSERT INTO `cm_node` VALUES (1,'Server'),(2,'Server'),(3,'Server'),(4,'Server'),(5,'Server'),(6,'Server'),(7,'Server'),(8,'Server'),(9,'Server'),(10,'Server'),(11,'Server'),(12,'Server'),(13,'Server'),(14,'Server'),(15,'Server'),(16,'Server'),(17,'Server'),(18,'Server'),(19,'Server'),(20,'Server'),(21,'Server'),(22,'Server'),(23,'Server'),(24,'Server'),(25,'Server'),(28,'Server'),(29,'Server'),(30,'Server'),(31,'Server'),(32,'Server'),(33,'Server'),(34,'Server'),(35,'Server'),(36,'Server'),(37,'Server'),(38,'Server'),(39,'Server'),(40,'Server'),(41,'Server'),(42,'Server'),(43,'Server'),(44,'Server'),(45,'Server'),(46,'Server'),(47,'Server'),(48,'Server'),(49,'Server'),(50,'Server'),(51,'Server'),(52,'Server'),(53,'Server'),(54,'Server'),(55,'Server'),(56,'Server'),(57,'Server'),(58,'Server'),(59,'Server'),(60,'Server'),(61,'Server'),(62,'Server'),(63,'Server'),(64,'Server'),(65,'Server'),(66,'Server'),(67,'Server'),(68,'Server'),(69,'Server'),(70,'Server'),(71,'Server'),(72,'Server'),(73,'Server'),(74,'Server'),(75,'Server'),(76,'Server'),(77,'Server'),(78,'Server'),(79,'Server'),(80,'Server'),(81,'Server'),(82,'Server'),(83,'Server'),(84,'Server'),(85,'Server'),(86,'Server'),(87,'Server'),(88,'Server'),(89,'Server'),(90,'Server'),(91,'Server'),(92,'Server'),(93,'Server'),(94,'Server'),(95,'Server'),(96,'Server'),(97,'Server'),(98,'Server'),(99,'Server'),(100,'Server'),(101,'Server'),(102,'Server'),(103,'Server'),(104,'Server'),(105,'Server'),(106,'Server'),(107,'Server'),(108,'Server'),(109,'Server'),(110,'Server'),(111,'Server'),(112,'Server'),(113,'Server'),(114,'Server'),(115,'Server'),(116,'Server'),(117,'Server'),(118,'Server'),(119,'Server'),(120,'Server'),(121,'Server'),(122,'Server'),(123,'Server'),(124,'Server'),(125,'Server'),(126,'Server'),(127,'Server'),(128,'Server'),(129,'Server'),(130,'Server'),(131,'Server'),(132,'Server'),(133,'Server'),(134,'VIP'),(135,'VIP'),(136,'VIP'),(137,'Server'),(138,'Server'),(139,'Server');
 /*!40000 ALTER TABLE `cm_node` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -193,7 +193,7 @@ CREATE TABLE `cm_node_subenvironment` (
   KEY `SubEnvironmentID` (`SubEnvironmentID`),
   CONSTRAINT `node_subenvironment_ibfk_1` FOREIGN KEY (`NodeID`) REFERENCES `cm_node` (`NodeID`),
   CONSTRAINT `node_subenvironment_ibfk_2` FOREIGN KEY (`SubEnvironmentID`) REFERENCES `cm_subenvironment` (`SubEnvironmentID`)
-) ENGINE=InnoDB AUTO_INCREMENT=247 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -202,7 +202,7 @@ CREATE TABLE `cm_node_subenvironment` (
 
 LOCK TABLES `cm_node_subenvironment` WRITE;
 /*!40000 ALTER TABLE `cm_node_subenvironment` DISABLE KEYS */;
-INSERT INTO `cm_node_subenvironment` VALUES (1,36,1),(2,2,1),(3,3,1),(4,4,1),(5,5,1),(6,6,1),(7,7,1),(8,8,1),(9,9,1),(10,10,1),(11,11,1),(12,12,1),(13,13,1),(14,14,1),(15,19,2),(16,20,2),(17,21,2),(18,22,2),(19,23,2),(20,24,2),(21,25,2),(22,36,2),(23,12,2),(24,13,2),(25,14,2),(26,26,5),(27,27,6),(28,28,5),(29,29,6),(30,30,5),(31,31,6),(32,33,5),(33,34,6),(34,35,7),(35,36,7),(36,37,7),(37,38,7),(38,39,7),(39,40,7),(40,41,7),(41,42,7),(42,43,7),(43,44,7),(44,12,7),(45,13,7),(46,14,7),(47,45,8),(48,46,8),(49,36,8),(50,47,8),(51,48,8),(52,49,8),(53,50,8),(54,51,8),(55,52,8),(56,12,8),(57,13,8),(58,14,8),(59,53,9),(60,54,9),(61,36,9),(62,55,9),(63,56,9),(64,57,9),(65,58,9),(66,59,9),(67,12,9),(68,13,9),(69,14,9),(70,36,10),(71,60,10),(72,61,10),(73,62,10),(74,63,10),(75,64,10),(76,65,10),(77,66,10),(78,67,10),(79,68,10),(80,69,10),(81,12,10),(82,13,10),(83,14,10),(84,36,11),(85,73,11),(86,74,11),(87,75,11),(88,76,11),(89,77,11),(90,78,11),(91,12,11),(92,13,11),(93,14,11),(94,79,12),(95,80,12),(96,36,12),(97,81,12),(98,82,12),(99,83,12),(100,84,12),(101,85,12),(102,12,12),(103,13,12),(104,14,12),(105,86,13),(106,87,13),(107,36,13),(108,88,13),(109,89,13),(110,90,13),(111,91,13),(112,92,13),(113,12,13),(114,13,13),(115,14,13),(116,93,14),(117,94,14),(118,36,14),(119,95,14),(120,96,14),(121,97,14),(122,98,14),(123,99,14),(124,12,14),(125,13,14),(126,14,14),(127,100,15),(128,101,15),(129,36,15),(130,56,15),(131,102,16),(132,103,16),(133,36,16),(134,104,16),(135,105,16),(136,106,16),(137,107,16),(138,108,16),(139,12,16),(140,13,16),(141,14,16),(142,109,17),(143,110,17),(144,36,17),(145,111,17),(146,112,17),(147,113,17),(148,114,17),(149,115,17),(150,12,17),(151,13,17),(152,14,17),(153,1,1),(154,1,2),(155,1,8),(156,1,9),(157,1,10),(158,1,11),(159,1,12),(160,1,13),(161,1,14),(162,1,15),(163,1,16),(164,1,17),(165,1,7),(166,32,6),(167,32,5),(168,116,7),(169,116,8),(170,116,9),(171,116,10),(172,116,11),(173,116,12),(174,116,2),(175,116,13),(176,116,14),(177,116,15),(178,116,16),(179,116,17),(180,116,1),(181,117,7),(182,117,8),(183,117,9),(184,117,10),(185,117,11),(186,117,12),(187,117,2),(188,117,13),(189,117,14),(190,117,15),(191,117,16),(192,117,17),(193,117,1),(194,118,7),(195,119,7),(196,120,7),(197,120,8),(198,118,8),(199,119,8),(200,120,9),(201,118,9),(202,119,9),(203,120,10),(204,118,10),(205,119,10),(206,120,11),(207,118,11),(208,119,11),(209,120,12),(210,118,12),(211,119,12),(212,121,12),(213,122,12),(214,123,2),(215,120,2),(216,118,2),(217,119,2),(218,120,13),(219,118,13),(220,119,13),(221,120,14),(222,118,14),(223,119,14),(224,120,16),(225,118,16),(226,119,16),(227,120,17),(228,118,17),(229,119,17),(230,120,1),(231,118,1),(232,119,1),(233,124,7),(234,125,8),(235,126,9),(236,127,12),(237,128,2),(238,129,13),(239,130,14),(240,131,16),(241,132,17),(242,133,1),(243,72,18),(244,72,19),(245,70,18),(246,71,19);
+INSERT INTO `cm_node_subenvironment` VALUES (1,36,1),(2,2,1),(3,3,1),(4,4,1),(5,5,1),(6,6,1),(7,7,1),(8,8,1),(9,9,1),(10,10,1),(11,11,1),(12,12,1),(13,13,1),(14,14,1),(15,19,2),(16,20,2),(17,21,2),(18,22,2),(19,23,2),(20,24,2),(21,25,2),(22,36,2),(23,12,2),(24,13,2),(25,14,2),(28,28,5),(29,29,6),(30,30,5),(31,31,6),(32,33,5),(33,34,6),(34,35,7),(35,36,7),(36,37,7),(37,38,7),(38,39,7),(39,40,7),(40,41,7),(41,42,7),(42,43,7),(43,44,7),(44,12,7),(45,13,7),(46,14,7),(47,45,8),(48,46,8),(49,36,8),(50,47,8),(51,48,8),(52,49,8),(53,50,8),(54,51,8),(55,52,8),(56,12,8),(57,13,8),(58,14,8),(59,53,9),(60,54,9),(61,36,9),(62,55,9),(63,56,9),(64,57,9),(65,58,9),(66,59,9),(67,12,9),(68,13,9),(69,14,9),(70,36,10),(71,60,10),(72,61,10),(73,62,10),(74,63,10),(75,64,10),(76,65,10),(77,66,10),(78,67,10),(79,68,10),(80,69,10),(81,12,10),(82,13,10),(83,14,10),(84,36,11),(86,74,11),(87,75,11),(88,76,11),(89,77,11),(90,78,11),(91,12,11),(92,13,11),(93,14,11),(94,79,20),(95,80,20),(96,36,12),(97,81,12),(98,82,12),(99,83,12),(100,84,12),(101,85,12),(102,12,12),(103,13,12),(104,14,12),(105,86,13),(106,87,13),(107,36,13),(108,88,13),(109,89,13),(110,90,13),(111,91,13),(112,92,13),(113,12,13),(114,13,13),(115,14,13),(116,93,14),(117,94,14),(118,36,14),(119,95,14),(120,96,14),(121,97,14),(122,98,14),(123,99,14),(124,12,14),(125,13,14),(126,14,14),(127,100,15),(128,101,15),(129,36,15),(131,102,16),(132,103,16),(133,36,16),(134,104,16),(135,105,16),(136,106,16),(137,107,16),(138,108,16),(139,12,16),(140,13,16),(141,14,16),(142,109,17),(143,110,17),(144,36,17),(145,111,17),(146,112,17),(147,113,17),(148,114,17),(149,115,17),(150,12,17),(151,13,17),(152,14,17),(153,1,1),(154,1,2),(155,1,8),(156,1,9),(157,1,10),(158,1,11),(159,1,12),(160,1,13),(161,1,14),(162,1,15),(163,1,16),(164,1,17),(165,1,7),(166,32,6),(167,32,5),(168,116,7),(169,116,8),(170,116,9),(171,116,10),(172,116,11),(173,116,12),(174,116,2),(175,116,13),(176,116,14),(177,116,15),(178,116,16),(179,116,17),(180,116,1),(181,117,7),(182,117,8),(183,117,9),(184,117,10),(185,117,11),(186,117,12),(187,117,2),(188,117,13),(189,117,14),(190,117,15),(191,117,16),(192,117,17),(193,117,1),(194,118,7),(195,119,7),(196,120,7),(197,120,8),(198,118,8),(199,119,8),(200,120,9),(201,118,9),(202,119,9),(203,120,10),(204,118,10),(205,119,10),(206,120,11),(207,118,11),(208,119,11),(209,120,12),(210,118,12),(211,119,12),(212,121,21),(213,122,21),(214,123,2),(215,120,2),(216,118,2),(217,119,2),(218,120,13),(219,118,13),(220,119,13),(221,120,14),(222,118,14),(223,119,14),(224,120,16),(225,118,16),(226,119,16),(227,120,17),(228,118,17),(229,119,17),(230,120,1),(231,118,1),(232,119,1),(233,124,7),(234,125,8),(235,126,9),(236,127,12),(237,128,2),(238,129,13),(239,130,14),(240,131,16),(241,132,17),(242,133,1),(243,72,18),(245,70,18),(246,71,19),(247,134,7),(248,135,7),(249,136,7),(250,134,8),(251,135,8),(252,136,8),(253,134,9),(254,135,9),(255,136,9),(256,134,10),(257,135,10),(258,136,10),(259,134,18),(260,135,18),(261,134,19),(262,135,19),(263,136,11),(264,134,20),(265,135,20),(266,134,21),(267,135,21),(268,136,12),(269,136,2),(270,135,2),(271,134,2),(272,134,13),(273,135,13),(274,136,13),(275,134,14),(276,135,14),(277,136,14),(278,134,15),(279,135,15),(280,136,15),(281,137,15),(282,134,16),(283,135,16),(284,136,16),(285,134,17),(286,135,17),(287,136,17),(288,134,1),(289,135,1),(290,136,1),(291,138,5),(293,139,6),(295,73,19);
 /*!40000 ALTER TABLE `cm_node_subenvironment` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -222,7 +222,7 @@ CREATE TABLE `cm_nodeip` (
   UNIQUE KEY `UQ_NodeIP_NodeSubIPAddress` (`NodeIPAddress`,`NodeSubID`),
   KEY `NodeSubID` (`NodeSubID`),
   CONSTRAINT `cm_nodeip_ibfk_2` FOREIGN KEY (`NodeSubID`) REFERENCES `cm_node_subenvironment` (`NodeSubID`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=307 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -231,8 +231,39 @@ CREATE TABLE `cm_nodeip` (
 
 LOCK TABLES `cm_nodeip` WRITE;
 /*!40000 ALTER TABLE `cm_nodeip` DISABLE KEYS */;
-INSERT INTO `cm_nodeip` VALUES (1,26,'0.0.0.0','WIRED'),(2,17,'10.141.129.249','VIRTUAL'),(4,7,'10.141.129.249','VIRTUAL'),(5,16,'10.141.129.248','VIRTUAL'),(6,15,'10.141.129.247','VIRTUAL'),(7,2,'10.141.129.247','VIRTUAL');
+INSERT INTO `cm_nodeip` VALUES (9,247,'10.141.129.247','VIRTUAL'),(10,248,'10.141.129.248','VIRTUAL'),(11,249,'10.141.129.249','VIRTUAL'),(12,250,'10.141.129.247','VIRTUAL'),(13,251,'10.141.129.248','VIRTUAL'),(14,252,'10.141.129.249','VIRTUAL'),(15,253,'10.141.129.247','VIRTUAL'),(16,254,'10.141.129.248','VIRTUAL'),(17,255,'10.141.129.249','VIRTUAL'),(18,256,'10.141.129.247','VIRTUAL'),(19,257,'10.141.129.248','VIRTUAL'),(20,258,'10.141.129.249','VIRTUAL'),(21,259,'10.141.129.247','VIRTUAL'),(22,261,'10.141.129.247','VIRTUAL'),(23,260,'10.141.129.248','VIRTUAL'),(24,262,'10.141.129.248','VIRTUAL'),(25,263,'10.141.129.249','VIRTUAL'),(26,165,'10.141.129.1','PHYSICAL'),(27,34,'10.141.129.3','PHYSICAL'),(28,36,'10.141.129.95','PHYSICAL'),(29,37,'10.141.129.10','PHYSICAL'),(30,38,'10.141.129.12','PHYSICAL'),(31,39,'10.141.129.13','PHYSICAL'),(32,168,'10.141.129.75','PHYSICAL'),(33,181,'10.141.129.70','PHYSICAL'),(34,43,'10.141.129.80','PHYSICAL'),(35,44,'10.141.129.84','PHYSICAL'),(37,40,'10.141.129.85','PHYSICAL'),(38,41,'10.141.129.241','PHYSICAL'),(39,42,'10.141.129.94','PHYSICAL'),(40,194,'10.141.129.227','PHYSICAL'),(41,195,'10.141.129.228','PHYSICAL'),(42,233,'10.141.129.39','PHYSICAL'),(43,45,'10.141.129.14','PHYSICAL'),(44,196,'10.141.129.16','PHYSICAL'),(45,46,'10.141.129.15','PHYSICAL'),(46,35,'10.141.129.251','PHYSICAL'),(47,155,'10.141.129.1','PHYSICAL'),(48,47,'10.141.129.4','PHYSICAL'),(49,48,'10.141.129.96','PHYSICAL'),(50,50,'10.141.129.19','PHYSICAL'),(51,51,'10.141.129.38','PHYSICAL'),(52,169,'10.141.129.75','PHYSICAL'),(53,182,'10.141.129.70','PHYSICAL'),(54,55,'10.141.129.81','PHYSICAL'),(55,56,'10.141.129.84','PHYSICAL'),(56,52,'10.141.129.86','PHYSICAL'),(57,53,'10.141.129.91','PHYSICAL'),(58,54,'10.141.129.77','PHYSICAL'),(59,198,'10.141.129.227','PHYSICAL'),(60,199,'10.141.129.228','PHYSICAL'),(61,234,'10.141.129.40','PHYSICAL'),(62,57,'10.141.129.14','PHYSICAL'),(63,197,'10.141.129.16','PHYSICAL'),(64,58,'10.141.129.15','PHYSICAL'),(65,49,'10.141.129.251','PHYSICAL'),(66,156,'10.141.129.1','PHYSICAL'),(67,59,'10.141.129.7','PHYSICAL'),(68,60,'10.141.129.8','PHYSICAL'),(69,62,'10.141.129.9','PHYSICAL'),(70,170,'10.141.129.75','PHYSICAL'),(71,183,'10.141.129.70','PHYSICAL'),(72,66,'10.141.129.20','PHYSICAL'),(73,67,'10.141.129.84','PHYSICAL'),(74,63,'10.141.129.21','PHYSICAL'),(75,64,'10.141.129.22','PHYSICAL'),(76,65,'10.141.129.23','PHYSICAL'),(77,201,'10.141.129.227','PHYSICAL'),(78,202,'10.141.129.228','PHYSICAL'),(79,235,'10.141.129.41','PHYSICAL'),(80,68,'10.141.129.14','PHYSICAL'),(81,200,'10.141.129.16','PHYSICAL'),(82,69,'10.141.129.15','PHYSICAL'),(83,61,'10.141.129.251','PHYSICAL'),(84,157,'10.141.129.1','PHYSICAL'),(85,71,'10.141.129.63','PHYSICAL'),(86,72,'10.141.129.64','PHYSICAL'),(87,73,'10.141.129.65','PHYSICAL'),(88,74,'10.141.129.66','PHYSICAL'),(89,75,'10.141.129.67','PHYSICAL'),(90,76,'10.141.129.68','PHYSICAL'),(91,171,'10.141.129.75','PHYSICAL'),(92,184,'10.141.129.70','PHYSICAL'),(93,80,'10.141.129.69','PHYSICAL'),(94,81,'10.141.129.84','PHYSICAL'),(95,77,'10.141.129.101','PHYSICAL'),(96,78,'10.141.129.102','PHYSICAL'),(97,79,'10.141.129.103','PHYSICAL'),(98,204,'10.141.129.227','PHYSICAL'),(99,205,'10.141.129.228','PHYSICAL'),(100,82,'10.141.129.14','PHYSICAL'),(101,203,'10.141.129.16','PHYSICAL'),(102,83,'10.141.129.15','PHYSICAL'),(103,70,'10.141.129.251','PHYSICAL'),(104,245,'10.141.129.104','PHYSICAL'),(105,243,'10.141.129.107','PHYSICAL'),(106,246,'10.141.129.106','PHYSICAL'),(108,158,'10.141.129.1','PHYSICAL'),(109,86,'10.141.129.112','PHYSICAL'),(110,172,'10.141.129.75','PHYSICAL'),(111,185,'10.141.129.70','PHYSICAL'),(112,90,'10.141.129.121','PHYSICAL'),(113,91,'10.141.129.84','PHYSICAL'),(114,87,'10.141.129.122','PHYSICAL'),(115,88,'10.141.129.123','PHYSICAL'),(116,89,'10.141.129.124','PHYSICAL'),(117,207,'10.141.129.227','PHYSICAL'),(118,208,'10.141.129.228','PHYSICAL'),(119,92,'10.141.129.14','PHYSICAL'),(120,206,'10.141.129.16','PHYSICAL'),(121,93,'10.141.129.15','PHYSICAL'),(122,84,'10.141.129.251','PHYSICAL'),(124,264,'10.141.129.247','VIRTUAL'),(125,265,'10.141.129.248','VIRTUAL'),(126,266,'10.141.129.247','VIRTUAL'),(127,267,'10.141.129.248','VIRTUAL'),(128,268,'10.141.129.249','VIRTUAL'),(130,94,'10.141.129.5','PHYSICAL'),(131,95,'10.141.129.97','PHYSICAL'),(132,212,'10.141.129.48','PHYSICAL'),(133,213,'10.141.129.49','PHYSICAL'),(134,159,'10.141.129.1','PHYSICAL'),(135,97,'10.141.129.17','PHYSICAL'),(136,173,'10.141.129.75','PHYSICAL'),(137,186,'10.141.129.70','PHYSICAL'),(138,101,'10.141.129.82','PHYSICAL'),(139,102,'10.141.129.84','PHYSICAL'),(140,98,'10.141.129.87','PHYSICAL'),(141,99,'10.141.129.92','PHYSICAL'),(142,100,'10.141.129.78','PHYSICAL'),(143,210,'10.141.129.227','PHYSICAL'),(144,211,'10.141.129.228','PHYSICAL'),(145,236,'10.141.129.42','PHYSICAL'),(146,103,'10.141.129.14','PHYSICAL'),(147,209,'10.141.129.16','PHYSICAL'),(148,104,'10.141.129.15','PHYSICAL'),(149,96,'10.141.129.251','PHYSICAL'),(150,271,'10.141.129.247','VIRTUAL'),(151,270,'10.141.129.248','VIRTUAL'),(152,269,'10.141.129.249','VIRTUAL'),(153,154,'10.141.129.1','PHYSICAL'),(154,15,'10.141.129.6','PHYSICAL'),(155,16,'10.141.129.98','PHYSICAL'),(156,17,'10.141.129.18','PHYSICAL'),(157,214,'10.141.129.51','PHYSICAL'),(158,174,'10.141.129.75','PHYSICAL'),(159,187,'10.141.129.70','PHYSICAL'),(160,21,'10.141.129.83','PHYSICAL'),(161,23,'10.141.129.84','PHYSICAL'),(162,18,'10.141.129.88','PHYSICAL'),(163,19,'10.141.129.93','PHYSICAL'),(164,20,'10.141.129.79','PHYSICAL'),(165,216,'10.141.129.227','PHYSICAL'),(166,217,'10.141.129.228','PHYSICAL'),(167,237,'10.141.129.43','PHYSICAL'),(168,24,'10.141.129.14','PHYSICAL'),(169,215,'10.141.129.16','PHYSICAL'),(170,25,'10.141.129.15','PHYSICAL'),(171,22,'10.141.129.251','PHYSICAL'),(172,272,'10.141.129.247','VIRTUAL'),(173,273,'10.141.129.248','VIRTUAL'),(174,274,'10.141.129.249','VIRTUAL'),(175,160,'10.141.129.1','PHYSICAL'),(176,105,'10.141.129.110','PHYSICAL'),(177,106,'10.141.129.111','PHYSICAL'),(178,108,'10.141.129.50','PHYSICAL'),(179,175,'10.141.129.75','PHYSICAL'),(180,188,'10.141.129.70','PHYSICAL'),(181,112,'10.141.129.113','PHYSICAL'),(182,113,'10.141.129.84','PHYSICAL'),(183,109,'10.141.129.99','PHYSICAL'),(184,110,'10.141.129.100','PHYSICAL'),(185,111,'10.141.129.90','PHYSICAL'),(186,219,'10.141.129.227','PHYSICAL'),(187,220,'10.141.129.228','PHYSICAL'),(188,238,'10.141.129.44','PHYSICAL'),(189,114,'10.141.129.14','PHYSICAL'),(190,218,'10.141.129.16','PHYSICAL'),(191,115,'10.141.129.15','PHYSICAL'),(192,107,'10.141.129.251','PHYSICAL'),(193,275,'10.141.129.247','VIRTUAL'),(194,276,'10.141.129.248','VIRTUAL'),(195,277,'10.141.129.249','VIRTUAL'),(197,161,'10.141.129.1','PHYSICAL'),(198,116,'10.141.129.24','PHYSICAL'),(199,117,'10.141.129.25','PHYSICAL'),(200,119,'10.141.129.26','PHYSICAL'),(201,176,'10.141.129.75','PHYSICAL'),(202,189,'10.141.129.70','PHYSICAL'),(203,123,'10.141.129.27','PHYSICAL'),(204,124,'10.141.129.84','PHYSICAL'),(205,120,'10.141.129.28','PHYSICAL'),(206,121,'10.141.129.29','PHYSICAL'),(207,122,'10.141.129.30','PHYSICAL'),(208,222,'10.141.129.227','PHYSICAL'),(209,223,'10.141.129.228','PHYSICAL'),(210,239,'10.141.129.45','PHYSICAL'),(211,125,'10.141.129.14','PHYSICAL'),(212,221,'10.141.129.16','PHYSICAL'),(213,126,'10.141.129.15','PHYSICAL'),(214,118,'10.141.129.251','PHYSICAL'),(215,278,'10.141.129.247','VIRTUAL'),(216,279,'10.141.129.248','VIRTUAL'),(217,280,'10.141.129.249','VIRTUAL'),(218,162,'10.141.129.1','PHYSICAL'),(219,127,'10.141.129.125','PHYSICAL'),(220,128,'10.141.129.126','PHYSICAL'),(221,177,'10.141.129.75','PHYSICAL'),(222,190,'10.141.129.70','PHYSICAL'),(223,281,'10.141.129.127','PHYSICAL'),(224,129,'10.141.129.251','PHYSICAL'),(225,282,'10.141.129.247','VIRTUAL'),(226,283,'10.141.129.248','VIRTUAL'),(227,284,'10.141.129.249','VIRTUAL'),(228,163,'10.141.129.1','PHYSICAL'),(229,131,'10.141.129.114','PHYSICAL'),(230,132,'10.141.129.115','PHYSICAL'),(231,134,'10.141.129.116','PHYSICAL'),(232,178,'10.141.129.75','PHYSICAL'),(233,191,'10.141.129.70','PHYSICAL'),(234,138,'10.141.129.117','PHYSICAL'),(235,139,'10.141.129.84','PHYSICAL'),(236,135,'10.141.129.118','PHYSICAL'),(237,136,'10.141.129.119','PHYSICAL'),(238,137,'10.141.129.120','PHYSICAL'),(239,225,'10.141.129.227','PHYSICAL'),(240,226,'10.141.129.228','PHYSICAL'),(241,240,'10.141.129.46','PHYSICAL'),(242,140,'10.141.129.14','PHYSICAL'),(243,224,'10.141.129.16','PHYSICAL'),(244,141,'10.141.129.15','PHYSICAL'),(245,133,'10.141.129.251','PHYSICAL'),(246,285,'10.141.129.247','VIRTUAL'),(247,286,'10.141.129.248','VIRTUAL'),(248,287,'10.141.129.249','VIRTUAL'),(249,164,'10.141.129.1','PHYSICAL'),(250,142,'10.141.129.31','PHYSICAL'),(251,143,'10.141.129.32','PHYSICAL'),(252,145,'10.141.129.33','PHYSICAL'),(253,179,'10.141.129.75','PHYSICAL'),(254,192,'10.141.129.70','PHYSICAL'),(255,149,'10.141.129.34','PHYSICAL'),(256,150,'10.141.129.84','PHYSICAL'),(257,146,'10.141.129.35','PHYSICAL'),(258,147,'10.141.129.36','PHYSICAL'),(259,148,'10.141.129.37','PHYSICAL'),(260,228,'10.141.129.227','PHYSICAL'),(261,229,'10.141.129.228','PHYSICAL'),(262,241,'10.141.129.47','PHYSICAL'),(263,151,'10.141.129.14','PHYSICAL'),(264,227,'10.141.129.16','PHYSICAL'),(265,152,'10.141.129.15','PHYSICAL'),(266,144,'10.141.129.251','PHYSICAL'),(267,288,'10.141.129.247','VIRTUAL'),(268,289,'10.141.129.248','VIRTUAL'),(269,290,'10.141.129.249','VIRTUAL'),(270,153,'10.141.129.1','PHYSICAL'),(271,2,'10.141.129.52','PHYSICAL'),(272,3,'10.141.129.53','PHYSICAL'),(273,4,'10.141.129.54','PHYSICAL'),(274,5,'10.141.129.55','PHYSICAL'),(275,6,'10.141.129.56','PHYSICAL'),(276,7,'10.141.129.57','PHYSICAL'),(277,180,'10.141.129.75','PHYSICAL'),(278,193,'10.141.129.70','PHYSICAL'),(279,11,'10.141.129.58','PHYSICAL'),(280,12,'10.141.129.84','PHYSICAL'),(281,8,'10.141.129.59','PHYSICAL'),(282,9,'10.141.129.60','PHYSICAL'),(283,10,'10.141.129.61','PHYSICAL'),(284,231,'10.141.129.227','PHYSICAL'),(285,232,'10.141.129.228','PHYSICAL'),(286,242,'10.141.129.62','PHYSICAL'),(287,13,'10.141.129.14','PHYSICAL'),(288,230,'10.141.129.16','PHYSICAL'),(289,14,'10.141.129.15','PHYSICAL'),(290,1,'10.141.129.251','PHYSICAL'),(291,167,'10.142.193.193','PHYSICAL'),(293,291,'10.142.193.173','PHYSICAL'),(294,28,'10.142.193.161','PHYSICAL'),(295,30,'10.142.193.165','PHYSICAL'),(297,32,'10.142.193.191','PHYSICAL'),(298,166,'10.142.193.193','PHYSICAL'),(300,29,'10.142.193.177','PHYSICAL'),(301,31,'10.142.193.181','PHYSICAL'),(302,33,'10.142.193.192','PHYSICAL'),(304,293,'10.142.193.174','PHYSICAL'),(306,295,'10.141.129.109','PHYSICAL');
 /*!40000 ALTER TABLE `cm_nodeip` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cm_nodeiprelationship`
+--
+
+DROP TABLE IF EXISTS `cm_nodeiprelationship`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cm_nodeiprelationship` (
+  `RelationshipID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PublishingNodeIPID` bigint(20) NOT NULL,
+  `ConsumingNodeIPID` bigint(20) NOT NULL,
+  `StartPort` bigint(20) NOT NULL,
+  `EndPort` bigint(20) NOT NULL,
+  `Protocol` enum('HTTP','NTP','HTTPS','TBC') NOT NULL,
+  PRIMARY KEY (`RelationshipID`),
+  KEY `cm_noderelationship_ibfk_1` (`PublishingNodeIPID`),
+  KEY `cm_noderelationship_ibfk_2` (`ConsumingNodeIPID`),
+  CONSTRAINT `cm_nodeiprelationship_ibfk_1` FOREIGN KEY (`PublishingNodeIPID`) REFERENCES `cm_nodeip` (`NodeIPID`),
+  CONSTRAINT `cm_nodeiprelationship_ibfk_2` FOREIGN KEY (`ConsumingNodeIPID`) REFERENCES `cm_nodeip` (`NodeIPID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cm_nodeiprelationship`
+--
+
+LOCK TABLES `cm_nodeiprelationship` WRITE;
+/*!40000 ALTER TABLE `cm_nodeiprelationship` DISABLE KEYS */;
+/*!40000 ALTER TABLE `cm_nodeiprelationship` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -453,7 +484,7 @@ CREATE TABLE `cm_server` (
   KEY `NodeID` (`NodeID`),
   CONSTRAINT `cm_server_ibfk_1` FOREIGN KEY (`ServerTypeID`) REFERENCES `cm_servertype` (`ServerTypeID`),
   CONSTRAINT `cm_server_ibfk_2` FOREIGN KEY (`NodeID`) REFERENCES `cm_node` (`NodeID`)
-) ENGINE=InnoDB AUTO_INCREMENT=161 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=164 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -462,7 +493,7 @@ CREATE TABLE `cm_server` (
 
 LOCK TABLES `cm_server` WRITE;
 /*!40000 ALTER TABLE `cm_server` DISABLE KEYS */;
-INSERT INTO `cm_server` VALUES (7,'gbrpmsdbst01',8,1),(9,'gbrpmsuist01',14,2),(10,'gbrpmsuist02',14,3),(11,'gbrpmseast01',4,4),(12,'gbrpmseast02',4,5),(13,'gbrpmsbrgt01',3,6),(14,'gbrpmsbrgt02',3,7),(15,'gbrpmstalt01',12,8),(16,'gbrpmstalt02',13,9),(17,'gbrpmstalt03',11,10),(19,'gbrpmsappt01',6,11),(20,'gbrpmsdbst03',7,12),(21,'gbrcbiappt01',1,13),(22,'gbrcbidbst01',2,14),(24,'TESTBRIDGE',3,15),(25,'TESTEAS',4,16),(26,'TESTBRIDGE2',3,17),(27,'TESTEAS2',4,18),(42,'gbrpmsuisf11',14,19),(43,'gbrpmseasf11',4,20),(44,'gbrpmsbrgf11',3,21),(45,'gbrpmstalf11',12,22),(46,'gbrpmstalf12',13,23),(47,'gbrpmstalf13',11,24),(48,'gbrpmsappf11',6,25),(49,'gbrpmsdbse02',10,26),(50,'gbrpmsdbse03',10,27),(51,'gbrpmsuise01',14,28),(52,'gbrpmsuise11',14,29),(53,'gbrpmsease01',4,30),(54,'gbrpmsease11',4,31),(55,'gbrpmsdbse01',8,32),(56,'gbrpmstale01',13,33),(57,'gbrpmstale11',13,34),(61,'gbrpmsuisi01',14,35),(62,'gbrpmsrpxt01',5,36),(63,'gbrpmseasi01',4,37),(64,'gbrpmseasi02',4,38),(65,'gbrpmsbrgi01',3,39),(66,'gbrpmsbrgi02',3,40),(67,'gbrpmstali01',12,41),(68,'gbrpmstali02',13,42),(69,'gbrpmstali03',11,43),(70,'gbrpmsappi01',6,44),(71,'gbrpmsuisi11',14,45),(72,'gbrpmseasi11',4,46),(73,'gbrpmsbrgi11',3,47),(74,'gbrpmsbrgi12',3,48),(75,'gbrpmstali11',12,49),(76,'gbrpmstali12',13,50),(77,'gbrpmstali13',11,51),(78,'gbrpmsappi11',6,52),(79,'gbrpmsuisi21',14,53),(80,'gbrpmseasi21',4,54),(81,'gbrpmsbrgi21',3,55),(82,'gbrpmstali21',12,56),(83,'gbrpmstali22',13,57),(84,'gbrpmstali23',11,58),(85,'gbrpmsappi21',6,59),(86,'gbrpmsuisi31',14,60),(87,'gbrpmsuisi32',14,61),(88,'gbrpmseasi31',4,62),(89,'gbrpmseasi32',4,63),(90,'gbrpmsbrgi31',3,64),(91,'gbrpmsbrgi32',3,65),(92,'gbrpmstali31',12,66),(93,'gbrpmstali32',13,67),(94,'gbrpmstali33',11,68),(95,'gbrpmsappi31',6,69),(96,'gbrpmsuisi41',14,70),(97,'gbrpmsuisi42',14,71),(98,'gbrpmseasi41',4,72),(99,'gbrpmseasi42',4,73),(100,'gbrpmsbrgi41',3,74),(101,'gbrpmstali41',12,75),(102,'gbrpmstali42',13,76),(103,'gbrpmstali43',11,77),(104,'gbrpmsappi41',6,78),(105,'gbrpmsuisf01',14,79),(106,'gbrpmseasf01',4,80),(107,'gbrpmsbrgf01',3,81),(108,'gbrpmstalf01',12,82),(109,'gbrpmstalf02',13,83),(110,'gbrpmstalf03',11,84),(111,'gbrpmsappf01',6,85),(112,'gbrpmsuisf21',14,86),(113,'gbrpmseasf21',4,87),(114,'gbrpmsbrgf21',3,88),(115,'gbrpmstalf21',12,89),(116,'gbrpmstalf22',13,90),(117,'gbrpmstalf23',11,91),(118,'gbrpmsappf21',6,92),(119,'gbrpmsuisf31',14,93),(120,'gbrpmseasf31',4,94),(121,'gbrpmsbrgf31',3,95),(122,'gbrpmstalf31',12,96),(123,'gbrpmstalf32',13,97),(124,'gbrpmstalf33',11,98),(125,'gbrpmsappf31',6,99),(126,'gbrpmsuisf41',14,100),(127,'gbrpmseasf41',4,101),(128,'gbrpmsuisu01',14,102),(129,'gbrpmseasu01',4,103),(130,'gbrpmsbrgu01',3,104),(131,'gbrpmstalu01',12,105),(132,'gbrpmstalu02',13,106),(133,'gbrpmstalu03',11,107),(134,'gbrpmsappu01',6,108),(135,'gbrpmsuisu11',14,109),(136,'gbrpmseasu11',4,110),(137,'gbrpmsbrgu11',3,111),(138,'gbrpmstalu11',12,112),(139,'gbrpmstalu12',13,113),(140,'gbrpmstalu13',11,114),(141,'gbrpmsappu11',6,115),(142,'gbrpmsdbst05',10,116),(143,'gbrpmsdbst14',10,117),(145,'gbrpmsrept01',9,118),(146,'gbrpmsrept02',9,119),(147,'gbrcbiappt02',1,120),(148,'gbrpmsuisf02',14,121),(149,'gbrpmseasf02',4,122),(150,'gbrpmsbrgf12',3,123),(151,'gbrpmsmigi01',15,124),(152,'gbrpmsmigi11',15,125),(153,'gbrpmsmigi21',15,126),(154,'gbrpmsmigf01',15,127),(155,'gbrpmsmigf11',15,128),(156,'gbrpmsmigf21',15,129),(157,'gbrpmsmigf31',15,130),(158,'gbrpmsmigu01',15,131),(159,'gbrpmsmigu02',15,132),(160,'gbrpmsmigt01',15,133);
+INSERT INTO `cm_server` VALUES (7,'gbrpmsdbst01',8,1),(9,'gbrpmsuist01',14,2),(10,'gbrpmsuist02',14,3),(11,'gbrpmseast01',4,4),(12,'gbrpmseast02',4,5),(13,'gbrpmsbrgt01',3,6),(14,'gbrpmsbrgt02',3,7),(15,'gbrpmstalt01',12,8),(16,'gbrpmstalt02',13,9),(17,'gbrpmstalt03',11,10),(19,'gbrpmsappt01',6,11),(20,'gbrpmsdbst03',7,12),(21,'gbrcbiappt01',1,13),(22,'gbrcbidbst01',2,14),(24,'TESTBRIDGE',3,15),(25,'TESTEAS',4,16),(26,'TESTBRIDGE2',3,17),(27,'TESTEAS2',4,18),(42,'gbrpmsuisf11',14,19),(43,'gbrpmseasf11',4,20),(44,'gbrpmsbrgf11',3,21),(45,'gbrpmstalf11',12,22),(46,'gbrpmstalf12',13,23),(47,'gbrpmstalf13',11,24),(48,'gbrpmsappf11',6,25),(51,'gbrpmsuise01',14,28),(52,'gbrpmsuise11',14,29),(53,'gbrpmsease01',4,30),(54,'gbrpmsease11',4,31),(55,'gbrpmsdbse01',8,32),(56,'gbrpmstale01',13,33),(57,'gbrpmstale11',13,34),(61,'gbrpmsuisi01',14,35),(62,'gbrpmsrpxt01',5,36),(63,'gbrpmseasi01',4,37),(64,'gbrpmseasi02',4,38),(65,'gbrpmsbrgi01',3,39),(66,'gbrpmsbrgi02',3,40),(67,'gbrpmstali01',12,41),(68,'gbrpmstali02',13,42),(69,'gbrpmstali03',11,43),(70,'gbrpmsappi01',6,44),(71,'gbrpmsuisi11',14,45),(72,'gbrpmseasi11',4,46),(73,'gbrpmsbrgi11',3,47),(74,'gbrpmsbrgi12',3,48),(75,'gbrpmstali11',12,49),(76,'gbrpmstali12',13,50),(77,'gbrpmstali13',11,51),(78,'gbrpmsappi11',6,52),(79,'gbrpmsuisi21',14,53),(80,'gbrpmseasi21',4,54),(81,'gbrpmsbrgi21',3,55),(82,'gbrpmstali21',12,56),(83,'gbrpmstali22',13,57),(84,'gbrpmstali23',11,58),(85,'gbrpmsappi21',6,59),(86,'gbrpmsuisi31',14,60),(87,'gbrpmsuisi32',14,61),(88,'gbrpmseasi31',4,62),(89,'gbrpmseasi32',4,63),(90,'gbrpmsbrgi31',3,64),(91,'gbrpmsbrgi32',3,65),(92,'gbrpmstali31',12,66),(93,'gbrpmstali32',13,67),(94,'gbrpmstali33',11,68),(95,'gbrpmsappi31',6,69),(96,'gbrpmsuisi41',14,70),(97,'gbrpmsuisi42',14,71),(98,'gbrpmseasi41',4,72),(99,'gbrpmseasi42',4,73),(100,'gbrpmsbrgi41',3,74),(101,'gbrpmstali41',12,75),(102,'gbrpmstali42',13,76),(103,'gbrpmstali43',11,77),(104,'gbrpmsappi41',6,78),(105,'gbrpmsuisf01',14,79),(106,'gbrpmseasf01',4,80),(107,'gbrpmsbrgf01',3,81),(108,'gbrpmstalf01',12,82),(109,'gbrpmstalf02',13,83),(110,'gbrpmstalf03',11,84),(111,'gbrpmsappf01',6,85),(112,'gbrpmsuisf21',14,86),(113,'gbrpmseasf21',4,87),(114,'gbrpmsbrgf21',3,88),(115,'gbrpmstalf21',12,89),(116,'gbrpmstalf22',13,90),(117,'gbrpmstalf23',11,91),(118,'gbrpmsappf21',6,92),(119,'gbrpmsuisf31',14,93),(120,'gbrpmseasf31',4,94),(121,'gbrpmsbrgf31',3,95),(122,'gbrpmstalf31',12,96),(123,'gbrpmstalf32',13,97),(124,'gbrpmstalf33',11,98),(125,'gbrpmsappf31',6,99),(126,'gbrpmsuisf41',14,100),(127,'gbrpmseasf41',4,101),(128,'gbrpmsuisu01',14,102),(129,'gbrpmseasu01',4,103),(130,'gbrpmsbrgu01',3,104),(131,'gbrpmstalu01',12,105),(132,'gbrpmstalu02',13,106),(133,'gbrpmstalu03',11,107),(134,'gbrpmsappu01',6,108),(135,'gbrpmsuisu11',14,109),(136,'gbrpmseasu11',4,110),(137,'gbrpmsbrgu11',3,111),(138,'gbrpmstalu11',12,112),(139,'gbrpmstalu12',13,113),(140,'gbrpmstalu13',11,114),(141,'gbrpmsappu11',6,115),(142,'gbrpmsdbst05',10,116),(143,'gbrpmsdbst14',10,117),(145,'gbrpmsrept01',9,118),(146,'gbrpmsrept02',9,119),(147,'gbrcbiappt02',1,120),(148,'gbrpmsuisf02',14,121),(149,'gbrpmseasf02',4,122),(150,'gbrpmsbrgf12',3,123),(151,'gbrpmsmigi01',15,124),(152,'gbrpmsmigi11',15,125),(153,'gbrpmsmigi21',15,126),(154,'gbrpmsmigf01',15,127),(155,'gbrpmsmigf11',15,128),(156,'gbrpmsmigf21',15,129),(157,'gbrpmsmigf31',15,130),(158,'gbrpmsmigu01',15,131),(159,'gbrpmsmigu02',15,132),(160,'gbrpmsmigt01',15,133),(161,'gbrpmstalf41',12,137),(162,'gb1pmsdbse02',10,138),(163,'gb1pmsdbse03',10,139);
 /*!40000 ALTER TABLE `cm_server` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -604,6 +635,34 @@ LOCK TABLES `cm_subenvironmenttype` WRITE;
 /*!40000 ALTER TABLE `cm_subenvironmenttype` DISABLE KEYS */;
 INSERT INTO `cm_subenvironmenttype` VALUES (1,'MAIN'),(2,'XLeg'),(3,'YLeg'),(4,'ZLeg');
 /*!40000 ALTER TABLE `cm_subenvironmenttype` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cm_vip`
+--
+
+DROP TABLE IF EXISTS `cm_vip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `cm_vip` (
+  `VIPID` bigint(20) NOT NULL AUTO_INCREMENT,
+  `VIPName` varchar(50) NOT NULL,
+  `NodeID` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`VIPID`),
+  UNIQUE KEY `UQ_CM_Server_ServerName` (`VIPName`),
+  KEY `NodeID` (`NodeID`),
+  CONSTRAINT `cm_vip_ibfk_1` FOREIGN KEY (`NodeID`) REFERENCES `cm_node` (`NodeID`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cm_vip`
+--
+
+LOCK TABLES `cm_vip` WRITE;
+/*!40000 ALTER TABLE `cm_vip` DISABLE KEYS */;
+INSERT INTO `cm_vip` VALUES (1,'gbrpmsuist00.corp.internal',134),(2,'gbrpmseast00.corp.internal',135),(3,'gbrpmsbrgt00.corp.internal',136);
+/*!40000 ALTER TABLE `cm_vip` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -840,7 +899,7 @@ IF (
 							and styp.subenvironmenttypename = inSubEnvTypeName)
 	)
 	=0) THEN
-	insert into cm_node_subenvironment values
+	insert into cm_node_subenvironment (NodeID, SubEnvironmentID) values
 	(
 		(
         select NodeID from cm_server where servername = inServerName
@@ -856,6 +915,62 @@ IF (
 	);
 ELSE
 	Select 'Server link existed';
+END IF;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AddVIP` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AddVIP`(inVIPName varchar(50), inEnvironmentName varchar(50), inSubEnvTypeName varchar(50))
+BEGIN   
+
+IF ((select count(*) from cm_vip where vipname = inVIPName) = 0) THEN
+	Insert into cm_node (NodeType) values ('VIP');
+	Insert into cm_vip (vipname, nodeid) values (inVIPName,  (select max(nodeid) from cm_node));
+else
+	Select 'VIP existed';
+END IF;
+
+IF (
+	(select count(*) 
+    from cm_node_subenvironment 
+    where NodeID = 		(select NodeID from cm_vip where vipname = inVIPName)
+	and SubenvironmentID = 	(select SubEnvironmentID 
+							from cm_subenvironment SEnv
+							left join cm_environment E on senv.environmentID = e.environmentID
+							left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+							where e.EnvironmentName = inEnvironmentName
+							and styp.subenvironmenttypename = inSubEnvTypeName)
+	)
+	=0) THEN
+	insert into cm_node_subenvironment (nodeID, subenvironmentID) values
+	(
+		(
+        select NodeID from cm_vip where vipname = inVIPName
+        )
+        ,(
+        select SubEnvironmentID 
+		from cm_subenvironment SEnv
+		left join cm_environment E on senv.environmentID = e.environmentID
+		left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+		where e.EnvironmentName = inEnvironmentName
+		and styp.subenvironmenttypename = inSubEnvTypeName
+		)
+	);
+ELSE
+	Select 'VIP link existed';
 END IF;
 
 END ;;
@@ -900,6 +1015,120 @@ IF(		(
 			(select 	NodeSubID 
 			from 	cm_node_subenvironment
 			where 	NodeID = 			(select nodeid from cm_Server where servername = inServerName)
+			and 	SubEnvironmentID = 	(select SubEnvironmentID 
+										from cm_subenvironment SEnv
+										left join cm_environment E on senv.environmentID = e.environmentID
+										left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+										where e.EnvironmentName = inEnvironmentName
+										and styp.subenvironmenttypename = inSubEnvTypeName
+										)
+			)
+		,    inIPAddr
+		,    inIPTypeName
+		);
+else
+	Select 'IP existed' ;	
+end if;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AssignServerIP` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AssignServerIP`(inServerName varchar(50), inEnvironmentName varchar(50), inSubEnvTypeName varchar(50), inIPAddr varchar(50), inIPTypeName varchar(50))
+BEGIN   
+
+IF(		(
+		select 	count(*) 
+		from 	cm_nodeIP 
+		where 	nodesubid = 	(select 	NodeSubID 
+								from 	cm_node_subenvironment
+								where 	NodeID = 			(select nodeid from cm_Server where servername = inServerName)
+								and 	SubEnvironmentID = 	(select SubEnvironmentID 
+															from cm_subenvironment SEnv
+															left join cm_environment E on senv.environmentID = e.environmentID
+															left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+															where e.EnvironmentName = inEnvironmentName
+															and styp.subenvironmenttypename = inSubEnvTypeName
+															)
+								)
+		and nodeipaddress = inIPAddr
+		and nodeiptype = inIPTypeName
+		) = 0) THEN
+        
+    insert into cm_nodeIP (nodesubid, nodeipaddress, nodeiptype) 
+    values(
+			(select 	NodeSubID 
+			from 	cm_node_subenvironment
+			where 	NodeID = 			(select nodeid from cm_Server where servername = inServerName)
+			and 	SubEnvironmentID = 	(select SubEnvironmentID 
+										from cm_subenvironment SEnv
+										left join cm_environment E on senv.environmentID = e.environmentID
+										left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+										where e.EnvironmentName = inEnvironmentName
+										and styp.subenvironmenttypename = inSubEnvTypeName
+										)
+			)
+		,    inIPAddr
+		,    inIPTypeName
+		);
+else
+	Select 'IP existed' ;	
+end if;
+
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `AssignVIPIP` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `AssignVIPIP`(inVIPName varchar(50), inEnvironmentName varchar(50), inSubEnvTypeName varchar(50), inIPAddr varchar(50), inIPTypeName varchar(50))
+BEGIN   
+
+IF(		(
+		select 	count(*) 
+		from 	cm_nodeIP 
+		where 	nodesubid = 	(select 	NodeSubID 
+								from 	cm_node_subenvironment
+								where 	NodeID = 			(select nodeid from cm_VIP where VIPname = inVIPName)
+								and 	SubEnvironmentID = 	(select SubEnvironmentID 
+															from cm_subenvironment SEnv
+															left join cm_environment E on senv.environmentID = e.environmentID
+															left join cm_subenvironmenttype Styp on styp.subenvironmenttypeID = senv.subenvironmenttypeID
+															where e.EnvironmentName = inEnvironmentName
+															and styp.subenvironmenttypename = inSubEnvTypeName
+															)
+								)
+		and nodeipaddress = inIPAddr
+		and nodeiptype = inIPTypeName
+		) = 0) THEN
+        
+    insert into cm_nodeIP (nodesubid, nodeipaddress, nodeiptype) 
+    values(
+			(select 	NodeSubID 
+			from 	cm_node_subenvironment
+			where 	NodeID = 			(select nodeid from cm_vip where VIPname = inVIPName)
 			and 	SubEnvironmentID = 	(select SubEnvironmentID 
 										from cm_subenvironment SEnv
 										left join cm_environment E on senv.environmentID = e.environmentID
@@ -1451,4 +1680,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-12-07 16:07:27
+-- Dump completed on 2016-12-11  8:57:16

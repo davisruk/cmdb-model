@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +27,10 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentType;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
-import uk.co.boots.columbus.cmdb.model.node.domain.IPType;
-import uk.co.boots.columbus.cmdb.model.node.domain.Node;
-import uk.co.boots.columbus.cmdb.model.node.domain.NodeIP;
-import uk.co.boots.columbus.cmdb.model.node.domain.NodeType;
+import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTOService;
+import uk.co.boots.columbus.cmdb.model.node.dto.NodeRelationshipDTOService;
 import uk.co.boots.columbus.cmdb.model.node.repository.NodeRepository;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
@@ -80,6 +80,22 @@ public class ServerEnvTests {
 		public ServerDTOService sService() {
 			return new ServerDTOService();
 		}
+		
+		@Bean
+		public SubEnvironmentDTOService subEnvironmentDTOService() {
+			return new SubEnvironmentDTOService();
+		}
+
+		@Bean
+		public NodeDTOService nodeDTOService() {
+			return new NodeDTOService();
+		}
+
+		@Bean
+		public NodeRelationshipDTOService nodeRelationshipDTOService() {
+			return new NodeRelationshipDTOService();
+		}
+
 	}
 	
 	@Autowired
@@ -98,9 +114,14 @@ public class ServerEnvTests {
 	private ReleaseDTOService rService;
 	@Autowired
 	private ServerDTOService sService;
-
 	@Autowired
 	private NodeRepository nRepo;
+	@Autowired
+	private SubEnvironmentDTOService subEnvironmentDTOService;
+	@Autowired
+	private NodeDTOService nodeDTOService;
+	@Autowired
+	private NodeRelationshipDTOService nodeRelationshipDTOService;
 
 	@Autowired
 	private SubEnvironmentRepository seRepo;
@@ -138,7 +159,7 @@ public class ServerEnvTests {
 		sc.setValue("Value");
 		sc.setServer(s);
 		this.entityManager.persist(sc);
-		List<ServerConfig> scl = scRepo.findByServer_subEnvironments_environment_name("Test Environment");
+		List<ServerConfig> scl = scRepo.findByServer_nodeSubEnvironments_subEnvironment_environment_name("Test Environment");
 		assertNotNull(scl);
 		assertThat(scl, hasSize(1));
 		System.out.println(scl.get(0));
@@ -295,20 +316,21 @@ public class ServerEnvTests {
 		this.entityManager.persist(e);
 		SubEnvironment se = createSubEnv(r, set, e);
 		this.entityManager.persist(se);
-		se.addNode(s, false);
-		s.addSubEnvironment(se);
+		se.addNode(s);
 		this.entityManager.persist(se);
 		this.entityManager.persist(s);
-		List<Server> servers = serverRepo.findBySubEnvironments_id(1L);
+		this.entityManager.persist(se.getNodeSubEnvironments().iterator().next());
+		Set<Server> servers = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(1L);
 		
 		System.out.println(servers.size());
 		ServerConfig sc = new ServerConfig();
 		sc.setHieraAddress("HIERA_ADDRESS");
 		sc.setParameter("Parameter");
 		sc.setValue("Value");
-		sc.setServer(servers.get(0));
+		Server s1=servers.iterator().next();
+		sc.setServer(s1);
 		this.entityManager.persist(sc);
-		List<ServerConfig> scl = scRepo.findByServer_name(servers.get(0).getName());
+		List<ServerConfig> scl = scRepo.findByServer_name(s1.getName());
 		System.out.println(scl.size());
 	}
 

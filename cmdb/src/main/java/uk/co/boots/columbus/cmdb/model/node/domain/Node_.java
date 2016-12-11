@@ -1,6 +1,5 @@
 package uk.co.boots.columbus.cmdb.model.node.domain;
 
-import javax.persistence.metamodel.ListAttribute;
 import javax.persistence.metamodel.SetAttribute;
 import javax.persistence.metamodel.SingularAttribute;
 
@@ -12,8 +11,8 @@ public class Node_ {
     public static volatile SingularAttribute<Node, NodeType> nodeType; 
     
     // One to Many
-    public static volatile ListAttribute<Node, NodeIP> nodeIPs;
-    public static volatile ListAttribute<Node, NodeRelationship> relationships;
+    public static volatile SetAttribute<Node, VIP> vips;
+    public static volatile SetAttribute<Node, NodeRelationship> relationships;
     
     // Many to Many
     public static volatile SetAttribute<Node, SubEnvironment> subEnvironments;

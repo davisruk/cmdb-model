@@ -49,7 +49,6 @@ public class NodeRelationship implements Identifiable<Long>, Serializable {
 	@Enumerated(EnumType.STRING)
 	private Protocol protocol;
 
-	
 	public NodeRelationship() {
 		super();
 		// TODO Auto-generated constructor stub

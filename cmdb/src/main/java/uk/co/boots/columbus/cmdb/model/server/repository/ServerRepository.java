@@ -30,7 +30,7 @@ public interface ServerRepository extends JpaRepository<Server, Long> {
     Page<Server>findByNameContainsAndIdNotIn(Pageable pageRequest, String name, List<Long> idList);
     Page<Server>findByServerType_nameContainsAndIdNotIn(Pageable pageRequest, String type, List<Long> idList);
     Page<Server>findByIdNotIn(Pageable pageRequest, List<Long> idList);
-    List<Server> findBySubEnvironments_id(Long id);
+    Set<Server> findByNodeSubEnvironments_SubEnvironment_id(Long id);
 
     default List<Server> complete(String query, int maxResults) {
         Server probe = new Server();

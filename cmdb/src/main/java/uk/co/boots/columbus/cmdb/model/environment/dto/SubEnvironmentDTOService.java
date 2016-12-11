@@ -24,13 +24,13 @@ import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentReposit
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentTypeRepository;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
+import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTOService;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
-import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
 @Service
@@ -43,8 +43,6 @@ public class SubEnvironmentDTOService {
 	private ReleaseDTOService releaseDTOService;
 	@Inject
 	private ReleaseRepository releaseRepository;
-	@Inject
-	private ServerDTOService serverDTOService;
 	@Inject
 	private ServerRepository serverRepo;
 	@Inject
@@ -176,32 +174,32 @@ public class SubEnvironmentDTOService {
 			}
 		}
 
-		Set<Node> nodes = subEnvironment.getNodes();
+		Set<? extends Node> nodes = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(dto.id);
+		Set<NodeSubEnvironment> nses = subEnvironment.getNodeSubEnvironments();
 		
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
 		if (dto.servers != null){
 			for (ServerDTO sDTO : dto.servers) {
-				Optional<Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
+				Optional<? extends Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
 				if (!optional.isPresent()) {
 					Server s = serverRepo.findOne(sDTO.id);
-					// add to both sides of the M:M
-					// subenv owns the relationship
-					subEnvironment.addNode(s,true);
+					NodeSubEnvironment nse = subEnvironment.addNode(s);
+					nses.add(nse);
 				}
 			}
 		}
 		// Remove any old nodes
 		// Only need to check this if updating
 		if (!inserting) {
-			for (Iterator<Node> it = nodes.iterator(); it.hasNext();) {
+			for (Iterator<? extends Node> it = nodes.iterator(); it.hasNext();) {
 				Node n = it.next();
 				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(n.getId())).findFirst();
 				if (!optional.isPresent()) {
 						// same as above - ensure correct M:M persistence
 						// by removing from both sides
-						((Server)n).removeSubEnvironment(subEnvironment);
+						//((Server)n).removeSubEnvironment(subEnvironment);
 						it.remove();
 				}
 			}
@@ -315,7 +313,8 @@ public class SubEnvironmentDTOService {
 		if (depth-- > 0) {
 			dto.environment = envDTOService.toDTO(subEnvironment.getEnvironment());
 			dto.release = releaseDTOService.toDTO(subEnvironment.getRelease(), depth);
-			dto.servers = nodeDTOService.getServerDTOList(subEnvironment.getNodes(), depth);
+			
+			dto.servers = nodeDTOService.getServerDTOList(serverRepo.findByNodeSubEnvironments_SubEnvironment_id(subEnvironment.getId()), depth);
 		}
 
 		return dto;

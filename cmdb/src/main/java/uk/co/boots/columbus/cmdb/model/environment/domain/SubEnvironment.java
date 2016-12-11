@@ -7,15 +7,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -26,7 +22,7 @@ import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
-import uk.co.boots.columbus.cmdb.model.node.domain.NodeType;
+import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 
 @Entity
@@ -50,19 +46,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	@JoinColumn(name="ReleaseID")
 	private Release release;
 
-	//bi-directional many-to-many association to Node
-	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-	@JoinTable(
-		name="cm_node_subenvironment"
-		, joinColumns={
-			@JoinColumn(name="SubEnvironmentID")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="NodeID")
-			}
-		)
-	private Set<Node> nodes;
-
 	//bi-directional many-to-one association to SubEnvironmentType
 	@ManyToOne
 	@JoinColumn(name="SubEnvironmentTypeID")
@@ -72,11 +55,9 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	@OneToMany(mappedBy="subEnvironment")
 	private List<SubEnvironmentConfig> subEnvironmentConfigs;
 
-	public SubEnvironment() {
-		nodes = new HashSet<Node>();
-	}
-
-	
+	//bi-directional many-to-one association to SubEnvironmentConfig
+	@OneToMany(mappedBy="subEnvironment")
+	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
 	public Long getId() {
 		return id;
@@ -110,19 +91,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		this.environment = cmEnvironment;
 	}
 
-	public Set<Node> getNodes() {
-		return this.nodes;
-	}
-
-	public Node getNodeOfType(NodeType type) {
-		// temp fix
-		Optional<Node> opt = this.nodes.stream().filter(x -> x.entityClassName().equals(type)).findFirst();
-		return opt.isPresent() ? opt.get() : null;
-	}
-
-	public void setNodes(Set<Node> nodes) {
-		this.nodes = nodes;
-	}
 
 	public SubEnvironmentType getSubEnvironmentType() {
 		return this.subEnvironmentType;
@@ -154,19 +122,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		return cmSubenvironmentconfig;
 	}
 	
-	public void addNode(Node node, boolean isDeep) {
-		nodes.add(node);
-		if (isDeep)
-			node.addSubEnvironment(this);
-	}
-
-	public Node removeNode(Node node, boolean isDeep) {
-		nodes.remove(node);
-		if (isDeep)
-			node.removeSubEnvironment(this);
-		return node;
-	}
-
 	/**
      * Apply the default values.
      */
@@ -219,5 +174,52 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
     @Transient
     public boolean isIdSet() {
         return id != null;
-    }    
+    }
+
+	public Set<NodeSubEnvironment> getNodeSubEnvironments() {
+		return nodeSubEnvironments;
+	}
+
+	public void setNodeSubEnvironments(Set<NodeSubEnvironment> nodeSubEnvironments) {
+		this.nodeSubEnvironments = nodeSubEnvironments;
+	}
+	
+	public NodeSubEnvironment addNodeSubEnvironment (NodeSubEnvironment nse){
+		this.nodeSubEnvironments.add(nse);
+		nse.setSubEnvironment(this);
+		return nse;
+	}
+
+	public NodeSubEnvironment removeNodeSubEnvironment (NodeSubEnvironment nse){
+		this.nodeSubEnvironments.remove(nse);
+		nse.setSubEnvironment(null);
+		return nse;
+	}
+	
+	public NodeSubEnvironment addNode (Node node){
+		NodeSubEnvironment nse = new NodeSubEnvironment();
+		if (nodeSubEnvironments == null)
+			nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
+
+		nse.setSubEnvironment(this);
+		node.addNodeSubEnvironment(nse);
+		nodeSubEnvironments.add(nse);
+		return nse;
+	}
+
+	public NodeSubEnvironment removeNode (Node node){
+		Optional<NodeSubEnvironment> optional = nodeSubEnvironments.stream().filter(x -> {
+			return x.getNode().getId().equals(node.getId());
+			}).findFirst();
+		if (optional.isPresent()){
+			NodeSubEnvironment nse = optional.get();
+			this.nodeSubEnvironments.remove(nse);
+			nse.setSubEnvironment(null);
+			nse.setNode(null);
+			return nse;
+		}
+		return null;
+	}
+	
+	
 }

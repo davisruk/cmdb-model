@@ -21,13 +21,13 @@ public interface SubEnvironmentRepository extends JpaRepository<SubEnvironment, 
 	Page<SubEnvironment>findBySubEnvironmentType_IdNotIn(Pageable pageRequest, List<Long> idList);
 	
 	// have to use both of below in conjunction as the not in subselect is not working
-	@Query("select s.subEnvironments from Server s where s.id = :id")
+	@Query("select nse.subEnvironment from NodeSubEnvironment nse where nse.node.id = :id")
 	List<SubEnvironment>findSubEnvsOfServer(@Param("id") Long serversNodeId);
 	List<SubEnvironment>findByIdNotIn(List<Long> subEnvironmentIds);
 	
 	// below doesn't work - sub select generates invalid select but value inner joins and where
-	@Query("SELECT se FROM SubEnvironment se WHERE se not in (select s.subEnvironments from Server s where s.id = :id)")
-	List<SubEnvironment>findSubEnvsWithoutServer(@Param("id") Long id);
+	//@Query("SELECT se FROM SubEnvironment se WHERE se not in (select s.subEnvironments from Server s where s.id = :id)")
+	//List<SubEnvironment>findSubEnvsWithoutServer(@Param("id") Long id);
 
 	default List<SubEnvironment> complete(Long query, int maxResults) {
 		SubEnvironment probe = new SubEnvironment();

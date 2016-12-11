@@ -1,7 +1,9 @@
 package uk.co.boots.columbus.cmdb.model.node.dto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -130,16 +132,16 @@ public class NodeRelationshipDTOService {
 
 		return nodeRelationship;
 	}
-	public List<NodeRelationship> toEntity(List<NodeRelationshipDTO> dtoList, int depth) {
+	public Set<NodeRelationship> toEntity(List<NodeRelationshipDTO> dtoList, int depth) {
 		if (dtoList == null)
 			return null;
-		List<NodeRelationship> ret = new ArrayList<NodeRelationship>();
+		Set<NodeRelationship> ret = new HashSet<NodeRelationship>();
 		for (NodeRelationshipDTO dto : dtoList)
 			ret.add(toEntity(dto, depth));
 		return ret;
 	}
 
-	public List<NodeRelationshipDTO> toDTO(List<NodeRelationship> nodeRelList, int depth) {
+	public List<NodeRelationshipDTO> toDTO(Set<NodeRelationship> nodeRelList, int depth) {
 		if (nodeRelList == null)
 			return null;
 		List<NodeRelationshipDTO> ret = new ArrayList<NodeRelationshipDTO>();

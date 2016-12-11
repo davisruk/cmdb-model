@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerConfigRepository;
@@ -31,6 +32,9 @@ public class ServerConfigDTOService {
     private ServerDTOService serverDTOService;
     @Inject
     private ServerRepository serverRepository;
+    @Inject
+    private SubEnvironmentRepository seRepository;
+
 
     @Transactional(readOnly = true)
     public ServerConfigDTO findOne(Long id) {
@@ -60,7 +64,7 @@ public class ServerConfigDTOService {
         	// find EnvTag in Hieara Address and replace with Env.name
         	// even though this is many to many servers always have the same configuration
         	// therefore we just take the first environment value in the list
-        	Set<SubEnvironment> envs = conf.getServer().getSubEnvironments(); 
+        	List<SubEnvironment> envs = seRepository.findSubEnvsOfServer(conf.getServer().getId());
         	if (envs != null && !envs.isEmpty()){
         		if (addr!=null)
         			addr = addr.replaceAll("\\{ENVID\\}", envs.iterator().next().getEnvironment().getName());
@@ -82,14 +86,14 @@ public class ServerConfigDTOService {
     
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByServerSubEnvironmentName(String query) {
-        List<ServerConfig> results = serverConfigRepository.findByServer_subEnvironments_environment_name(query);
+        List<ServerConfig> results = serverConfigRepository.findByServer_nodeSubEnvironments_subEnvironment_environment_name(query);
         buildHieraAddresses (results);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByDistinctServerSubEnvironmentEnvironment(Long envId) {
-    	List<ServerConfig> results = serverConfigRepository.findDistinctByServer_subEnvironments_environment_id(envId);
+    	List<ServerConfig> results = serverConfigRepository.findDistinctByServer_nodeSubEnvironments_subEnvironment_environment_id(envId);
         buildHieraAddresses (results);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }

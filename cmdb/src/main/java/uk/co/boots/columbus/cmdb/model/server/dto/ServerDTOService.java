@@ -142,6 +142,7 @@ public class ServerDTOService {
 		server.setName(dto.name);
 		server.setServerType(serverTypeDTOService.toEntity(dto.serverType));
 		server = serverRepository.save(server);
+/*
 		Set<SubEnvironment> seList = server.getSubEnvironments();
 
 
@@ -183,7 +184,7 @@ public class ServerDTOService {
 				}
 			}
 		}
-
+*/
 		dto.id = server.getId();
 		return dto;
 	}
@@ -241,7 +242,7 @@ public class ServerDTOService {
 		dto.name = server.getName();
 		if (depth-- > 0) {
 			dto.serverType = serverTypeDTOService.toDTO(server.getServerType(), depth);
-			dto.subEnvironments = subEnvironmentDTOService.toDTO(server.getSubEnvironments(), depth);
+			dto.subEnvironments = subEnvironmentDTOService.findSubEnvironmentsWithServer(dto);
 		}
 
 		return dto;
@@ -267,7 +268,7 @@ public class ServerDTOService {
 		server.setName(dto.name);
 		if (depth-- > 0) {
 			server.setServerType(serverTypeDTOService.toEntity(dto.serverType, depth));
-			server.setSubEnvironments(subEnvironmentDTOService.toEntity(dto.subEnvironments, depth));
+			//server.setNodeSubEnvironments(subEnvironmentDTOService.toEntity(dto.subEnvironments, depth));
 		}
 		return server;
 	}
