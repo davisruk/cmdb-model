@@ -39,6 +39,7 @@ public class NodeIPDTOService {
 		nodeIP.setIpAddress(dto.ipAddress);
 		nodeIP.setIPType(dto.ipType);
 
+/*
 		if (dto.node == null) {
 			nodeIP.setNode(null);
 		} else {
@@ -47,7 +48,7 @@ public class NodeIPDTOService {
 				nodeIP.setNode(nodeRepo.findOne(dto.node.id));
 			}
 		}
-
+*/
 		return toDTO(nodeIPRepo.save(nodeIP));
 	}
 
@@ -79,13 +80,13 @@ public class NodeIPDTOService {
 		dto.ipAddress = nodeIP.getIpAddress();
 		dto.ipType = nodeIP.getIPType();
 
-			nodeIP.setNode(null);
+//			nodeIP.setNode(null);
 
-		
+/*		
 		if (depth-- > 0) {
 			dto.node = nodeDTOService.toDTO(nodeIP.getNode(), depth);
 		}
-
+*/
 		return dto;
 	}
 
@@ -112,10 +113,11 @@ public class NodeIPDTOService {
 		nodeIP.setIpAddress(dto.ipAddress);
 		nodeIP.setIPType(dto.ipType);
 
+/*
 		if (depth-- > 0) {
 			nodeIP.setNode(nodeDTOService.toEntity(dto.node, depth, new Server())); // MUST change this!!
 		}
-
+*/
 		return nodeIP;
 	}
 	

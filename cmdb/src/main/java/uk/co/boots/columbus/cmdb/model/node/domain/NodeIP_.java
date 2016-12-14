@@ -8,6 +8,6 @@ public class NodeIP_ {
     public static volatile SingularAttribute<NodeIP, String> ipAddress;
     public static volatile SingularAttribute<NodeIP, IPType> ipType;
     // Many to One
-    public static volatile SingularAttribute<NodeIP, Node> node; 
+    public static volatile SingularAttribute<NodeIP, NodeSubEnvironment> nodeSubEnvironment; 
 
 }

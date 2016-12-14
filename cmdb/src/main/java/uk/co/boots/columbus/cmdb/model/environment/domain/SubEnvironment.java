@@ -1,6 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.environment.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +29,13 @@ import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 @Entity
 @Table(name = "cm_subenvironment")
 public class SubEnvironment implements Identifiable<Long>, Serializable{
-    private static final long serialVersionUID = 1L;
+    public SubEnvironment() {
+		super();
+		nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
+		subEnvironmentConfigs = new ArrayList<SubEnvironmentConfig>();
+	}
+
+	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(SubEnvironment.class.getName());
 	
 	@Column(name = "SubEnvironmentID", precision = 19)
@@ -198,9 +205,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	
 	public NodeSubEnvironment addNode (Node node){
 		NodeSubEnvironment nse = new NodeSubEnvironment();
-		if (nodeSubEnvironments == null)
-			nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
-
 		nse.setSubEnvironment(this);
 		node.addNodeSubEnvironment(nse);
 		nodeSubEnvironments.add(nse);

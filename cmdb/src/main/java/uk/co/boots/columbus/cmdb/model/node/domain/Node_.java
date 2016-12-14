@@ -11,7 +11,6 @@ public class Node_ {
     public static volatile SingularAttribute<Node, NodeType> nodeType; 
     
     // One to Many
-    public static volatile SetAttribute<Node, VIP> vips;
     public static volatile SetAttribute<Node, NodeRelationship> relationships;
     
     // Many to Many

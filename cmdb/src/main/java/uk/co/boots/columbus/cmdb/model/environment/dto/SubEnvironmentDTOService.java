@@ -26,6 +26,7 @@ import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentType
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTOService;
+import uk.co.boots.columbus.cmdb.model.node.repository.NodeSubEnvRepository;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
@@ -51,6 +52,7 @@ public class SubEnvironmentDTOService {
 	private NodeDTOService nodeDTOService;
 	@Inject
 	private EnvironmentDTOService envDTOService;
+	@Inject NodeSubEnvRepository nseRepo;
 
 	@Transactional(readOnly = true)
 	public SubEnvironmentDTO findOne(Long id, int depth) {
@@ -181,28 +183,32 @@ public class SubEnvironmentDTOService {
 		// there's no real alternative
 		// Add any new servers
 		if (dto.servers != null){
+			List<NodeSubEnvironment> nsesToAdd = new ArrayList<NodeSubEnvironment>();
 			for (ServerDTO sDTO : dto.servers) {
 				Optional<? extends Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
 				if (!optional.isPresent()) {
 					Server s = serverRepo.findOne(sDTO.id);
 					NodeSubEnvironment nse = subEnvironment.addNode(s);
-					nses.add(nse);
+					nsesToAdd.add(nse);
 				}
 			}
+			if (!nsesToAdd.isEmpty())
+				nseRepo.save(nsesToAdd);
 		}
 		// Remove any old nodes
 		// Only need to check this if updating
 		if (!inserting) {
-			for (Iterator<? extends Node> it = nodes.iterator(); it.hasNext();) {
-				Node n = it.next();
-				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(n.getId())).findFirst();
+			List<NodeSubEnvironment> nsesToDelete = new ArrayList<NodeSubEnvironment>();
+			for (Iterator<NodeSubEnvironment> it = nses.iterator(); it.hasNext();){
+				NodeSubEnvironment nse = it.next();
+				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(nse.getNode().getId())).findFirst();
 				if (!optional.isPresent()) {
-						// same as above - ensure correct M:M persistence
-						// by removing from both sides
-						//((Server)n).removeSubEnvironment(subEnvironment);
-						it.remove();
+					nsesToDelete.add(nse);
+					it.remove();
 				}
 			}
+			if (!nsesToDelete.isEmpty())
+				nseRepo.delete(nsesToDelete);
 		}
 		subEnvironmentRepository.save(subEnvironment);
 		return dto;

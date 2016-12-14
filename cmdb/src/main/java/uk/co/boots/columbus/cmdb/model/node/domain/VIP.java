@@ -5,9 +5,6 @@ import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -17,31 +14,17 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="cm_vip")
-public class VIP implements Serializable {
+public class VIP extends Node implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@GeneratedValue
-	@Id
 	@Column(name="VIPID")
-	private String id;
+	private String vipId;
 
 	@Column(name="VIPName")
 	private String name;
 
-	//bi-directional many-to-one association to Node
-	@ManyToOne
-	@JoinColumn(name="NodeID")
-	private Node node;
-
 	public VIP() {
-	}
-
-	public String getId() {
-		return this.id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -52,12 +35,12 @@ public class VIP implements Serializable {
 		this.name = name;
 	}
 
-	public Node getNode() {
-		return this.node;
+	public String getVipId() {
+		return vipId;
 	}
 
-	public void setNode(Node node) {
-		this.node = node;
+	public void setVipId(String vipId) {
+		this.vipId = vipId;
 	}
 
 }

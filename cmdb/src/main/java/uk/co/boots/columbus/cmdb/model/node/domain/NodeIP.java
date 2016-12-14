@@ -59,25 +59,11 @@ public class NodeIP implements Identifiable<Long>, Serializable {
 		super();
 		this.ipType = ipType;
 		this.ipAddress = ipAddress;
-		this.node = node;
 	}
 
 
     public String getIpAddress() {
 		return ipAddress;
-	}
-
-	//bi-directional many-to-one association to EnvironmentType
-	@ManyToOne
-	@JoinColumn(name="NodeID")
-	private Node node;
-   
-	public Node getNode() {
-		return node;
-	}
-
-	public void setNode(Node node) {
-		this.node = node;
 	}
 
 	public void setIpAddress(String ipAddress) {

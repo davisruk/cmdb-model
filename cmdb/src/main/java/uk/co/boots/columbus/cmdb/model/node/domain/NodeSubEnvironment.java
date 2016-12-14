@@ -3,6 +3,7 @@ package uk.co.boots.columbus.cmdb.model.node.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -40,7 +41,7 @@ public class NodeSubEnvironment implements Serializable {
 	private Node node;
 
 	//bi-directional many-to-one association to NodeIP
-	@OneToMany(mappedBy="nodeSubEnvironment")
+	@OneToMany(mappedBy="nodeSubEnvironment", cascade = {CascadeType.REMOVE})
 	private Set<NodeIP> nodeIPs;
 
 	public NodeSubEnvironment() {

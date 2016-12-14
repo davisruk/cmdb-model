@@ -43,9 +43,6 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 	@OneToMany(mappedBy="node")
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
-	@OneToMany(mappedBy="node")
-	private Set<VIP> vips;
-	
 	public Node() {
 		super();
 		relationships = new HashSet<NodeRelationship>();
@@ -138,27 +135,6 @@ public abstract class Node implements Identifiable<Long>, Serializable {
                 .toString();
     }
 
-	public Set<VIP> getVips() {
-		return vips;
-	}
-
-	public void setVips(Set<VIP> vips) {
-		this.vips = vips;
-	}
-	
-	
-	public VIP removeVIP(VIP vip){
-		this.vips.remove(vip);
-		vip.setNode(null);
-		return vip;
-	}
-
-	public VIP addVIP(VIP vip){
-		this.vips.add(vip);
-		vip.setNode(this);
-		return vip;
-	}
-	
 	public Node addNodeSubEnvironment(NodeSubEnvironment nse){
 		nse.setNode(this);
 		if (this.nodeSubEnvironments == null)
