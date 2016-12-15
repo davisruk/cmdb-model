@@ -52,6 +52,7 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 		super();
 //		this.nodeType = nodeType;
 		relationships = new HashSet<NodeRelationship>();
+		nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
 	}
 
 	public Set<NodeRelationship> getRelationships() {
@@ -141,5 +142,13 @@ public abstract class Node implements Identifiable<Long>, Serializable {
 			this.nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
 		this.nodeSubEnvironments.add(nse);
 		return this;
+	}
+
+	public Set<NodeSubEnvironment> getNodeSubEnvironments() {
+		return nodeSubEnvironments;
+	}
+
+	public void setNodeSubEnvironments(Set<NodeSubEnvironment> nodeSubEnvironments) {
+		this.nodeSubEnvironments = nodeSubEnvironments;
 	}
 }

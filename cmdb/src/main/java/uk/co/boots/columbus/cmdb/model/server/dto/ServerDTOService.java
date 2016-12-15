@@ -25,7 +25,9 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.node.dto.NodeDTO;
+import uk.co.boots.columbus.cmdb.model.node.repository.NodeSubEnvRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
@@ -43,7 +45,8 @@ public class ServerDTOService {
 	private SubEnvironmentDTOService subEnvironmentDTOService;
 	@Inject
 	private SubEnvironmentRepository seRepository;
-
+	@Inject
+	private NodeSubEnvRepository nseRepo;
 	
 	@Transactional(readOnly = true)
 	public ServerDTO findOne(Long id) {
@@ -142,49 +145,45 @@ public class ServerDTOService {
 		server.setName(dto.name);
 		server.setServerType(serverTypeDTOService.toEntity(dto.serverType));
 		server = serverRepository.save(server);
-/*
-		Set<SubEnvironment> seList = server.getSubEnvironments();
 
-
+		Set<NodeSubEnvironment> ses = server.getNodeSubEnvironments();
 		if (dto.subEnvironments == null && dto.subEnvironments.size() == 0)
-			server.setSubEnvironments(null);
+			server.setNodeSubEnvironments(null);
+
 		else{
+			List<NodeSubEnvironment> nseAddList = new ArrayList<NodeSubEnvironment>();
 			for (SubEnvironmentDTO seDTO : dto.subEnvironments){
-				Optional<SubEnvironment> optional = seList.stream().filter(x -> x.getId().equals(seDTO.id)).findFirst();
+				Optional<NodeSubEnvironment> optional = ses.stream().filter(x -> x.getSubEnvironment().getId().equals(seDTO.id)).findFirst();
 				if (!optional.isPresent()){
 					// this is a new sub env for the server 
+					NodeSubEnvironment nse = new NodeSubEnvironment();
 					SubEnvironment se = seRepository.findOne(seDTO.id);
-					// add server to sub env
-					// as sub env owns the persistence relationship
-					// it also takes ownership of adding to both
-					// sides of the collection i.e. we don't
-					// need to add it to server, the subenv will
-					// do it for us - if isDeep is true
-					se.addNode(server, true);
-					
-					// SubEnv owns the relationship so we must make it persist
-					if (dto.isIdSet())
-						seRepository.save(se);
+					nse.setNode(server);
+					se.addNodeSubEnvironment(nse);
+					nseAddList.add(nse);
 				}
 			}
+			if (!nseAddList.isEmpty())
+				nseRepo.save(nseAddList);
 		}
-
+		
 		// Remove any old subEnvs
 		// Only need to check this if updating and we already have subenvs
-		if (dto.isIdSet() && seList != null && seList.size() > 0) {
-			for (Iterator<SubEnvironment> it = seList.iterator(); it.hasNext();) {
-				SubEnvironment se = it.next();
-				Optional<SubEnvironmentDTO> optional = dto.subEnvironments.stream().filter(x -> x.id.equals(se.getId())).findFirst();
+		if (dto.isIdSet() && ses != null && ses.size() > 0) {
+			List<NodeSubEnvironment> nseRemoveList = new ArrayList<NodeSubEnvironment>();
+			for (Iterator<NodeSubEnvironment> it = ses.iterator(); it.hasNext();) {
+				NodeSubEnvironment nse = it.next();
+				Optional<SubEnvironmentDTO> optional = dto.subEnvironments.stream().filter(x -> x.id.equals(nse.getSubEnvironment().getId())).findFirst();
 				if (!optional.isPresent()) {
 					// the DTO is not present so the relationship has been removed
-					se.removeNode(server, false);
-					// SubEnv owns the relationship so we must make it persist
-					seRepository.save(se);
+					nseRemoveList.add(nse);
 					it.remove();
 				}
 			}
+			if (!nseRemoveList.isEmpty())
+				nseRepo.delete(nseRemoveList);
 		}
-*/
+
 		dto.id = server.getId();
 		return dto;
 	}
