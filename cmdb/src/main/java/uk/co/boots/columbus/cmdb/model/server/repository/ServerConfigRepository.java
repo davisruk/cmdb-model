@@ -13,8 +13,10 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 
+import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig_;
 
@@ -24,7 +26,8 @@ public interface ServerConfigRepository extends JpaRepository<ServerConfig, Long
     List<ServerConfig>findByServer_nodeSubEnvironments_subEnvironment_environment_name(String name);
     List<ServerConfig>findDistinctByServer_nodeSubEnvironments_subEnvironment_environment_id(Long id);
     List<ServerConfig> findByServer_name(String typeName);
-    
+    Page<ServerConfig> findByServer_id(Pageable pageRequest);
+
 	default List<ServerConfig> complete(String query, int maxResults) {
         ServerConfig probe = new ServerConfig();
         probe.setParameter(query);

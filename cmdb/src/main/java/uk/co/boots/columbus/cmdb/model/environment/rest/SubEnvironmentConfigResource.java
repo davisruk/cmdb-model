@@ -13,7 +13,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -29,43 +28,38 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
-import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentConfigDTO;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentConfigDTOService;
-import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentConfigRepository;
-import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOService;
+import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 
 @RestController
-@RequestMapping("/api/environmentConfigs")
-public class EnvironmentConfigResource {
+@RequestMapping("/api/subEnvironmentConfigs")
+public class SubEnvironmentConfigResource {
 
-    private final Logger log = LoggerFactory.getLogger(EnvironmentConfigResource.class);
+    private final Logger log = LoggerFactory.getLogger(SubEnvironmentConfigResource.class);
 
-    private EnvironmentConfigRepository environmentConfigRepository;
+    private SubEnvironmentConfigRepository subEnvironmentConfigRepository;
     @Inject
-    private EnvironmentConfigDTOService environmentConfigDTOService;
-    @Inject
-    private HieraDTOService hieraDTOService;
+    private SubEnvironmentConfigDTOService subEnvironmentConfigDTOService;
 
     /**
      * Create a new EnvironmentConfig.
      */
     @RequestMapping(value = "/", method = POST, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EnvironmentConfigDTO> create(@RequestBody EnvironmentConfigDTO environmentConfigDTO) throws URISyntaxException {
+    public ResponseEntity<SubEnvironmentConfigDTO> create(@RequestBody SubEnvironmentConfigDTO subEnvironmentConfigDTO) throws URISyntaxException {
 
-        log.debug("Create EnvironmentConfigDTO : {}", environmentConfigDTO);
+        log.debug("Create SubEnvironmentConfigDTO : {}", subEnvironmentConfigDTO);
 
-        if (environmentConfigDTO.isIdSet()) {
+        if (subEnvironmentConfigDTO.isIdSet()) {
             return ResponseEntity.badRequest().header("Failure", "Cannot create EnvironmentConfig with existing ID").body(null);
         }
 
-        EnvironmentConfigDTO result = environmentConfigDTOService.save(environmentConfigDTO);
+        SubEnvironmentConfigDTO result = subEnvironmentConfigDTOService.save(subEnvironmentConfigDTO);
 
         return ResponseEntity.created(new URI("/api/environmentConfigs/" + result.id)).body(result);
     }
@@ -74,27 +68,27 @@ public class EnvironmentConfigResource {
     * Find by id EnvironmentConfig.
     */
     @RequestMapping(value = "/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EnvironmentConfigDTO> findById(@PathVariable Long id) throws URISyntaxException {
+    public ResponseEntity<SubEnvironmentConfigDTO> findById(@PathVariable Long id) throws URISyntaxException {
 
-        log.debug("Find by id EnvironmentConfig : {}", id);
+        log.debug("Find by id SubEnvironmentConfig : {}", id);
 
-        return Optional.ofNullable(environmentConfigDTOService.findOne(id))
-                .map(environmentConfigDTO -> new ResponseEntity<>(environmentConfigDTO, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+        return Optional.ofNullable(subEnvironmentConfigDTOService.findOne(id, 2))
+                .map(subEnvironmentConfigDTO -> new ResponseEntity<>(subEnvironmentConfigDTO, HttpStatus.OK)).orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     /**
      * Update EnvironmentConfig.
      */
     @RequestMapping(value = "/", method = PUT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<EnvironmentConfigDTO> update(@RequestBody EnvironmentConfigDTO environmentConfigDTO) throws URISyntaxException {
+    public ResponseEntity<SubEnvironmentConfigDTO> update(@RequestBody SubEnvironmentConfigDTO subEnvironmentConfigDTO) throws URISyntaxException {
 
-        log.debug("Update EnvironmentConfigDTO : {}", environmentConfigDTO);
+        log.debug("Update SubEnvironmentConfigDTO : {}", subEnvironmentConfigDTO);
 
-        if (!environmentConfigDTO.isIdSet()) {
-            return create(environmentConfigDTO);
+        if (!subEnvironmentConfigDTO.isIdSet()) {
+            return create(subEnvironmentConfigDTO);
         }
 
-        EnvironmentConfigDTO result = environmentConfigDTOService.save(environmentConfigDTO);
+        SubEnvironmentConfigDTO result = subEnvironmentConfigDTOService.save(subEnvironmentConfigDTO);
 
         return ResponseEntity.ok().body(result);
     }
@@ -103,8 +97,8 @@ public class EnvironmentConfigResource {
      * Find a Page of EnvironmentConfig using query by example.
      */
     @RequestMapping(value = "/page", method = POST, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<PageResponse<EnvironmentConfigDTO>> findAll(@RequestBody PageRequestByExample<EnvironmentConfigDTO> prbe) throws URISyntaxException {
-        PageResponse<EnvironmentConfigDTO> pageResponse = environmentConfigDTOService.findAll(prbe);
+    public ResponseEntity<PageResponse<SubEnvironmentConfigDTO>> findAll(@RequestBody PageRequestByExample<SubEnvironmentConfigDTO> prbe) throws URISyntaxException {
+        PageResponse<SubEnvironmentConfigDTO> pageResponse = subEnvironmentConfigDTOService.findAll(prbe);
         return new ResponseEntity<>(pageResponse, new HttpHeaders(), HttpStatus.OK);
     }
 
@@ -112,9 +106,9 @@ public class EnvironmentConfigResource {
     * Auto complete support.
     */
     @RequestMapping(value = "/complete", method = POST, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<EnvironmentConfigDTO>> complete(@RequestBody AutoCompleteQuery acq) throws URISyntaxException {
+    public ResponseEntity<List<SubEnvironmentConfigDTO>> complete(@RequestBody AutoCompleteQuery acq) throws URISyntaxException {
 
-        List<EnvironmentConfigDTO> results = environmentConfigDTOService.complete(acq.query, acq.maxResults);
+        List<SubEnvironmentConfigDTO> results = subEnvironmentConfigDTOService.complete(acq.query, acq.maxResults);
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
     }
@@ -128,7 +122,7 @@ public class EnvironmentConfigResource {
         log.debug("Delete by id EnvironmentConfig : {}", id);
 
         try {
-            //environmentConfigRepository.delete(id);
+            subEnvironmentConfigRepository.delete(id);
             return ResponseEntity.ok().build();
         } catch (Exception x) {
             // todo: dig exception, most likely org.hibernate.exception.ConstraintViolationException

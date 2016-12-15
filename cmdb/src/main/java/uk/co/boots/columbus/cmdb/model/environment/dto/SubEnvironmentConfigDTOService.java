@@ -6,9 +6,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
+import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
@@ -25,8 +30,8 @@ public class SubEnvironmentConfigDTOService {
 	private SubEnvironmentDTOService subEnvironmentDTOService;
 
 	@Transactional(readOnly = true)
-	public SubEnvironmentConfigDTO findOne(Long id) {
-		return toDTO(subEnvironmentConfigRepository.findOne(id));
+	public SubEnvironmentConfigDTO findOne(Long id, int depth) {
+		return toDTO(subEnvironmentConfigRepository.findOne(id), depth);
 	}
 
 	private void buildHieraAddresses(List<SubEnvironmentConfig> cl) {
@@ -147,4 +152,68 @@ public class SubEnvironmentConfigDTOService {
 
 		return subEnvironmentConfig;
 	}
+	
+	@Transactional(readOnly = true)
+    public List<SubEnvironmentConfigDTO> complete(String query, int maxResults) {
+    	List<SubEnvironmentConfig> results = subEnvironmentConfigRepository.complete(query, maxResults);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<SubEnvironmentConfigDTO> findAll(PageRequestByExample<SubEnvironmentConfigDTO> req) {
+
+    	Example<SubEnvironmentConfig> example = null;
+        SubEnvironmentConfig subEnvironmentConfig = toEntity(req.example);
+
+        if (subEnvironmentConfig != null) {
+            example = Example.of(subEnvironmentConfig);
+        }
+
+        Page<SubEnvironmentConfig> page;
+        if (example != null) {
+            page = subEnvironmentConfigRepository.findAll(example, req.toPageable());
+        } else {
+            page = subEnvironmentConfigRepository.findAll(req.toPageable());
+        }
+
+        List<SubEnvironmentConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+        return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+
+    }
+
+    /**
+     * Save the passed dto as a new entity or update the corresponding entity if any.
+     */
+    @Transactional
+    public SubEnvironmentConfigDTO save(SubEnvironmentConfigDTO dto) {
+
+    	if (dto == null) {
+            return null;
+        }
+
+        SubEnvironmentConfig subEnvironmentConfig;
+        if (dto.isIdSet()) {
+            subEnvironmentConfig = subEnvironmentConfigRepository.findOne(dto.id);
+        } else {
+            subEnvironmentConfig = new SubEnvironmentConfig();
+        }
+
+        subEnvironmentConfig.setParameter(dto.parameter);
+        subEnvironmentConfig.setValue(dto.value);
+        subEnvironmentConfig.setHieraAddress(dto.hieraAddress);
+
+        if (dto.subEnvironment == null) {
+            subEnvironmentConfig.setSubEnvironment(null);
+        } else {
+            SubEnvironment subEnvironment = subEnvironmentConfig.getSubEnvironment();
+            if (subEnvironment == null || (subEnvironment.getId().compareTo(dto.subEnvironment.id) != 0)) {
+                subEnvironmentConfig.setSubEnvironment(subEnvironmentRepository.findOne(dto.subEnvironment.id));
+            }
+        }
+
+        return toDTO(subEnvironmentConfigRepository.save(subEnvironmentConfig));
+
+    }
+	
 }

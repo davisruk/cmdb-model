@@ -179,6 +179,7 @@ public class SubEnvironmentDTOService {
 		Set<? extends Node> nodes = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(dto.id);
 		Set<NodeSubEnvironment> nses = subEnvironment.getNodeSubEnvironments();
 		
+		subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
@@ -210,7 +211,7 @@ public class SubEnvironmentDTOService {
 			if (!nsesToDelete.isEmpty())
 				nseRepo.delete(nsesToDelete);
 		}
-		subEnvironmentRepository.save(subEnvironment);
+		//subEnvironmentRepository.save(subEnvironment);
 		return dto;
 	}
 
