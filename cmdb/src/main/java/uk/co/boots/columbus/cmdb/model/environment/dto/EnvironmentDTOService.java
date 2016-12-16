@@ -3,12 +3,14 @@ package uk.co.boots.columbus.cmdb.model.environment.dto;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -90,20 +92,29 @@ public class EnvironmentDTOService {
 	@Transactional(readOnly = true)
 	public PageResponse<EnvironmentDTO> findAll(PageRequestByExample<EnvironmentDTO> req) {
 		Example<Environment> example = null;
-		Environment environment = toEntity(req.example);
-
-		if (environment != null) {
-			example = Example.of(environment);
-		}
-
 		Page<Environment> page;
-		if (example != null) {
-			page = environmentRepository.findAll(example, req.toPageable());
-		} else {
+		if (req.example == null)
 			page = environmentRepository.findAll(req.toPageable());
+		else
+		{
+			Environment env = toEntity(req.example);
+			example = Example.of(env);			
+			if (env != null) {
+				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null && req.lazyLoadEvent.filters.size() > 0){
+					// build the Matcher for this page request
+					// probably a little overkill but should cope with all use cases
+					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
+						FilterMetadata filter = entry.getValue();
+						// setup the matcher for contains / starts with or ends with
+						ExampleMatcher matcher = ExampleMatcher.matching().withMatcher(entry.getKey(), match->filter.getMatcher(match));
+						example = Example.of(env, matcher);		
+					}
+				}
+			}
+			page = environmentRepository.findAll(example, req.toPageable());
 		}
 
-		List<EnvironmentDTO> content = page.getContent().stream().map((Environment e) -> toDTO(e,0)).collect(Collectors.toList());
+		List<EnvironmentDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
 	}
 

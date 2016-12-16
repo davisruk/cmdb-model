@@ -70,7 +70,7 @@ public class ServerDTOService {
 			Server server = toEntity(req.example);
 			example = Example.of(server);			
 			if (server != null) {
-				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null){
+				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null && req.lazyLoadEvent.filters.size() > 0){
 					// build the Matcher for this page request
 					// probably a little overkill but should cope with all use cases
 					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
