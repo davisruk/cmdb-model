@@ -1,61 +1,36 @@
 package uk.co.boots.columbus.cmdb.model.user.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQuery;
 import javax.persistence.Transient;
 
 import uk.co.boots.columbus.cmdb.model.component.domain.ComponentConfig;
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 
-
-/**
- * The persistent class for the role database table.
- * 
- */
 @Entity
-@NamedQuery(name="Role.findAll", query="SELECT r FROM Role r")
-public class Role implements Identifiable<Integer>, Serializable {
+public class Privelege implements Identifiable<Integer>, Serializable {
 	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(ComponentConfig.class.getName());
     
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;
-
 	private String name;
 
 	//bi-directional many-to-many association to User
-	@ManyToMany(mappedBy="roles")
-	private List<User> users;
+	@ManyToMany(mappedBy="priveleges")
+	private Set<Role> roles;
 
-	//bi-directional many-to-many association to Role
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-		name="role_privelege"
-		, joinColumns={
-			@JoinColumn(name="role_id")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="privelege_id")
-			}
-		)
-	private Set<Privelege> priveleges;
-	
-	public Role() {
+	public Privelege() {
 	}
 
 	public Integer getId() {
@@ -74,12 +49,12 @@ public class Role implements Identifiable<Integer>, Serializable {
 		this.name = name;
 	}
 
-	public List<User> getUsers() {
-		return this.users;
+	public Set<Role> getRoles() {
+		return this.roles;
 	}
 
-	public void setUsers(List<User> users) {
-		this.users = users;
+	public void setUsers(Set<Role> roles) {
+		this.roles = roles;
 	}
 
 	@Transient 
@@ -99,25 +74,15 @@ public class Role implements Identifiable<Integer>, Serializable {
 		 return id != null;
 	}
 	
-	public void addUser(User user) {
-		if (users == null)
-			users = new ArrayList<User>();
-		users.add(user);
+	public void addRole(Role role) {
+		if (roles == null)
+			roles = new HashSet<Role>();
+		roles.add(role);
 	}
 
 	@Override
 	public String toString() {
-		return "Role [id=" + id + ", name=" + name + ", users=" + users + ", identifiableHashBuilder="
+		return "Privelege [id=" + id + ", name=" + name + ", roles=" + roles + ", identifiableHashBuilder="
 				+ identifiableHashBuilder + "]";
 	}
-
-	public Set<Privelege> getPriveleges() {
-		return priveleges;
-	}
-
-	public void setPriveleges(Set<Privelege> priveleges) {
-		this.priveleges = priveleges;
-	}
-	
-	
 }

@@ -99,15 +99,15 @@ public class EnvironmentResource {
     	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id, true), "HieraData_SubEnv.csv");
     }
 
-    @RequestMapping(value = "/configdownloadall/{id}", method = GET, produces = "text/csv")
+    @RequestMapping(value = "/configdownloadall/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsAll(@PathVariable Long id) throws IOException {
+    public CsvResponse downloadConfigsAllPost(@PathVariable Long id) throws IOException {
     	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForEnv(id, true), "HieraData_Complete.csv");
     }
 
-    @RequestMapping(value = "/configdownloadall", method = GET, produces = "text/csv")
+    @RequestMapping(value = "/configdownloadall", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsAll() throws IOException {
+    public CsvResponse downloadConfigsAllPost() throws IOException {
     	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForAllEnvs(), "HieraData_Complete.csv");
     }
 

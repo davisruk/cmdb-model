@@ -1,17 +1,23 @@
 package uk.co.boots.columbus.cmdb.model.release.dto;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseConfigRepository;
@@ -31,22 +37,29 @@ public class ReleaseConfigDTOService {
         return toDTO(releaseConfigRepository.findOne(id));
     }
 
+    
     private void buildHieraAddresses (List<ReleaseConfig> cl, String envName){
+    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    	boolean allowSensitive = false;
+    	Collection<? extends GrantedAuthority> auths = auth.getAuthorities();
+    	Optional<? extends GrantedAuthority> optional = auths.stream().filter(x -> x.getAuthority().equals("ROLE_ADMIN")).findFirst();
+    	if (optional.isPresent())
+    		allowSensitive = true;
     	String addr;
     	String value;
     	for (ReleaseConfig conf: cl){
         	addr = conf.getHieraAddress();
         	value = conf.getValue();
         	if (addr != null){
-	        	addr = addr.replaceAll("\\{Release\\}",conf.getRelease().getName());
-	        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-	        	addr = addr.replaceAll("\\{ENVID\\}", envName);
+        		addr = addr.replaceAll("\\{Release\\}",allowSensitive ? conf.getRelease().getName() : "[YOU AIN'T GOT NO RIGHT!]");
+	        	addr = addr.replaceAll("\\{ParamName\\}",allowSensitive ? conf.getParameter() : "[YOU AIN'T GOT NO RIGHT!]");
+	        	addr = addr.replaceAll("\\{ENVID\\}",allowSensitive ? envName : "[YOU AIN'T GOT NO RIGHT!]");
 	        	conf.setHieraAddress(addr);
         	}
         	if (value != null){
-	        	value = value.replaceAll("\\{Release\\}",conf.getRelease().getName());
-	        	value = value.replaceAll("\\{ParamName\\}",conf.getParameter());
-	        	value = value.replaceAll("\\{ENVID\\}",envName);
+        		value = value.replaceAll("\\{Release\\}", allowSensitive ? conf.getRelease().getName() : "[YOU AIN'T GOT NO RIGHT!]");
+	        	value = value.replaceAll("\\{ParamName\\}", allowSensitive ? conf.getParameter() : "[YOU AIN'T GOT NO RIGHT!]");
+	        	value = value.replaceAll("\\{ENVID\\}",  allowSensitive ? envName : "[YOU AIN'T GOT NO RIGHT!]");
 	        	conf.setValue(value);
         	}
         }

@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.security.jwt.UserWithId;
+import uk.co.boots.columbus.cmdb.model.user.domain.Privelege;
 import uk.co.boots.columbus.cmdb.model.user.domain.Role;
 import uk.co.boots.columbus.cmdb.model.user.domain.User;
 import uk.co.boots.columbus.cmdb.model.user.repository.UserRepository;
@@ -75,6 +76,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
         for (Role role : roles) {
             result.add(new SimpleGrantedAuthority(role.getName()));
+            for (Privelege priv : role.getPriveleges()) {
+                result.add(new SimpleGrantedAuthority(priv.getName()));
+            }
         }
         return result;
     }

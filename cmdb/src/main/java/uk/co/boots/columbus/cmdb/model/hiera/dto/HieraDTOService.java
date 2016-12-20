@@ -9,7 +9,6 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import uk.co.boots.columbus.cmdb.model.component.dto.ComponentConfigDTOService;
-import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOService;
@@ -26,8 +25,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 
 	@Inject
 	private GlobalconfigDTOService gcService;
-	@Inject
-	private EnvironmentConfigDTOService ecService;
 	@Inject
 	private ServerConfigDTOService scService;
 	@Inject
