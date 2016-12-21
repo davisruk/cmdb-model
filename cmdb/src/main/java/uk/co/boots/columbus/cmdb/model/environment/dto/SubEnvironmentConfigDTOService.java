@@ -18,6 +18,7 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
+import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
 @Service
 public class SubEnvironmentConfigDTOService {
@@ -37,6 +38,7 @@ public class SubEnvironmentConfigDTOService {
 	private void buildHieraAddresses(List<SubEnvironmentConfig> cl) {
 		String addr;
 		String value;
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (SubEnvironmentConfig conf : cl) {
 			addr = conf.getHieraAddress();
 			value = conf.getValue();
@@ -47,8 +49,12 @@ public class SubEnvironmentConfigDTOService {
 				conf.setHieraAddress(addr);
 			}
 			if (value != null) {
-				value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-				value = value.replaceAll("\\{ENVID\\}", conf.getSubEnvironment().getEnvironment().getName());
+				if (allowSensitive){
+					value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+					value = value.replaceAll("\\{ENVID\\}", conf.getSubEnvironment().getEnvironment().getName());
+				}else{
+					value = "[SENSITIVE]";
+				}
 				conf.setValue(value);
 			}
 		}
@@ -56,15 +62,19 @@ public class SubEnvironmentConfigDTOService {
 
 	public List<SubEnvironmentConfigDTO> getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(
 			SubEnvironmentDTO seDTO, List<ReleaseConfigDTO> relConfList) {
-	
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		List<SubEnvironmentConfigDTO> subConList = new ArrayList<SubEnvironmentConfigDTO>();
 		for (ReleaseConfigDTO rDTO : relConfList) {
 			if (rDTO.recurseBySubEnv.booleanValue()) {
 				SubEnvironmentConfigDTO dto = new SubEnvironmentConfigDTO();
 				dto.hieraAddress = rDTO.hieraAddress.replaceAll("\\{ParamName\\}", rDTO.getParameter());
 				dto.hieraAddress = dto.hieraAddress.replaceAll("\\{ENVID\\}", seDTO.environment.name);
-				dto.value = rDTO.value.replaceAll("\\{ParamName\\}", rDTO.getParameter());
-				dto.value = dto.value.replaceAll("\\{ENVID\\}", seDTO.environment.name);
+				if (allowSensitive){
+					dto.value = rDTO.value.replaceAll("\\{ParamName\\}", rDTO.getParameter());
+					dto.value = dto.value.replaceAll("\\{ENVID\\}", seDTO.environment.name);
+				}else{
+					dto.value = "[SENSITIVE]";
+				}
 			}
 		}
 		return subConList;

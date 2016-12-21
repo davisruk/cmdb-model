@@ -17,7 +17,7 @@ import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 
 @Entity
-public class Privelege implements Identifiable<Integer>, Serializable {
+public class Privilege implements Identifiable<Integer>, Serializable {
 	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(ComponentConfig.class.getName());
     
@@ -27,10 +27,10 @@ public class Privelege implements Identifiable<Integer>, Serializable {
 	private String name;
 
 	//bi-directional many-to-many association to User
-	@ManyToMany(mappedBy="priveleges")
+	@ManyToMany(mappedBy="privileges")
 	private Set<Role> roles;
 
-	public Privelege() {
+	public Privilege() {
 	}
 
 	public Integer getId() {

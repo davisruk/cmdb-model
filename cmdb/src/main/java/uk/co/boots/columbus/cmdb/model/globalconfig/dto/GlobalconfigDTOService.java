@@ -21,6 +21,7 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 
 /**
@@ -91,13 +92,29 @@ public class GlobalconfigDTOService {
         Globalconfig globalconfig;
         if (dto.isIdSet()) {
             globalconfig = globalconfigRepository.findOne(dto.id);
+            if (SecurityHelper.userCanWriteSensitiveData()){
+            	// only ever set sensitive data if we are allowed to
+            	// value is set to [SENSITIVE] when retrieved from
+            	// the DB for the DTO - we don't want to overwrite
+            	// the real value.
+            	globalconfig.setValue(dto.value);
+            	globalconfig.setSensitive(dto.sensitive);
+            }
         } else {
             globalconfig = new Globalconfig();
+        	// sensitive data can always be set here as it's a new item
+            // if the user has rights they will have been checked in the
+            // UI.
+            globalconfig.setValue(dto.value);
+        	globalconfig.setSensitive(dto.sensitive);
         }
 
         globalconfig.setParameter(dto.parameter);
-        globalconfig.setValue(dto.value);
         globalconfig.setHieraAddress(dto.hieraAddress);
+        globalconfig.setNotes(dto.notes);
+        globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
+        globalconfig.setRecursiveByRel(dto.recursiveByRel);
+        globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
 
         return toDTO(globalconfigRepository.save(globalconfig));
     }
@@ -127,11 +144,17 @@ public class GlobalconfigDTOService {
 
         dto.id = globalconfig.getId();
         dto.parameter = globalconfig.getParameter();
-        dto.value = globalconfig.getValue();
+        if (SecurityHelper.userCanViewSensitiveData())
+        	dto.value = globalconfig.getValue();
+        else
+        	dto.value = "[SENSITIVE]";
         dto.hieraAddress = globalconfig.getHieraAddress();
-        if (depth-- > 0) {
-        }
-
+        dto.recursiveByEnv = globalconfig.isRecursiveByEnv();
+        dto.recursiveByRel = globalconfig.isRecursiveByRel();
+        dto.recursiveBySubEnv = globalconfig.isRecursiveBySubEnv();
+        dto.notes = globalconfig.getNotes();
+        dto.sensitive = globalconfig.IsSensitive();
+        
         return dto;
     }
 
@@ -158,9 +181,12 @@ public class GlobalconfigDTOService {
         globalconfig.setParameter(dto.parameter);
         globalconfig.setValue(dto.value);
         globalconfig.setHieraAddress(dto.hieraAddress);
-        if (depth-- > 0) {
-        }
-
+        globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
+        globalconfig.setRecursiveByRel(dto.recursiveByRel);
+        globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
+        globalconfig.setSensitive(dto.sensitive);
+        
+        
         return globalconfig;
     }
 }

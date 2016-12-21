@@ -24,6 +24,7 @@ import uk.co.boots.columbus.cmdb.model.component.repository.SolutionComponentRep
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentConfig;
+import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
 /**
  * A simple DTO Facility for ComponentConfig.
@@ -66,6 +67,8 @@ public class ComponentConfigDTOService {
     
     private void buildHieraAddresses (List<ComponentConfig> cl){
     	String addr;
+    	String value;
+    	boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
     	for (ComponentConfig conf: cl){
         	addr = conf.getHieraAddress();
         	//find Parameter in Hieara Address and replace with Release
@@ -74,7 +77,17 @@ public class ComponentConfigDTOService {
         	addr = addr.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
         	//find EnvTag in Hieara Address and replace with Env.name
         	addr = addr.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
-        	
+        	if (allowSensitive){
+		    	value = conf.getValue();
+		    	//find Parameter in Hieara Address and replace with Release
+		    	value = value.replaceAll("\\{Release\\}",conf.getSolutionComponent().getPackageInfo().getRelease().getName());
+		    	//find EnvTag in Hieara Address and replace with ServType
+		    	value = value.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
+		    	//find EnvTag in Hieara Address and replace with Env.name
+		    	value = value.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
+        	}else{
+        		value = "[SENSITIVE]";
+        	}
         	conf.setHieraAddress(addr);
         }
     }

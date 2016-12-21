@@ -11,5 +11,5 @@ public abstract class Role_ {
 	    public static volatile SingularAttribute<User, Integer> id;
 	    public static volatile SingularAttribute<User, String> name;
 	    public static volatile ListAttribute<Role, User> users;
-	    public static volatile SetAttribute<Role, Privelege> priveleges;
+	    public static volatile SetAttribute<Role, Privilege> privileges;
 }

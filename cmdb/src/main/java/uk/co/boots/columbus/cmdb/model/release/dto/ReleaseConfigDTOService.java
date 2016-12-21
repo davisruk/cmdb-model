@@ -22,6 +22,7 @@ import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseConfigRepository;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
+import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
 @Service
 public class ReleaseConfigDTOService {
@@ -39,27 +40,27 @@ public class ReleaseConfigDTOService {
 
     
     private void buildHieraAddresses (List<ReleaseConfig> cl, String envName){
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	boolean allowSensitive = false;
-    	Collection<? extends GrantedAuthority> auths = auth.getAuthorities();
-    	Optional<? extends GrantedAuthority> optional = auths.stream().filter(x -> x.getAuthority().equals("ROLE_ADMIN")).findFirst();
-    	if (optional.isPresent())
-    		allowSensitive = true;
     	String addr;
     	String value;
+    	boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
     	for (ReleaseConfig conf: cl){
         	addr = conf.getHieraAddress();
         	value = conf.getValue();
         	if (addr != null){
-        		addr = addr.replaceAll("\\{Release\\}",allowSensitive ? conf.getRelease().getName() : "[YOU AIN'T GOT NO RIGHT!]");
-	        	addr = addr.replaceAll("\\{ParamName\\}",allowSensitive ? conf.getParameter() : "[YOU AIN'T GOT NO RIGHT!]");
-	        	addr = addr.replaceAll("\\{ENVID\\}",allowSensitive ? envName : "[YOU AIN'T GOT NO RIGHT!]");
+        		addr = addr.replaceAll("\\{Release\\}",conf.getRelease().getName());
+	        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
+	        	addr = addr.replaceAll("\\{ENVID\\}", envName);
 	        	conf.setHieraAddress(addr);
         	}
         	if (value != null){
-        		value = value.replaceAll("\\{Release\\}", allowSensitive ? conf.getRelease().getName() : "[YOU AIN'T GOT NO RIGHT!]");
-	        	value = value.replaceAll("\\{ParamName\\}", allowSensitive ? conf.getParameter() : "[YOU AIN'T GOT NO RIGHT!]");
-	        	value = value.replaceAll("\\{ENVID\\}",  allowSensitive ? envName : "[YOU AIN'T GOT NO RIGHT!]");
+        		if (allowSensitive){
+	        		value = value.replaceAll("\\{Release\\}", conf.getRelease().getName());
+		        	value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+		        	value = value.replaceAll("\\{ENVID\\}",envName);
+        		}
+        		else{
+        			value = "[SENSITIVE]";
+        		}
 	        	conf.setValue(value);
         	}
         }

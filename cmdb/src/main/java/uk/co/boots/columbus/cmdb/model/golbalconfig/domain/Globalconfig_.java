@@ -18,4 +18,9 @@ public abstract class Globalconfig_ {
     public static volatile SingularAttribute<Globalconfig, String> parameter;
     public static volatile SingularAttribute<Globalconfig, String> value;
     public static volatile SingularAttribute<Globalconfig, String> hieraAddress;
+    public static volatile SingularAttribute<Globalconfig, Boolean> recursiveByEnv;
+    public static volatile SingularAttribute<Globalconfig, Boolean> recursiveByRel;
+    public static volatile SingularAttribute<Globalconfig, Boolean> recursiveBySubEnv;
+    public static volatile SingularAttribute<Globalconfig, String> notes;
+    public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;
 }

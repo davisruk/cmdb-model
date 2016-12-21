@@ -45,15 +45,15 @@ public class Role implements Identifiable<Integer>, Serializable {
 	//bi-directional many-to-many association to Role
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
-		name="role_privelege"
+		name="role_privilege"
 		, joinColumns={
 			@JoinColumn(name="role_id")
 			}
 		, inverseJoinColumns={
-			@JoinColumn(name="privelege_id")
+			@JoinColumn(name="privilege_id")
 			}
 		)
-	private Set<Privelege> priveleges;
+	private Set<Privilege> privileges;
 	
 	public Role() {
 	}
@@ -111,12 +111,12 @@ public class Role implements Identifiable<Integer>, Serializable {
 				+ identifiableHashBuilder + "]";
 	}
 
-	public Set<Privelege> getPriveleges() {
-		return priveleges;
+	public Set<Privilege> getPrivileges() {
+		return privileges;
 	}
 
-	public void setPriveleges(Set<Privelege> priveleges) {
-		this.priveleges = priveleges;
+	public void setPrivileges(Set<Privilege> privileges) {
+		this.privileges = privileges;
 	}
 	
 	

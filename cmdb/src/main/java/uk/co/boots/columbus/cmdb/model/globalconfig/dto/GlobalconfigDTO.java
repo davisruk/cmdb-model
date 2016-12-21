@@ -35,6 +35,11 @@ public class GlobalconfigDTO implements CoreConfigDTO{
     public String parameter;
     public String value;
     public String hieraAddress;
+    public Boolean recursiveByEnv;
+    public Boolean recursiveByRel;
+    public Boolean recursiveBySubEnv;
+    public String notes;
+    public Boolean sensitive;
 
     @JsonIgnore
     public boolean isIdSet() {
