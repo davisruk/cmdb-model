@@ -9,6 +9,8 @@ public class SubEnvironmentConfigDTO implements CoreConfigDTO{
 	public String parameter;
     public String value;
     public String hieraAddress;
+    public String notes;
+    public Boolean sensitive;
     public SubEnvironmentDTO subEnvironment;
 
     public Long getId() {

@@ -35,6 +35,9 @@ public class ComponentConfigDTO implements CoreConfigDTO{
     public String parameter;
     public String value;
     public String hieraAddress;
+    public String notes;
+    public Boolean sensitive;
+    
     public SolutionComponentDTO my_component;
 
     @JsonIgnore

@@ -35,6 +35,8 @@ public class ServerConfigDTO implements CoreConfigDTO{
     public String parameter;
     public String value;
     public String hieraAddress;
+    public String notes;
+    public Boolean sensitive;
     public ServerDTO server;
 
     @JsonIgnore

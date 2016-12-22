@@ -19,6 +19,7 @@ import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConf
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
+import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 
 @Service
 public class SubEnvironmentConfigDTOService {
@@ -65,7 +66,7 @@ public class SubEnvironmentConfigDTOService {
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		List<SubEnvironmentConfigDTO> subConList = new ArrayList<SubEnvironmentConfigDTO>();
 		for (ReleaseConfigDTO rDTO : relConfList) {
-			if (rDTO.recurseBySubEnv.booleanValue()) {
+			if (rDTO.recursiveBySubEnv.booleanValue()) {
 				SubEnvironmentConfigDTO dto = new SubEnvironmentConfigDTO();
 				dto.hieraAddress = rDTO.hieraAddress.replaceAll("\\{ParamName\\}", rDTO.getParameter());
 				dto.hieraAddress = dto.hieraAddress.replaceAll("\\{ENVID\\}", seDTO.environment.name);
@@ -125,7 +126,17 @@ public class SubEnvironmentConfigDTOService {
 		dto.id = subEnvironmentConfig.getId();
 		dto.parameter = subEnvironmentConfig.getParameter();
 		dto.value = subEnvironmentConfig.getValue();
+		// hide sensitive info if user doesn't have rights
+		if (subEnvironmentConfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
+			dto.value = "[SENSITIVE]";
+		else
+			dto.value = subEnvironmentConfig.getValue();
+
+		
 		dto.hieraAddress = subEnvironmentConfig.getHieraAddress();
+		dto.notes = subEnvironmentConfig.getNotes();
+		dto.sensitive = subEnvironmentConfig.IsSensitive();
+		
 		if (depth-- > 0) {
 			dto.subEnvironment = subEnvironmentDTOService.toDTO(subEnvironmentConfig.getSubEnvironment(), depth);
 		}
@@ -156,6 +167,9 @@ public class SubEnvironmentConfigDTOService {
 		subEnvironmentConfig.setParameter(dto.parameter);
 		subEnvironmentConfig.setValue(dto.value);
 		subEnvironmentConfig.setHieraAddress(dto.hieraAddress);
+		subEnvironmentConfig.setSensitive(dto.sensitive);
+		subEnvironmentConfig.setNotes(dto.notes);
+		
 		if (depth-- > 0) {
 			subEnvironmentConfig.setSubEnvironment(subEnvironmentDTOService.toEntity(dto.subEnvironment, depth));
 		}
@@ -203,16 +217,31 @@ public class SubEnvironmentConfigDTOService {
         }
 
         SubEnvironmentConfig subEnvironmentConfig;
-        if (dto.isIdSet()) {
-            subEnvironmentConfig = subEnvironmentConfigRepository.findOne(dto.id);
-        } else {
-            subEnvironmentConfig = new SubEnvironmentConfig();
-        }
+		if (dto.isIdSet()) {
+			subEnvironmentConfig = subEnvironmentConfigRepository.findOne(dto.id);
+			if (!subEnvironmentConfig.IsSensitive()
+					|| (subEnvironmentConfig.IsSensitive() && SecurityHelper.userCanWriteSensitiveData())) {
+				// only ever set sensitive data if we are allowed to
+				// value is set to [SENSITIVE] when retrieved from
+				// the DB for the DTO - we don't want to overwrite
+				// the real value.
+				subEnvironmentConfig.setValue(dto.value);
+				subEnvironmentConfig.setSensitive(dto.sensitive);
+			}
+		} else {
+			subEnvironmentConfig = new SubEnvironmentConfig();
+			// sensitive data can always be set here as it's a new item
+			// if the user has rights they will have been checked in the
+			// UI.
+			subEnvironmentConfig.setValue(dto.value);
+			subEnvironmentConfig.setSensitive(dto.sensitive);
+		}
+        
 
         subEnvironmentConfig.setParameter(dto.parameter);
-        subEnvironmentConfig.setValue(dto.value);
         subEnvironmentConfig.setHieraAddress(dto.hieraAddress);
-
+        subEnvironmentConfig.setNotes(dto.notes);
+        
         if (dto.subEnvironment == null) {
             subEnvironmentConfig.setSubEnvironment(null);
         } else {

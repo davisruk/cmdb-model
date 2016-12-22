@@ -15,6 +15,8 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
+import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerConfigRepository;
@@ -128,16 +130,30 @@ public class ServerConfigDTOService {
         }
 
         ServerConfig serverConfig;
-        if (dto.isIdSet()) {
-            serverConfig = serverConfigRepository.findOne(dto.id);
-        } else {
-            serverConfig = new ServerConfig();
-        }
+		if (dto.isIdSet()) {
+			serverConfig = serverConfigRepository.findOne(dto.id);
+			if (!serverConfig.IsSensitive()
+					|| (serverConfig.IsSensitive() && SecurityHelper.userCanWriteSensitiveData())) {
+				// only ever set sensitive data if we are allowed to
+				// value is set to [SENSITIVE] when retrieved from
+				// the DB for the DTO - we don't want to overwrite
+				// the real value.
+				serverConfig.setValue(dto.value);
+				serverConfig.setSensitive(dto.sensitive);
+			}
+		} else {
+			serverConfig = new ServerConfig();
+			// sensitive data can always be set here as it's a new item
+			// if the user has rights they will have been checked in the
+			// UI.
+			serverConfig.setValue(dto.value);
+			serverConfig.setSensitive(dto.sensitive);
+		}
 
         serverConfig.setParameter(dto.parameter);
-        serverConfig.setValue(dto.value);
         serverConfig.setHieraAddress(dto.hieraAddress);
-
+        serverConfig.setNotes(dto.notes);
+        
         if (dto.server == null) {
             serverConfig.setServer(null);
         } else {
@@ -175,8 +191,17 @@ public class ServerConfigDTOService {
 
         dto.id = serverConfig.getId();
         dto.parameter = serverConfig.getParameter();
-        dto.value = serverConfig.getValue();
+		dto.value = serverConfig.getValue();
+		// hide sensitive info if user doesn't have rights
+		if (serverConfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
+			dto.value = "[SENSITIVE]";
+		else
+			dto.value = serverConfig.getValue();
+
         dto.hieraAddress = serverConfig.getHieraAddress();
+		dto.notes = serverConfig.getNotes();
+		dto.sensitive = serverConfig.IsSensitive();
+        
         if (depth-- > 0) {
             dto.server = serverDTOService.toDTO(serverConfig.getServer(), depth);
         }
@@ -207,6 +232,9 @@ public class ServerConfigDTOService {
         serverConfig.setParameter(dto.parameter);
         serverConfig.setValue(dto.value);
         serverConfig.setHieraAddress(dto.hieraAddress);
+        serverConfig.setSensitive(dto.sensitive);
+        serverConfig.setNotes(dto.notes);
+        
         if (depth-- > 0) {
             serverConfig.setServer(serverDTOService.toEntity(dto.server, depth));
         }

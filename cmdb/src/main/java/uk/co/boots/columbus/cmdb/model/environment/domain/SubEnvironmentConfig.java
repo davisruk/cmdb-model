@@ -43,6 +43,12 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	@Column(name = "SubEnvConfigValue", nullable = false, unique = true, length = 50)
 	private String value;
 
+	@Column(name = "SubEnvConfigNotes")
+    private String notes;
+
+    @Column(name = "SubEnvConfigIsSensitive")
+    private Boolean sensitive;
+	
 	// bi-directional many-to-one association to SubEnvironment
 	@ManyToOne
 	@JoinColumn(name = "SubEnvironmentID")
@@ -140,6 +146,22 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 				.add("value", getValue()) //
 				.add("hieraAddress", getHieraAddress()) //
 				.toString();
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Boolean IsSensitive() {
+		return sensitive;
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
 	}
 	
 }

@@ -42,6 +42,12 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
     @Column(name = "ServConfigHieraAddress", length = 45)
     private String hieraAddress;
 
+	@Column(name = "ServerConfigNotes")
+    private String notes;
+
+    @Column(name = "ServerConfigIsSensitive")
+    private Boolean sensitive;
+    
     @JoinColumn(name = "ServerID", referencedColumnName="serverId")
     @ManyToOne
     private Server server;
@@ -164,4 +170,20 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
                 .add("hieraAddress", getHieraAddress()) //
                 .toString();
     }
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Boolean IsSensitive() {
+		return sensitive;
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
+	}
 }

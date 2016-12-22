@@ -32,15 +32,37 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(ComponentConfig.class.getName());
 
-    // Raw attributes
+    @Column(name = "CompConfigID", precision = 19)
+    @GeneratedValue
+    @Id
     private Long id;
+
+    @Size(max = 50)
+    @Column(name = "CompConfigParameter", length = 50)
     private String parameter;
+
+    @Size(max = 50)
+    @Column(name = "CompConfigValue", length = 50)
     private String value;
+    
+    @Size(max = 50)
+    @Column(name = "CompConfigHieraAddress", length = 50)
     private String hieraAddress;
 
-    // Many to one
+	@Column(name = "CompConfigNotes")
+    private String notes;
+
+    @Column(name = "CompConfigIsSensitive")
+    private Boolean sensitive;
+    
+    @NotNull
+    @JoinColumn(name = "ComponentID", nullable = false)
+    @ManyToOne
     private SolutionComponent solutionComponent;
 
+    @Transient
+    private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+    
     @Override
     public String entityClassName() {
         return ComponentConfig.class.getSimpleName();
@@ -49,9 +71,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     // -- [id] ------------------------
 
     @Override
-    @Column(name = "CompConfigID", precision = 19)
-    @GeneratedValue
-    @Id
     public Long getId() {
         return id;
     }
@@ -73,8 +92,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     }
     // -- [parameter] ------------------------
 
-    @Size(max = 50)
-    @Column(name = "CompConfigParameter", length = 50)
     public String getParameter() {
         return parameter;
     }
@@ -89,8 +106,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     }
     // -- [value] ------------------------
 
-    @Size(max = 50)
-    @Column(name = "CompConfigValue", length = 50)
     public String getValue() {
         return value;
     }
@@ -105,8 +120,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     }
     // -- [hieraAddress] ------------------------
 
-    @Size(max = 50)
-    @Column(name = "CompConfigHieraAddress", length = 50)
     public String getHieraAddress() {
         return hieraAddress;
     }
@@ -128,9 +141,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     // many-to-one: ComponentConfig.my_component ==> SolutionComponent.id
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    @NotNull
-    @JoinColumn(name = "ComponentID", nullable = false)
-    @ManyToOne
     public SolutionComponent getSolutionComponent() {
         return solutionComponent;
     }
@@ -162,8 +172,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
         return this == other || (other instanceof ComponentConfig && hashCode() == other.hashCode());
     }
 
-    private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
-
     @Override
     public int hashCode() {
         return identifiableHashBuilder.hash(log, this, parameter + value + hieraAddress);
@@ -182,4 +190,20 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
                 .add("hieraAddress", getHieraAddress()) //
                 .toString();
     }
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public Boolean IsSensitive() {
+		return sensitive;
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
+	}
 }

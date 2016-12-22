@@ -26,8 +26,10 @@ public class ReleaseConfigDTO implements CoreConfigDTO{
     public String value;
     public String hieraAddress;
     public ReleaseDTO release;
-    public Boolean recurseByEnv;
-    public Boolean recurseBySubEnv;
+    public Boolean recursiveByEnv;
+    public Boolean recursiveBySubEnv;
+    public String notes;
+    public Boolean sensitive;
 
     @JsonIgnore
     public boolean isIdSet() {

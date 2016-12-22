@@ -25,18 +25,44 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(ReleaseConfig.class.getName());
 
-	// Raw attributes
+	@Column(name = "RelConfigID", precision = 19)
+	@GeneratedValue
+	@Id
 	private Long id;
-	private String parameter;
-	private String value;
-	private String hieraAddress;
-	private Boolean recurseByEnv;
-	private Boolean recurseBySubEnv;
-	
-	// Many to one
-	private Release release;
 
-	@Override
+	@Size(max = 50)
+	@Column(name = "RelConfigParameter", length = 50)
+	private String parameter;
+
+	@Size(max = 50)
+	@Column(name = "RelConfigValue", length = 50)
+	private String value;
+	
+	@Size(max = 50)
+	@Column(name = "RelConfigHieraAddress", length = 50)
+	private String hieraAddress;
+	
+	@Column(name = "RecursiveByEnv")	
+	private Boolean recursiveByEnv;
+	
+	@Column(name = "RecursiveBySubEnv")
+	private Boolean recursiveBySubEnv;
+
+	@Column(name = "ReleaseConfigNotes")
+    private String notes;
+
+    @Column(name = "ReleaseConfigIsSensitive")
+    private Boolean sensitive;
+
+	@NotNull
+	@JoinColumn(name = "ReleaseID", nullable = false)
+	@ManyToOne
+    private Release release;
+
+	@Transient
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+
+    @Override
 	public String entityClassName() {
 		return ReleaseConfig.class.getSimpleName();
 	}
@@ -44,9 +70,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	// -- [id] ------------------------
 
 	@Override
-	@Column(name = "RelConfigID", precision = 19)
-	@GeneratedValue
-	@Id
 	public Long getId() {
 		return id;
 	}
@@ -68,8 +91,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	}
 	// -- [parameter] ------------------------
 
-	@Size(max = 50)
-	@Column(name = "RelConfigParameter", length = 50)
 	public String getParameter() {
 		return parameter;
 	}
@@ -84,8 +105,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	}
 	// -- [value] ------------------------
 
-	@Size(max = 50)
-	@Column(name = "RelConfigValue", length = 50)
 	public String getValue() {
 		return value;
 	}
@@ -100,8 +119,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	}
 	// -- [hieraAddress] ------------------------
 
-	@Size(max = 50)
-	@Column(name = "RelConfigHieraAddress", length = 50)
 	public String getHieraAddress() {
 		return hieraAddress;
 	}
@@ -123,9 +140,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	// many-to-one: ReleaseConfig.release ==> Release.id
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-	@NotNull
-	@JoinColumn(name = "ReleaseID", nullable = false)
-	@ManyToOne
 	public Release getRelease() {
 		return release;
 	}
@@ -143,6 +157,30 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 		return this;
 	}
 
+	public Boolean isRecursiveByEnv() {
+		return recursiveByEnv;
+	}
+
+	public void setRecursiveByEnv(Boolean recursiveByEnv) {
+		this.recursiveByEnv = recursiveByEnv;
+	}
+
+	public Boolean isRecursiveBySubEnv() {
+		return recursiveBySubEnv;
+	}
+
+	public void setRecursiveBySubEnv(Boolean recursiveBySubEnv) {
+		this.recursiveBySubEnv = recursiveBySubEnv;
+	}
+
+	public Boolean IsSensitive() {
+		return sensitive;
+	}
+
+	public void setSensitive(Boolean sensitive) {
+		this.sensitive = sensitive;
+	}
+
 	/**
 	 * Apply the default values.
 	 */
@@ -157,8 +195,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	public boolean equals(Object other) {
 		return this == other || (other instanceof ReleaseConfig && hashCode() == other.hashCode());
 	}
-
-	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
 	@Override
 	public int hashCode() {
@@ -181,21 +217,12 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 				.toString();
 	}
 
-	@Column(name = "RecursiveByEnv")
-	public Boolean isRecurseByEnv() {
-		return recurseByEnv;
+	public String getNotes() {
+		return notes;
 	}
 
-	public void setRecurseByEnv(Boolean recurseByEnv) {
-		this.recurseByEnv = recurseByEnv;
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
-	@Column(name = "RecursiveBySubEnv")
-	public Boolean isRecurseBySubEnv() {
-		return recurseBySubEnv;
-	}
-
-	public void setRecurseBySubEnv(Boolean recurseBySubEnv) {
-		this.recurseBySubEnv = recurseBySubEnv;
-	}
 }

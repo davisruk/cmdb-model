@@ -30,166 +30,173 @@ import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 @Service
 public class GlobalconfigDTOService {
 
-    @Inject
-    private GlobalconfigRepository globalconfigRepository;
+	@Inject
+	private GlobalconfigRepository globalconfigRepository;
 
-    @Transactional(readOnly = true)
-    public GlobalconfigDTO findOne(Long id) {
-        return toDTO(globalconfigRepository.findOne(id));
-    }
+	@Transactional(readOnly = true)
+	public GlobalconfigDTO findOne(Long id) {
+		return toDTO(globalconfigRepository.findOne(id));
+	}
 
-    private void buildHieraAddresses (List<Globalconfig> cl){
-    	String addr;
-    	for (Globalconfig conf: cl){
-        	addr = conf.getHieraAddress();
-        	//find Parameter in Hieara Address and replace with Parametername
-        	addr = addr.replaceAll("\\{ParamName\\}",conf.getParameter());
-        	conf.setHieraAddress(addr);
-        }
-    }
-    @Transactional(readOnly = true)
-    public List<GlobalconfigDTO> findAllReplaceHiera() {
-        List<Globalconfig> results = globalconfigRepository.findAll();
-        buildHieraAddresses (results);
-        return results.stream().map(this::toDTO).collect(Collectors.toList());
-    }
+	private void buildHieraAddresses(List<Globalconfig> cl) {
+		String addr;
+		for (Globalconfig conf : cl) {
+			addr = conf.getHieraAddress();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			conf.setHieraAddress(addr);
+		}
+	}
 
-    @Transactional(readOnly = true)
-    public List<GlobalconfigDTO> complete(String query, int maxResults) {
-        List<Globalconfig> results = globalconfigRepository.complete(query, maxResults);
-        return results.stream().map(this::toDTO).collect(Collectors.toList());
-    }
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAllReplaceHiera() {
+		List<Globalconfig> results = globalconfigRepository.findAll();
+		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
 
-    @Transactional(readOnly = true)
-    public PageResponse<GlobalconfigDTO> findAll(PageRequestByExample<GlobalconfigDTO> req) {
-        Example<Globalconfig> example = null;
-        Globalconfig globalconfig = toEntity(req.example);
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> complete(String query, int maxResults) {
+		List<Globalconfig> results = globalconfigRepository.complete(query, maxResults);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
 
-        if (globalconfig != null) {
-            example = Example.of(globalconfig);
-        }
+	@Transactional(readOnly = true)
+	public PageResponse<GlobalconfigDTO> findAll(PageRequestByExample<GlobalconfigDTO> req) {
+		Example<Globalconfig> example = null;
+		Globalconfig globalconfig = toEntity(req.example);
 
-        Page<Globalconfig> page;
-        if (example != null) {
-            page = globalconfigRepository.findAll(example, req.toPageable());
-        } else {
-            page = globalconfigRepository.findAll(req.toPageable());
-        }
+		if (globalconfig != null) {
+			example = Example.of(globalconfig);
+		}
 
-        List<GlobalconfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-        return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
-    }
+		Page<Globalconfig> page;
+		if (example != null) {
+			page = globalconfigRepository.findAll(example, req.toPageable());
+		} else {
+			page = globalconfigRepository.findAll(req.toPageable());
+		}
 
-    /**
-     * Save the passed dto as a new entity or update the corresponding entity if any.
-     */
-    @Transactional
-    public GlobalconfigDTO save(GlobalconfigDTO dto) {
-        if (dto == null) {
-            return null;
-        }
+		List<GlobalconfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+	}
 
-        Globalconfig globalconfig;
-        if (dto.isIdSet()) {
-            globalconfig = globalconfigRepository.findOne(dto.id);
-            if (SecurityHelper.userCanWriteSensitiveData()){
-            	// only ever set sensitive data if we are allowed to
-            	// value is set to [SENSITIVE] when retrieved from
-            	// the DB for the DTO - we don't want to overwrite
-            	// the real value.
-            	globalconfig.setValue(dto.value);
-            	globalconfig.setSensitive(dto.sensitive);
-            }
-        } else {
-            globalconfig = new Globalconfig();
-        	// sensitive data can always be set here as it's a new item
-            // if the user has rights they will have been checked in the
-            // UI.
-            globalconfig.setValue(dto.value);
-        	globalconfig.setSensitive(dto.sensitive);
-        }
+	/**
+	 * Save the passed dto as a new entity or update the corresponding entity if
+	 * any.
+	 */
+	@Transactional
+	public GlobalconfigDTO save(GlobalconfigDTO dto) {
+		if (dto == null) {
+			return null;
+		}
 
-        globalconfig.setParameter(dto.parameter);
-        globalconfig.setHieraAddress(dto.hieraAddress);
-        globalconfig.setNotes(dto.notes);
-        globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
-        globalconfig.setRecursiveByRel(dto.recursiveByRel);
-        globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
+		Globalconfig globalconfig;
+		if (dto.isIdSet()) {
+			globalconfig = globalconfigRepository.findOne(dto.id);
+			if (!globalconfig.IsSensitive()
+					|| (globalconfig.IsSensitive() && SecurityHelper.userCanWriteSensitiveData())) {
+				// only ever set sensitive data if we are allowed to
+				// value is set to [SENSITIVE] when retrieved from
+				// the DB for the DTO - we don't want to overwrite
+				// the real value.
+				globalconfig.setValue(dto.value);
+				globalconfig.setSensitive(dto.sensitive);
+			}
+		} else {
+			globalconfig = new Globalconfig();
+			// sensitive data can always be set here as it's a new item
+			// if the user has rights they will have been checked in the
+			// UI.
+			globalconfig.setValue(dto.value);
+			globalconfig.setSensitive(dto.sensitive);
+		}
 
-        return toDTO(globalconfigRepository.save(globalconfig));
-    }
+		globalconfig.setParameter(dto.parameter);
+		globalconfig.setHieraAddress(dto.hieraAddress);
+		globalconfig.setNotes(dto.notes);
+		globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
+		globalconfig.setRecursiveByRel(dto.recursiveByRel);
+		globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
 
-    /**
-     * Converts the passed globalconfig to a DTO.
-     */
-    public GlobalconfigDTO toDTO(Globalconfig globalconfig) {
-        return toDTO(globalconfig, 1);
-    }
+		return toDTO(globalconfigRepository.save(globalconfig));
+	}
 
-    /**
-     * Converts the passed globalconfig to a DTO. The depth is used to control the
-     * amount of association you want. It also prevents potential infinite serialization cycles.
-     *
-     * @param globalconfig
-     * @param depth the depth of the serialization. A depth equals to 0, means no x-to-one association will be serialized.
-     *              A depth equals to 1 means that xToOne associations will be serialized. 2 means, xToOne associations of
-     *              xToOne associations will be serialized, etc.
-     */
-    public GlobalconfigDTO toDTO(Globalconfig globalconfig, int depth) {
-        if (globalconfig == null) {
-            return null;
-        }
+	/**
+	 * Converts the passed globalconfig to a DTO.
+	 */
+	public GlobalconfigDTO toDTO(Globalconfig globalconfig) {
+		return toDTO(globalconfig, 1);
+	}
 
-        GlobalconfigDTO dto = new GlobalconfigDTO();
+	/**
+	 * Converts the passed globalconfig to a DTO. The depth is used to control
+	 * the amount of association you want. It also prevents potential infinite
+	 * serialization cycles.
+	 *
+	 * @param globalconfig
+	 * @param depth
+	 *            the depth of the serialization. A depth equals to 0, means no
+	 *            x-to-one association will be serialized. A depth equals to 1
+	 *            means that xToOne associations will be serialized. 2 means,
+	 *            xToOne associations of xToOne associations will be serialized,
+	 *            etc.
+	 */
+	public GlobalconfigDTO toDTO(Globalconfig globalconfig, int depth) {
+		if (globalconfig == null) {
+			return null;
+		}
 
-        dto.id = globalconfig.getId();
-        dto.parameter = globalconfig.getParameter();
-        
-        // hide sensitive info if user doesn't have rights
-        if (globalconfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
-        	dto.value = "[SENSITIVE]";
-        else
-        	dto.value = globalconfig.getValue();
-        
-        dto.hieraAddress = globalconfig.getHieraAddress();
-        dto.recursiveByEnv = globalconfig.isRecursiveByEnv();
-        dto.recursiveByRel = globalconfig.isRecursiveByRel();
-        dto.recursiveBySubEnv = globalconfig.isRecursiveBySubEnv();
-        dto.notes = globalconfig.getNotes();
-        dto.sensitive = globalconfig.IsSensitive();
-        
-        return dto;
-    }
+		GlobalconfigDTO dto = new GlobalconfigDTO();
 
-    /**
-     * Converts the passed dto to a Globalconfig.
-     * Convenient for query by example.
-     */
-    public Globalconfig toEntity(GlobalconfigDTO dto) {
-        return toEntity(dto, 1);
-    }
+		dto.id = globalconfig.getId();
+		dto.parameter = globalconfig.getParameter();
 
-    /**
-     * Converts the passed dto to a Globalconfig.
-     * Convenient for query by example.
-     */
-    public Globalconfig toEntity(GlobalconfigDTO dto, int depth) {
-        if (dto == null) {
-            return null;
-        }
+		// hide sensitive info if user doesn't have rights
+		if (globalconfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
+			dto.value = "[SENSITIVE]";
+		else
+			dto.value = globalconfig.getValue();
 
-        Globalconfig globalconfig = new Globalconfig();
+		dto.hieraAddress = globalconfig.getHieraAddress();
+		dto.recursiveByEnv = globalconfig.isRecursiveByEnv();
+		dto.recursiveByRel = globalconfig.isRecursiveByRel();
+		dto.recursiveBySubEnv = globalconfig.isRecursiveBySubEnv();
+		dto.notes = globalconfig.getNotes();
+		dto.sensitive = globalconfig.IsSensitive();
 
-        globalconfig.setId(dto.id);
-        globalconfig.setParameter(dto.parameter);
-        globalconfig.setValue(dto.value);
-        globalconfig.setHieraAddress(dto.hieraAddress);
-        globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
-        globalconfig.setRecursiveByRel(dto.recursiveByRel);
-        globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
-        globalconfig.setSensitive(dto.sensitive);
-        
-        
-        return globalconfig;
-    }
+		return dto;
+	}
+
+	/**
+	 * Converts the passed dto to a Globalconfig. Convenient for query by
+	 * example.
+	 */
+	public Globalconfig toEntity(GlobalconfigDTO dto) {
+		return toEntity(dto, 1);
+	}
+
+	/**
+	 * Converts the passed dto to a Globalconfig. Convenient for query by
+	 * example.
+	 */
+	public Globalconfig toEntity(GlobalconfigDTO dto, int depth) {
+		if (dto == null) {
+			return null;
+		}
+
+		Globalconfig globalconfig = new Globalconfig();
+
+		globalconfig.setId(dto.id);
+		globalconfig.setParameter(dto.parameter);
+		globalconfig.setValue(dto.value);
+		globalconfig.setHieraAddress(dto.hieraAddress);
+		globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
+		globalconfig.setRecursiveByRel(dto.recursiveByRel);
+		globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
+		globalconfig.setSensitive(dto.sensitive);
+		globalconfig.setNotes(dto.notes);
+
+		return globalconfig;
+	}
 }

@@ -10,6 +10,8 @@ package uk.co.boots.columbus.cmdb.model.component.domain;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
+import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+
 @StaticMetamodel(ComponentConfig.class)
 public abstract class ComponentConfig_ {
 
@@ -18,6 +20,8 @@ public abstract class ComponentConfig_ {
     public static volatile SingularAttribute<ComponentConfig, String> parameter;
     public static volatile SingularAttribute<ComponentConfig, String> value;
     public static volatile SingularAttribute<ComponentConfig, String> hieraAddress;
+    public static volatile SingularAttribute<Globalconfig, String> notes;
+    public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;
 
     // Many to one
     public static volatile SingularAttribute<ComponentConfig, SolutionComponent> solutionComponent;

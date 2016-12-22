@@ -24,6 +24,7 @@ import uk.co.boots.columbus.cmdb.model.component.repository.SolutionComponentRep
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentConfig;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
 /**
@@ -123,16 +124,30 @@ public class ComponentConfigDTOService {
         }
 
         ComponentConfig componentConfig;
-        if (dto.isIdSet()) {
-            componentConfig = componentConfigRepository.findOne(dto.id);
-        } else {
-            componentConfig = new ComponentConfig();
-        }
+		if (dto.isIdSet()) {
+			componentConfig = componentConfigRepository.findOne(dto.id);
+			if (!componentConfig.IsSensitive()
+					|| (componentConfig.IsSensitive() && SecurityHelper.userCanWriteSensitiveData())) {
+				// only ever set sensitive data if we are allowed to
+				// value is set to [SENSITIVE] when retrieved from
+				// the DB for the DTO - we don't want to overwrite
+				// the real value.
+				componentConfig.setValue(dto.value);
+				componentConfig.setSensitive(dto.sensitive);
+			}
+		} else {
+			componentConfig = new ComponentConfig();
+			// sensitive data can always be set here as it's a new item
+			// if the user has rights they will have been checked in the
+			// UI.
+			componentConfig.setValue(dto.value);
+			componentConfig.setSensitive(dto.sensitive);
+		}
 
         componentConfig.setParameter(dto.parameter);
-        componentConfig.setValue(dto.value);
         componentConfig.setHieraAddress(dto.hieraAddress);
-
+        componentConfig.setNotes(dto.notes);
+        
         if (dto.my_component == null) {
             componentConfig.setSolutionComponent(null);
         } else {
@@ -170,8 +185,17 @@ public class ComponentConfigDTOService {
 
         dto.id = componentConfig.getId();
         dto.parameter = componentConfig.getParameter();
-        dto.value = componentConfig.getValue();
+		dto.value = componentConfig.getValue();
+		// hide sensitive info if user doesn't have rights
+		if (componentConfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
+			dto.value = "[SENSITIVE]";
+		else
+			dto.value = componentConfig.getValue();
+
         dto.hieraAddress = componentConfig.getHieraAddress();
+		dto.notes = componentConfig.getNotes();
+		dto.sensitive = componentConfig.IsSensitive();
+        
         if (depth-- > 0) {
             dto.my_component = solutionComponentDTOService.toDTO(componentConfig.getSolutionComponent(), depth);
         }
@@ -202,6 +226,9 @@ public class ComponentConfigDTOService {
         componentConfig.setParameter(dto.parameter);
         componentConfig.setValue(dto.value);
         componentConfig.setHieraAddress(dto.hieraAddress);
+        componentConfig.setSensitive(dto.sensitive);
+        componentConfig.setNotes(dto.notes);
+        
         if (depth-- > 0) {
             componentConfig.setSolutionComponent(solutionComponentDTOService.toEntity(dto.my_component, depth));
         }
