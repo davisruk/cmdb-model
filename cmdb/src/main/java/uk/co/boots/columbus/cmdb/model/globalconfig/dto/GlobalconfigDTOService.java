@@ -144,10 +144,13 @@ public class GlobalconfigDTOService {
 
         dto.id = globalconfig.getId();
         dto.parameter = globalconfig.getParameter();
-        if (SecurityHelper.userCanViewSensitiveData())
-        	dto.value = globalconfig.getValue();
-        else
+        
+        // hide sensitive info if user doesn't have rights
+        if (globalconfig.IsSensitive() && !SecurityHelper.userCanViewSensitiveData())
         	dto.value = "[SENSITIVE]";
+        else
+        	dto.value = globalconfig.getValue();
+        
         dto.hieraAddress = globalconfig.getHieraAddress();
         dto.recursiveByEnv = globalconfig.isRecursiveByEnv();
         dto.recursiveByRel = globalconfig.isRecursiveByRel();
