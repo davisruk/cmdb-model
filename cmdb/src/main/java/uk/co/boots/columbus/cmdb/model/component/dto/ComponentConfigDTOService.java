@@ -78,18 +78,22 @@ public class ComponentConfigDTOService {
         	addr = addr.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
         	//find EnvTag in Hieara Address and replace with Env.name
         	addr = addr.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
-        	if (allowSensitive){
+
+        	if (conf.IsSensitive() && !allowSensitive)
+				value = "[SENSITIVE]";
+        	else{
 		    	value = conf.getValue();
-		    	//find Parameter in Hieara Address and replace with Release
-		    	value = value.replaceAll("\\{Release\\}",conf.getSolutionComponent().getPackageInfo().getRelease().getName());
-		    	//find EnvTag in Hieara Address and replace with ServType
-		    	value = value.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
-		    	//find EnvTag in Hieara Address and replace with Env.name
-		    	value = value.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
-        	}else{
-        		value = "[SENSITIVE]";
+		    	if (value != null){
+			    	//find Parameter in Hieara Address and replace with Release
+			    	value = value.replaceAll("\\{Release\\}",conf.getSolutionComponent().getPackageInfo().getRelease().getName());
+			    	//find EnvTag in Hieara Address and replace with ServType
+			    	value = value.replaceAll("\\{ServType\\}", conf.getSolutionComponent().getPackageInfo().getServerType().getName());
+			    	//find EnvTag in Hieara Address and replace with Env.name
+			    	value = value.replaceAll("\\{AppName\\}", conf.getSolutionComponent().getName());
+		    	}
         	}
         	conf.setHieraAddress(addr);
+        	conf.setValue(value);
         }
     }
 

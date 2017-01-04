@@ -2,6 +2,7 @@ package uk.co.boots.columbus.cmdb.model.environment.dto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -17,9 +18,10 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
+import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
-import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 
 @Service
 public class SubEnvironmentConfigDTOService {
@@ -30,6 +32,8 @@ public class SubEnvironmentConfigDTOService {
 	private SubEnvironmentRepository subEnvironmentRepository;
 	@Inject
 	private SubEnvironmentDTOService subEnvironmentDTOService;
+	@Inject 
+	private GlobalconfigDTOService gcDTOService;
 
 	@Transactional(readOnly = true)
 	public SubEnvironmentConfigDTO findOne(Long id, int depth) {
@@ -47,17 +51,15 @@ public class SubEnvironmentConfigDTOService {
 			if (addr != null) {
 				addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
 				addr = addr.replaceAll("\\{ENVID\\}", conf.getSubEnvironment().getEnvironment().getName());
-				conf.setHieraAddress(addr);
 			}
 			if (value != null) {
-				if (allowSensitive){
-					value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-					value = value.replaceAll("\\{ENVID\\}", conf.getSubEnvironment().getEnvironment().getName());
-				}else{
+				value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+				value = value.replaceAll("\\{ENVID\\}", conf.getSubEnvironment().getEnvironment().getName());
+				if (conf.IsSensitive() && !allowSensitive)
 					value = "[SENSITIVE]";
-				}
-				conf.setValue(value);
 			}
+			conf.setHieraAddress(addr);
+			conf.setValue(value);
 		}
 	}
 
@@ -76,7 +78,30 @@ public class SubEnvironmentConfigDTOService {
 				}else{
 					dto.value = "[SENSITIVE]";
 				}
+				subConList.add(dto);
 			}
+		}
+		return subConList;
+	}
+
+	public List<SubEnvironmentConfigDTO> getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(
+			SubEnvironmentDTO seDTO, List<ReleaseConfigDTO> relConfList, Set<Globalconfig>gcSet) {
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		List<SubEnvironmentConfigDTO> subConList = new ArrayList<SubEnvironmentConfigDTO>();
+		for (ReleaseConfigDTO rDTO : relConfList) {
+			if (rDTO.recursiveBySubEnv.booleanValue()) {
+				SubEnvironmentConfigDTO dto = new SubEnvironmentConfigDTO();
+				dto.hieraAddress = rDTO.hieraAddress.replaceAll("\\{ParamName\\}", rDTO.getParameter());
+				dto.hieraAddress = dto.hieraAddress.replaceAll("\\{ENVID\\}", seDTO.environment.name);
+				if (allowSensitive){
+					dto.value = rDTO.value.replaceAll("\\{ParamName\\}", rDTO.getParameter());
+					dto.value = dto.value.replaceAll("\\{ENVID\\}", seDTO.environment.name);
+				}else{
+					dto.value = "[SENSITIVE]";
+				}
+				subConList.add(dto);
+			}
+			
 		}
 		return subConList;
 	}

@@ -53,11 +53,10 @@ public class ReleaseConfigDTOService {
 				conf.setHieraAddress(addr);
 			}
 			if (value != null) {
-				if (allowSensitive) {
-					value = value.replaceAll("\\{Release\\}", conf.getRelease().getName());
-					value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-					value = value.replaceAll("\\{ENVID\\}", envName);
-				} else {
+				value = value.replaceAll("\\{Release\\}", conf.getRelease().getName());
+				value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+				value = value.replaceAll("\\{ENVID\\}", envName);
+				if (!allowSensitive && conf.IsSensitive()){
 					value = "[SENSITIVE]";
 				}
 				conf.setValue(value);

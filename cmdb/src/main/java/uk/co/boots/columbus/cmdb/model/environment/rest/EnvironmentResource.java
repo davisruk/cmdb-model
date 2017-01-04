@@ -9,6 +9,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentTypeDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTO;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTOService;
 
 @RestController
@@ -102,13 +104,15 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownloadall/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAllPost(@PathVariable Long id) throws IOException {
-    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForEnv(id, true), "HieraData_Complete.csv");
+    	
+    	//return new CsvResponse(hieraDTOService.findHieraCompleteInfoForEnv(id, true), "HieraData_Complete.csv");
+    	return new CsvResponse(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(id, new HashSet<HieraDTO>()), "HieraData_Complete.csv");
     }
 
     @RequestMapping(value = "/configdownloadall", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAllPost() throws IOException {
-    	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForAllEnvs(), "HieraData_Complete.csv");
+    	return new CsvResponse(hieraDTOService.getHieraForAllEnvsWithSubstitution(), "HieraData_Complete.csv");
     }
 
     @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)

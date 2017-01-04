@@ -8,18 +8,23 @@
 package uk.co.boots.columbus.cmdb.model.globalconfig.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig_;
 
 public interface GlobalconfigRepository extends JpaRepository<Globalconfig, Long> {
 
+	List<Globalconfig> findByRecursiveByEnv(boolean recursiveByEnv);
+	List<Globalconfig> findByRecursiveBySubEnv(boolean recursiveBySubEnv);
+	List<Globalconfig> findByRecursiveByRel(boolean recursiveByRelease);
+	
 	default List<Globalconfig> complete(String query, int maxResults) {
         Globalconfig probe = new Globalconfig();
         probe.setParameter(query);

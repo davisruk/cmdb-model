@@ -33,7 +33,8 @@ public class CsvMessageConverter extends AbstractHttpMessageConverter<CsvRespons
 	       output.getHeaders().set("Content-Disposition", "attachment; filename=\"" + csvResponse.getFilename() + "\"");
 	       OutputStream out = output.getBody();
 	       CSVWriter csvWriter = new CSVWriter(new OutputStreamWriter(out), ',');
-	       List<String[]> result = new HieraDTOService().convertForCSV(csvResponse.getRecords(), true); 
+	       //List<String[]> result = new HieraDTOService().convertForCSV(csvResponse.getRecords(), true); 
+	       List<String[]> result = new HieraDTOService().convertForCSV(csvResponse, true);
 	       csvWriter.writeAll(result,false);
            csvWriter.flush();
            csvWriter.close();	       

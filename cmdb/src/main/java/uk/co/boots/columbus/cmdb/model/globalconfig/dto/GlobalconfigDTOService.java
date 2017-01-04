@@ -7,7 +7,9 @@
  */
 package uk.co.boots.columbus.cmdb.model.globalconfig.dto;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -19,10 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
-import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
 
 /**
  * A simple DTO Facility for Globalconfig.
@@ -40,18 +45,125 @@ public class GlobalconfigDTOService {
 
 	private void buildHieraAddresses(List<Globalconfig> cl) {
 		String addr;
+		String value;
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (Globalconfig conf : cl) {
 			addr = conf.getHieraAddress();
 			// find Parameter in Hieara Address and replace with Parametername
 			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
 			conf.setHieraAddress(addr);
+			value = conf.getValue();
+			if (value != null){
+				value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+				if (conf.IsSensitive() && !allowSensitive)
+					value = "[SENSITIVE]";
+			}
+			conf.setValue(value);
 		}
 	}
 
+	// utility for building heira - keeps track of existing heira in a set and if it already exists
+	// removes the config from the underlying cl list. use this when you need to build heira that repeats
+	// the list you pass in should only be for repeating hiera - the method does not check this
+	// the utility can be used at global, env, subenv and release levels you must pass in the
+	// relevant domain objects for the level
+	public void buildHieraAddresses(List<Globalconfig> cl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO r, Set<Globalconfig> gcSet) {
+		String addr;
+		String value;
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		for (Iterator<Globalconfig> it = cl.iterator(); it.hasNext();){
+			Globalconfig conf = it.next();
+			addr = conf.getHieraAddress();
+			value = conf.getValue();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			if (e != null){
+				addr = addr.replaceAll("\\{ENVID\\}", e.name);
+				value = value.replaceAll("\\{ENVID\\}", e.name);
+			}
+			if (se != null){
+				addr = addr.replaceAll("\\{ENVID\\}", se.subEnvironmentType.name);
+				value = value.replaceAll("\\{ENVID\\}", se.subEnvironmentType.name);
+			}
+			if (r != null){
+				addr = addr.replaceAll("\\{Release\\}", r.name);
+				value = value.replaceAll("\\{Release\\}", r.name);
+			}
+
+			conf.setHieraAddress(addr);
+
+			if (value != null) {
+				if (!allowSensitive) {
+					value = "[SENSITIVE]";
+				}
+			}
+			conf.setValue(value);
+			if (!gcSet.add(conf))
+				it.remove();
+		}
+	}
+	
 	@Transactional(readOnly = true)
 	public List<GlobalconfigDTO> findAllReplaceHiera() {
 		List<Globalconfig> results = globalconfigRepository.findAll();
 		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAllReplaceHiera(Set<Globalconfig> gcSet) {
+		List<Globalconfig> results = globalconfigRepository.findAll();
+		buildHieraAddresses(results, null, null, null, gcSet);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForEnv(EnvironmentDTO eDTO, Set<Globalconfig> gcSet) {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnv(true);
+		buildHieraAddresses(results, eDTO, null, null, gcSet);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForEnv() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnv(true);
+		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForSubEnv(SubEnvironmentDTO seDTO, Set<Globalconfig> gcSet) {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveBySubEnv(true);
+		buildHieraAddresses(results, seDTO.environment, seDTO, null, gcSet);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForSubEnv() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveBySubEnv(true);
+		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForRelease() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByRel(true);
+		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAndReplaceHieraForRelease(SubEnvironmentDTO seDTO, Set<Globalconfig> gcSet) {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByRel(true);
+		buildHieraAddresses(results, seDTO.environment, seDTO, seDTO.release, gcSet);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findRepeatingGCByRelease() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByRel(true);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 

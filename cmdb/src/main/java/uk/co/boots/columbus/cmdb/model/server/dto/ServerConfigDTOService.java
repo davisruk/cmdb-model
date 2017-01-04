@@ -52,6 +52,8 @@ public class ServerConfigDTOService {
     private void buildHieraAddresses (List<ServerConfig> cl){
     	String addr;
     	String value;
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		
     	for (ServerConfig conf: cl){
         	addr = conf.getHieraAddress();
         	value = conf.getValue();
@@ -72,6 +74,10 @@ public class ServerConfigDTOService {
         			addr = addr.replaceAll("\\{ENVID\\}", envs.iterator().next().getEnvironment().getName());
         		if (value!=null)
         			value = value.replaceAll("\\{ENVID\\}", envs.iterator().next().getEnvironment().getName());
+        	}
+
+        	if (conf.IsSensitive() && !allowSensitive){
+        		value = "[SENSITIVE]";
         	}
         	conf.setHieraAddress(addr);
         	conf.setValue(value);
