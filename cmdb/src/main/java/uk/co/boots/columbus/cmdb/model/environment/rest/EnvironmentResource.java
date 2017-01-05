@@ -85,6 +85,7 @@ public class EnvironmentResource {
         return Optional.ofNullable(dto).map(environmentDTO -> new ResponseEntity<>(environmentDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
     @RequestMapping(value = "/envTypes", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnvironmentTypeDTO>> getAllEnvironmentTypes() throws URISyntaxException {
 
@@ -95,7 +96,7 @@ public class EnvironmentResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/subconfigdownload/{id}", method = GET, produces = "text/csv")
+    @RequestMapping(value = "/subconfigdownload/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsBySubEnv(@PathVariable Long id) throws IOException {
     	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id, true), "HieraData_SubEnv.csv");
@@ -104,8 +105,6 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownloadall/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAllPost(@PathVariable Long id) throws IOException {
-    	
-    	//return new CsvResponse(hieraDTOService.findHieraCompleteInfoForEnv(id, true), "HieraData_Complete.csv");
     	return new CsvResponse(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(id, new HashSet<HieraDTO>()), "HieraData_Complete.csv");
     }
 

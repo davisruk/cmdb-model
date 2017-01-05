@@ -74,15 +74,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			and().
 			authorizeRequests().antMatchers("/api/login").permitAll().
 			// allow all login requests
-			antMatchers("/api/**/configdownload/**").permitAll(). // temp fix for download buttons
-			antMatchers("/api/**/subconfigdownload/**").permitAll(). // temp fix for download buttons
-			antMatchers("/api/**/configdownloadall/**").permitAll(). // needs addressing in prod
 			antMatchers("/api/users/**").hasRole("ADMIN").
 			antMatchers("/api/roles/**").hasRole("ADMIN").
-			antMatchers("/api/currentUserAuthorities").authenticated(). // ok to use ANONYMOUS here
 			antMatchers("/**").hasRole("USER").
-			antMatchers("/swagger-ui*").permitAll()
-			.anyRequest().hasRole("USER").and().httpBasic();
+			antMatchers("/swagger-ui*").permitAll().
+			antMatchers("/swagger-resources/configuration/ui").permitAll().
+			antMatchers("/swagger-resources/configuration/ui/**").permitAll().
+			antMatchers("/webjars/springfox-swagger-ui/**").permitAll().
+			anyRequest().hasRole("USER").and().httpBasic();
 
 		// Spring doesn't support JWT yet so we must add our Token check
 		// as a Filter before the rest of the security layer kicks in 

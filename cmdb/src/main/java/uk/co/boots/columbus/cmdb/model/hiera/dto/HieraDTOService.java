@@ -65,27 +65,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findAllHiera() {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-		List<EnvironmentDTO> eList = eDTOService.findAllEnvironments();
-		/*
-		 * Move to SubEnvironment for (EnvironmentDTO e: eList){ if (e.release
-		 * != null) getHieraForRelease(hDTOList, e.release.name); }
-		 */
-		hDTOList.sort(this);
-		return hDTOList;
-	}
-
-	private List<HieraDTO> getHieraForRelease(List<HieraDTO> hDTOList, String relName) {
-		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
-		// addToHieraDTOList(hDTOList,
-		// secDTOService.findBySubEnvironmentReleaseName(relName, true));
-		//addToHieraDTOList(hDTOList, scService.findByServerSubEnvironmentReleaseName(relName));
-		addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(relName));
-		return hDTOList;
-	}
-
 	public List<HieraDTO> findHieraCompleteInfoForSubEnv(Long subEnvId, boolean includeGlobal) {
 		SubEnvironmentDTO subEnv = seDTOService.findOne(subEnvId, 1);
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
@@ -202,12 +181,7 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		addToHieraDTOSet(hDTOSet, serverConfDTOs);
 		return hDTOSet;
 	}
-
 	
-	
-	
-	
-
 	public List<HieraDTO> findHieraInfoForServer(String serverName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, scService.findByServerName(serverName));

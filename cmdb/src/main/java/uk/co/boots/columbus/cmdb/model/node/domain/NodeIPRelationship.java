@@ -39,11 +39,11 @@ public class NodeIPRelationship implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name="PublishingNodeIPID")
-	private NodeIP publishingNode;
+	private NodeIP publishingNodeIP;
 
 	@ManyToOne
 	@JoinColumn(name="ConsumingNodeIPID")
-	private NodeIP consumingNode;
+	private NodeIP consumingNodeIP;
 
 	public NodeIPRelationship() {
 	}
@@ -80,19 +80,19 @@ public class NodeIPRelationship implements Serializable {
 		this.startPort = startPort;
 	}
 
-	public NodeIP getPublishingNode() {
-		return publishingNode;
+	public NodeIP getPublishingNodeIP() {
+		return publishingNodeIP;
 	}
 
-	public void setPublishingNode(NodeIP publishingNode) {
-		this.publishingNode = publishingNode;
+	public void setPublishingNodeIP(NodeIP publishingNode) {
+		this.publishingNodeIP = publishingNode;
 	}
 
-	public NodeIP getConsumingNode() {
-		return consumingNode;
+	public NodeIP getConsumingNodeIP() {
+		return consumingNodeIP;
 	}
 
-	public void setConsumingNode(NodeIP consumingNode) {
-		this.consumingNode = consumingNode;
+	public void setConsumingNodeIP(NodeIP consumingNode) {
+		this.consumingNodeIP = consumingNode;
 	}
 }
