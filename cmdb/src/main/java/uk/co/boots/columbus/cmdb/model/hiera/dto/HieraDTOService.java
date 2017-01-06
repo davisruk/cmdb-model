@@ -19,7 +19,6 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOSe
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTO;
@@ -83,22 +82,9 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		return hDTOList;
 	}
 
-	public List<HieraDTO> findHieraCompleteInfoForSubEnv(Long subEnvId, Set<Globalconfig> gcSet) {
-		SubEnvironmentDTO subEnv = seDTOService.findOne(subEnvId, 1);
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, gcService.findAndReplaceHieraForSubEnv(subEnv, gcSet));
+	
 
-		if (subEnv.subEnvironmentType != null)
-			addToHieraDTOList(hDTOList, secDTOService.findByTypeAndEnvironmentName(subEnv.subEnvironmentType.name,
-					subEnv.environment.name));
-		if (subEnv.release != null) {
-			addToHieraDTOList(hDTOList, ccService.findByComponentPackageReleaseName(subEnv.release.name));
-		}
-		
-		return hDTOList;
-	}
-
-	public List<HieraDTO> findHieraCompleteInfoForEnv(Long EnvId, boolean includeGlobal) {
+	private List<HieraDTO> findHieraCompleteInfoForEnv(Long EnvId, boolean includeGlobal) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		if (includeGlobal)
 			addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
@@ -118,39 +104,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		}
 		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
 		addToHieraDTOList(hDTOList, serverConfDTOs);
-		return hDTOList;
-	}
-	
-	public List<HieraDTO> findHieraCompleteInfoForEnv(Long EnvId, Set<Globalconfig> gcSet) {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		EnvironmentDTO dto = eDTOService.findOne(EnvId);
-		addToHieraDTOList(hDTOList, gcService.findAndReplaceHieraForEnv(dto, gcSet));
-		
-		List<ReleaseConfigDTO> relDTOs = rcService.getDistinctConfigsForEnv(dto.name);
-		// Check recursive flag and add to list for releases
-		addToHieraDTOList(hDTOList, relDTOs);
-		for (SubEnvironmentDTO seDTO : dto.subEnvironments) {
-			seDTO.environment = dto;
-			hDTOList.addAll(findHieraCompleteInfoForSubEnv(seDTO.id, false));
-			// add in recursive release config items here
-			addToHieraDTOList(hDTOList, secDTOService.getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(seDTO, relDTOs));
-			addToHieraDTOList(hDTOList, gcService.findAndReplaceHieraForRelease(seDTO, gcSet));
-		}
-		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
-		addToHieraDTOList(hDTOList, serverConfDTOs);
-		return hDTOList;
-	}
-
-	public List<HieraDTO> findHieraCompleteInfoForAllEnvs() {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		Set<Globalconfig> gcSet = new HashSet<Globalconfig>();
-		//addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-		addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera(gcSet));
-		List<EnvironmentDTO> dtoList = eDTOService.findAllEnvironments();
-		for (EnvironmentDTO dto:dtoList){
-//			hDTOList.addAll(findHieraCompleteInfoForEnv(dto.id, false));
-			hDTOList.addAll(findHieraCompleteInfoForEnv(dto.id, gcSet));
-		}
 		return hDTOList;
 	}
 	
@@ -209,26 +162,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		if (includeHeaders)
 			result.add(new String[] { "Address", "Value" });
 		for (HieraDTO h : coll) {
-			result.add(new String[] { h.address, h.value });
-		}
-		return result;
-	}
-
-	public List<String[]> convertForCSV(List<HieraDTO> list, boolean includeHeaders) {
-		List<String[]> result = new ArrayList<String[]>();
-		if (includeHeaders)
-			result.add(new String[] { "Address", "Value" });
-		for (HieraDTO h : list) {
-			result.add(new String[] { h.address, h.value });
-		}
-		return result;
-	}
-
-	public List<String[]> convertForCSV(Set<HieraDTO> set, boolean includeHeaders) {
-		List<String[]> result = new ArrayList<String[]>();
-		if (includeHeaders)
-			result.add(new String[] { "Address", "Value" });
-		for (HieraDTO h : set) {
 			result.add(new String[] { h.address, h.value });
 		}
 		return result;

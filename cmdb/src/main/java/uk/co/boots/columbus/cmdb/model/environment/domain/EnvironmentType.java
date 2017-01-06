@@ -50,10 +50,7 @@ public class EnvironmentType implements Identifiable<Long>, Serializable {
         this.id = id;
     }
 
-    public EnvironmentType id(Long id) {
-        setId(id);
-        return this;
-    }
+    
 
     @Override
     @Transient
@@ -71,18 +68,6 @@ public class EnvironmentType implements Identifiable<Long>, Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public EnvironmentType name(String name) {
-        setName(name);
-        return this;
-    }
-
-    /**
-     * Apply the default values.
-     */
-    public EnvironmentType withDefaults() {
-        return this;
     }
 
     /**

@@ -23,145 +23,117 @@ import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 @Table(name = "cm_globalconfig")
 
 public class Globalconfig implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(Globalconfig.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(Globalconfig.class.getName());
 
-    @Column(name = "GlobalConfigID", precision = 19)
-    @GeneratedValue
-    @Id
-    private Long id;
-    
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "GlobalConfigParameter", nullable = false, length = 50)
-    private String parameter;
+	@Column(name = "GlobalConfigID", precision = 19)
+	@GeneratedValue
+	@Id
+	private Long id;
 
-    @Size(max = 50)
-    @Column(name = "GlobalConfigValue", length = 50)
-    private String value;
+	@NotEmpty
+	@Size(max = 50)
+	@Column(name = "GlobalConfigParameter", nullable = false, length = 50)
+	private String parameter;
 
-    @Size(max = 50)
-    @Column(name = "GlobalConfigHieraAddress", length = 50)
-    private String hieraAddress;
+	@Size(max = 50)
+	@Column(name = "GlobalConfigValue", length = 50)
+	private String value;
 
-    @Column(name = "RecursiveByEnv")
-    private Boolean recursiveByEnv;
-    
-    @Column(name = "RecursiveByRel")
-    private Boolean recursiveByRel;
-    
-    @Column(name = "RecursiveBySubEnv")
-    private Boolean recursiveBySubEnv;
+	@Size(max = 50)
+	@Column(name = "GlobalConfigHieraAddress", length = 50)
+	private String hieraAddress;
 
-    @Column(name = "GlobalConfigNotes")
-    private String notes;
-    
-    @Column(name = "GlobalConfigIsSensitive")
-    private Boolean sensitive;
+	@Column(name = "RecursiveByEnv")
+	private Boolean recursiveByEnv;
 
-    @Transient
-    private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+	@Column(name = "RecursiveByRel")
+	private Boolean recursiveByRel;
 
-    @Override
-    public String entityClassName() {
-        return Globalconfig.class.getSimpleName();
-    }
-    
-    public Long getId() {
-        return id;
-    }
+	@Column(name = "RecursiveBySubEnv")
+	private Boolean recursiveBySubEnv;
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Column(name = "GlobalConfigNotes")
+	private String notes;
 
-    public Globalconfig id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Column(name = "GlobalConfigIsSensitive")
+	private Boolean sensitive;
 
-    @Override
-    public boolean isIdSet() {
-        return id != null;
-    }
+	@Transient
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
-    public String getParameter() {
-        return parameter;
-    }
+	@Override
+	public String entityClassName() {
+		return Globalconfig.class.getSimpleName();
+	}
 
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public Globalconfig parameter(String parameter) {
-        setParameter(parameter);
-        return this;
-    }
-    // -- [value] ------------------------
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public String getValue() {
-        return value;
-    }
+	@Override
+	public boolean isIdSet() {
+		return id != null;
+	}
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+	public String getParameter() {
+		return parameter;
+	}
 
-    public Globalconfig value(String value) {
-        setValue(value);
-        return this;
-    }
+	public void setParameter(String parameter) {
+		this.parameter = parameter;
+	}
 
-    public String getHieraAddress() {
-        return hieraAddress;
-    }
+	public String getValue() {
+		return value;
+	}
 
-    public void setHieraAddress(String hieraAddress) {
-        this.hieraAddress = hieraAddress;
-    }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-    public Globalconfig hieraAddress(String hieraAddress) {
-        setHieraAddress(hieraAddress);
-        return this;
-    }
+	public String getHieraAddress() {
+		return hieraAddress;
+	}
 
-    /**
-     * Apply the default values.
-     */
-    public Globalconfig withDefaults() {
-        return this;
-    }
+	public void setHieraAddress(String hieraAddress) {
+		this.hieraAddress = hieraAddress;
+	}
 
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof Globalconfig && hashCode() == other.hashCode());
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof Globalconfig && hashCode() == other.hashCode());
+	}
 
-    
+	@Override
+	public int hashCode() {
+		return identifiableHashBuilder.hash(log, this, parameter + value + hieraAddress);
+	}
 
-    @Override
-    public int hashCode() {
-        return identifiableHashBuilder.hash(log, this, parameter + value + hieraAddress);
-    }
-
-    /**
-     * Construct a readable string representation for this Globalconfig instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    @Transient
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("parameter", getParameter()) //
-                .add("value", getValue()) //
-                .add("hieraAddress", getHieraAddress()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this Globalconfig
+	 * instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	@Transient
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("parameter", getParameter()) //
+				.add("value", getValue()) //
+				.add("hieraAddress", getHieraAddress()) //
+				.toString();
+	}
 
 	public Boolean isRecursiveByEnv() {
 		return recursiveByEnv;

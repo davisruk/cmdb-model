@@ -28,67 +28,59 @@ import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 
 @Entity
 @Table(name = "cm_subenvironment")
-public class SubEnvironment implements Identifiable<Long>, Serializable{
-    public SubEnvironment() {
+public class SubEnvironment implements Identifiable<Long>, Serializable {
+	public SubEnvironment() {
 		super();
 		nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
 		subEnvironmentConfigs = new ArrayList<SubEnvironmentConfig>();
 	}
 
 	private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(SubEnvironment.class.getName());
-	
+	private static final Logger log = Logger.getLogger(SubEnvironment.class.getName());
+
 	@Column(name = "SubEnvironmentID", precision = 19)
 	@GeneratedValue
-	@Id 
+	@Id
 	private Long id;
 
-	//bi-directional many-to-one association to Environment
+	// bi-directional many-to-one association to Environment
 	@ManyToOne
-	@JoinColumn(name="EnvironmentID")
+	@JoinColumn(name = "EnvironmentID")
 	private Environment environment;
 
-	//bi-directional many-to-one association to Release
+	// bi-directional many-to-one association to Release
 	@ManyToOne
-	@JoinColumn(name="ReleaseID")
+	@JoinColumn(name = "ReleaseID")
 	private Release release;
 
-	//bi-directional many-to-one association to SubEnvironmentType
+	// bi-directional many-to-one association to SubEnvironmentType
 	@ManyToOne
-	@JoinColumn(name="SubEnvironmentTypeID")
+	@JoinColumn(name = "SubEnvironmentTypeID")
 	private SubEnvironmentType subEnvironmentType;
 
-	//bi-directional many-to-one association to SubEnvironmentConfig
-	@OneToMany(mappedBy="subEnvironment")
+	// bi-directional many-to-one association to SubEnvironmentConfig
+	@OneToMany(mappedBy = "subEnvironment")
 	private List<SubEnvironmentConfig> subEnvironmentConfigs;
 
-	//bi-directional many-to-one association to SubEnvironmentConfig
-	@OneToMany(mappedBy="subEnvironment")
+	// bi-directional many-to-one association to SubEnvironmentConfig
+	@OneToMany(mappedBy = "subEnvironment")
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
 	public Long getId() {
 		return id;
 	}
 
-
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
 
 	public Release getRelease() {
 		return release;
 	}
 
-
-
 	public void setRelease(Release release) {
 		this.release = release;
 	}
-
-
 
 	public Environment getEnvironment() {
 		return this.environment;
@@ -97,7 +89,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	public void setEnvironment(Environment cmEnvironment) {
 		this.environment = cmEnvironment;
 	}
-
 
 	public SubEnvironmentType getSubEnvironmentType() {
 		return this.subEnvironmentType;
@@ -128,60 +119,54 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 
 		return cmSubenvironmentconfig;
 	}
-	
+
 	/**
-     * Apply the default values.
-     */
-    public SubEnvironment withDefaults() {
-        return this;
-    }
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof SubEnvironment && hashCode() == other.hashCode());
+	}
 
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof SubEnvironment && hashCode() == other.hashCode());
-    }
+	@Transient
+	private volatile int previousHashCode = 0;
 
-    @Transient
-    private volatile int previousHashCode = 0;
+	@Override
+	public int hashCode() {
+		int hashCode = Objects.hashCode(getId());
 
-    @Override
-    public int hashCode() {
-        int hashCode = Objects.hashCode(getId());
+		if (previousHashCode != 0 && previousHashCode != hashCode) {
+			log.warning("DEVELOPER: hashCode has changed!." //
+					+ "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
+					+ getClass().getCanonicalName());
+		}
 
-        if (previousHashCode != 0 && previousHashCode != hashCode) {
-            log.warning("DEVELOPER: hashCode has changed!." //
-                    + "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
-                    + getClass().getCanonicalName());
-        }
+		previousHashCode = hashCode;
+		return hashCode;
+	}
 
-        previousHashCode = hashCode;
-        return hashCode;
-    }
+	/**
+	 * Construct a readable string representation for this ServerType instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.toString();
+	}
 
-    /**
-     * Construct a readable string representation for this ServerType instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .toString();
-    }
-    
-    @Override
-    public String entityClassName() {
-        return SubEnvironment.class.getSimpleName();
-    }
-    
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
+	@Override
+	public String entityClassName() {
+		return SubEnvironment.class.getSimpleName();
+	}
+
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
 
 	public Set<NodeSubEnvironment> getNodeSubEnvironments() {
 		return nodeSubEnvironments;
@@ -190,20 +175,20 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 	public void setNodeSubEnvironments(Set<NodeSubEnvironment> nodeSubEnvironments) {
 		this.nodeSubEnvironments = nodeSubEnvironments;
 	}
-	
-	public NodeSubEnvironment addNodeSubEnvironment (NodeSubEnvironment nse){
+
+	public NodeSubEnvironment addNodeSubEnvironment(NodeSubEnvironment nse) {
 		this.nodeSubEnvironments.add(nse);
 		nse.setSubEnvironment(this);
 		return nse;
 	}
 
-	public NodeSubEnvironment removeNodeSubEnvironment (NodeSubEnvironment nse){
+	public NodeSubEnvironment removeNodeSubEnvironment(NodeSubEnvironment nse) {
 		this.nodeSubEnvironments.remove(nse);
 		nse.setSubEnvironment(null);
 		return nse;
 	}
-	
-	public NodeSubEnvironment addNode (Node node){
+
+	public NodeSubEnvironment addNode(Node node) {
 		NodeSubEnvironment nse = new NodeSubEnvironment();
 		nse.setSubEnvironment(this);
 		node.addNodeSubEnvironment(nse);
@@ -211,11 +196,11 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		return nse;
 	}
 
-	public NodeSubEnvironment removeNode (Node node){
+	public NodeSubEnvironment removeNode(Node node) {
 		Optional<NodeSubEnvironment> optional = nodeSubEnvironments.stream().filter(x -> {
 			return x.getNode().getId().equals(node.getId());
-			}).findFirst();
-		if (optional.isPresent()){
+		}).findFirst();
+		if (optional.isPresent()) {
 			NodeSubEnvironment nse = optional.get();
 			this.nodeSubEnvironments.remove(nse);
 			nse.setSubEnvironment(null);
@@ -224,6 +209,5 @@ public class SubEnvironment implements Identifiable<Long>, Serializable{
 		}
 		return null;
 	}
-	
-	
+
 }

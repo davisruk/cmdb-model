@@ -52,7 +52,8 @@ public class SubEnvironmentDTOService {
 	private NodeDTOService nodeDTOService;
 	@Inject
 	private EnvironmentDTOService envDTOService;
-	@Inject NodeSubEnvRepository nseRepo;
+	@Inject
+	NodeSubEnvRepository nseRepo;
 
 	@Transactional(readOnly = true)
 	public SubEnvironmentDTO findOne(Long id, int depth) {
@@ -66,7 +67,6 @@ public class SubEnvironmentDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	
 	@Transactional(readOnly = true)
 	public List<SubEnvironmentDTO> findSubEnvironmentsWithoutServer(ServerDTO serverDTO) {
 		List<SubEnvironment> results = subEnvironmentRepository.findSubEnvsOfServer(serverDTO.id);
@@ -77,9 +77,11 @@ public class SubEnvironmentDTOService {
 			results = subEnvironmentRepository.findAll();
 		else
 			results = subEnvironmentRepository.findByIdNotIn(idList);
-		//results = subEnvironmentRepository.findSubEnvsWithoutServer(serverDTO.id);
+		// results =
+		// subEnvironmentRepository.findSubEnvsWithoutServer(serverDTO.id);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
+
 	@Transactional(readOnly = true)
 	public List<SubEnvironmentDTO> findSubEnvironmentsWithServer(ServerDTO serverDTO) {
 		List<SubEnvironment> results = subEnvironmentRepository.findSubEnvsOfServer(serverDTO.id);
@@ -123,10 +125,11 @@ public class SubEnvironmentDTOService {
 			ids.add(s.id);
 		page = subEnvironmentRepository.findBySubEnvironmentType_IdNotIn(req.toPageable(), ids);
 
-		List<SubEnvironmentDTO> content = page.getContent().stream().map((SubEnvironment s) -> toDTO(s, 0)).collect(Collectors.toList()); 
+		List<SubEnvironmentDTO> content = page.getContent().stream().map((SubEnvironment s) -> toDTO(s, 0))
+				.collect(Collectors.toList());
 
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
-			
+
 	}
 
 	/**
@@ -157,7 +160,7 @@ public class SubEnvironmentDTOService {
 				subEnvironment.setRelease(releaseRepository.findOne(dto.release.id));
 			}
 		}
-		
+
 		if (dto.subEnvironmentType == null) {
 			subEnvironment.setSubEnvironmentType(null);
 		} else {
@@ -171,19 +174,19 @@ public class SubEnvironmentDTOService {
 			subEnvironment.setEnvironment(null);
 		} else {
 			Environment env = subEnvironment.getEnvironment();
-			if (env== null || (env.getId().compareTo(dto.environment.id) != 0)) {
+			if (env == null || (env.getId().compareTo(dto.environment.id) != 0)) {
 				subEnvironment.setEnvironment(environmentRepository.findOne(dto.environment.id));
 			}
 		}
 
 		Set<? extends Node> nodes = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(dto.id);
 		Set<NodeSubEnvironment> nses = subEnvironment.getNodeSubEnvironments();
-		
+
 		subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
-		if (dto.servers != null){
+		if (dto.servers != null) {
 			List<NodeSubEnvironment> nsesToAdd = new ArrayList<NodeSubEnvironment>();
 			for (ServerDTO sDTO : dto.servers) {
 				Optional<? extends Node> optional = nodes.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
@@ -200,9 +203,10 @@ public class SubEnvironmentDTOService {
 		// Only need to check this if updating
 		if (!inserting) {
 			List<NodeSubEnvironment> nsesToDelete = new ArrayList<NodeSubEnvironment>();
-			for (Iterator<NodeSubEnvironment> it = nses.iterator(); it.hasNext();){
+			for (Iterator<NodeSubEnvironment> it = nses.iterator(); it.hasNext();) {
 				NodeSubEnvironment nse = it.next();
-				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(nse.getNode().getId())).findFirst();
+				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(nse.getNode().getId()))
+						.findFirst();
 				if (!optional.isPresent()) {
 					nsesToDelete.add(nse);
 					it.remove();
@@ -211,19 +215,8 @@ public class SubEnvironmentDTOService {
 			if (!nsesToDelete.isEmpty())
 				nseRepo.delete(nsesToDelete);
 		}
-		//subEnvironmentRepository.save(subEnvironment);
+		// subEnvironmentRepository.save(subEnvironment);
 		return dto;
-	}
-
-	@Transactional
-	public List<SubEnvironmentDTO> findSubEnvironmentsNotInList(List<SubEnvironment> envs) {
-		List<SubEnvironment> results = subEnvironmentRepository.findAll();
-		if (envs != null) {
-			for (SubEnvironment env : envs) {
-				results.remove(env);
-			}
-		}
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
@@ -241,19 +234,21 @@ public class SubEnvironmentDTOService {
 		if (e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
 			return findAllSubEnvironmentTypes();
 
-		// otherwise we need to build a list of unavailable sub environment types 
-		for (SubEnvironment se : e.getSubEnvironments()){
+		// otherwise we need to build a list of unavailable sub environment
+		// types
+		for (SubEnvironment se : e.getSubEnvironments()) {
 			idList.add(se.getSubEnvironmentType().getId());
 		}
 		// get the subenvironmenttypes not in the list
 		results = subEnvironmentTypeRepository.findByIdNotIn(idList);
-		// add in the subenvironment type that we're checking - could be null if new
-		 if (seDTO.subEnvironmentType != null)
-			 results.add(subEnvironmentTypeRepository.findOne(seDTO.subEnvironmentType.id));
-		
+		// add in the subenvironment type that we're checking - could be null if
+		// new
+		if (seDTO.subEnvironmentType != null)
+			results.add(subEnvironmentTypeRepository.findOne(seDTO.subEnvironmentType.id));
+
 		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
 	}
-	
+
 	@Transactional(readOnly = true)
 	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnv(EnvironmentDTO eDTO) {
 		List<SubEnvironmentType> results;
@@ -263,24 +258,26 @@ public class SubEnvironmentDTOService {
 		if (e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
 			return findAllSubEnvironmentTypes();
 
-		// otherwise we need to build a list of unavailable sub environment types 
-		for (SubEnvironment se : e.getSubEnvironments()){
+		// otherwise we need to build a list of unavailable sub environment
+		// types
+		for (SubEnvironment se : e.getSubEnvironments()) {
 			idList.add(se.getSubEnvironmentType().getId());
 		}
 		// get the subenvironmenttypes not in the list
 		results = subEnvironmentTypeRepository.findByIdNotIn(idList);
-	
+
 		return results.stream().map(this::subEnvTypeToDTO).collect(Collectors.toList());
 	}
 
-	private SubEnvironmentTypeDTO subEnvTypeToDTO (SubEnvironmentType set){
+	private SubEnvironmentTypeDTO subEnvTypeToDTO(SubEnvironmentType set) {
 		if (set == null)
 			return null;
 		SubEnvironmentTypeDTO setDTO = new SubEnvironmentTypeDTO();
 		setDTO.id = set.getId();
 		setDTO.name = set.getName();
 		return setDTO;
-	}	
+	}
+
 	/**
 	 * Converts the passed subEnvironment to a DTO.
 	 */
@@ -312,16 +309,17 @@ public class SubEnvironmentDTOService {
 		dto.subEnvironmentType = new SubEnvironmentTypeDTO();
 		SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
 		// type could be null if we are in depth situation > 1
-		if (set != null){
+		if (set != null) {
 			dto.subEnvironmentType.id = subEnvironment.getSubEnvironmentType().getId();
 			dto.subEnvironmentType.name = subEnvironment.getSubEnvironmentType().getName();
 		}
-		
+
 		if (depth-- > 0) {
 			dto.environment = envDTOService.toDTO(subEnvironment.getEnvironment());
 			dto.release = releaseDTOService.toDTO(subEnvironment.getRelease(), depth);
-			
-			dto.servers = nodeDTOService.getServerDTOList(serverRepo.findByNodeSubEnvironments_SubEnvironment_id(subEnvironment.getId()), depth);
+
+			dto.servers = nodeDTOService.getServerDTOList(
+					serverRepo.findByNodeSubEnvironments_SubEnvironment_id(subEnvironment.getId()), depth);
 		}
 
 		return dto;
@@ -349,8 +347,10 @@ public class SubEnvironmentDTOService {
 		subEnvironment.setId(dto.id);
 		if (depth-- > 0) {
 			// Move to SubSubEnvironment
-			//subEnvironment.setRelease(releaseDTOService.toEntity(dto.release, depth));
-//			subEnvironment.setServers(serverDTOService.toEntity(dto.servers, depth));
+			// subEnvironment.setRelease(releaseDTOService.toEntity(dto.release,
+			// depth));
+			// subEnvironment.setServers(serverDTOService.toEntity(dto.servers,
+			// depth));
 		}
 
 		return subEnvironment;
@@ -382,5 +382,5 @@ public class SubEnvironmentDTOService {
 			ret.add(toDTO(e, depth));
 		return ret;
 	}
-	
+
 }

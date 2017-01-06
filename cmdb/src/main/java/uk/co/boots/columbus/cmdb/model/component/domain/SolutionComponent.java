@@ -31,121 +31,102 @@ import uk.co.boots.columbus.cmdb.model.packageinfo.domain.PackageInfo;
 @Entity
 @Table(name = "cm_component")
 public class SolutionComponent implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(SolutionComponent.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(SolutionComponent.class.getName());
 
-    // Raw attributes
-    private Long id;
-    private String name;
+	// Raw attributes
+	private Long id;
+	private String name;
 
-    // Many to one
-    private PackageInfo packageInfo;
+	// Many to one
+	private PackageInfo packageInfo;
 
-    @Override
-    public String entityClassName() {
-        return SolutionComponent.class.getSimpleName();
-    }
+	@Override
+	public String entityClassName() {
+		return SolutionComponent.class.getSimpleName();
+	}
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
-    @Override
-    @Column(name = "ComponentID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
-        return id;
-    }
+	@Override
+	@Column(name = "ComponentID", precision = 19)
+	@GeneratedValue
+	@Id
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public SolutionComponent id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
+	// -- [name] ------------------------
 
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
+	@NotEmpty
+	@Size(max = 50)
+	@Column(name = "ComponentName", nullable = false, length = 50)
+	public String getName() {
+		return name;
+	}
 
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "ComponentName", nullable = false, length = 50)
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	// -----------------------------------------------------------------
+	// Many to One support
+	// -----------------------------------------------------------------
 
-    public SolutionComponent name(String name) {
-        setName(name);
-        return this;
-    }
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// many-to-one: SolutionComponent.packageInfo ==> PackageInfo.id
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // -----------------------------------------------------------------
-    // Many to One support
-    // -----------------------------------------------------------------
+	@JoinColumn(name = "PackageID")
+	@ManyToOne
+	public PackageInfo getPackageInfo() {
+		return packageInfo;
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: SolutionComponent.packageInfo ==> PackageInfo.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	/**
+	 * Set the {@link #packageInfo} without adding this SolutionComponent
+	 * instance on the passed {@link #packageInfo}
+	 */
+	public void setPackageInfo(PackageInfo packageInfo) {
+		this.packageInfo = packageInfo;
+	}
 
-    @JoinColumn(name = "PackageID")
-    @ManyToOne
-    public PackageInfo getPackageInfo() {
-        return packageInfo;
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof SolutionComponent && hashCode() == other.hashCode());
+	}
 
-    /**
-     * Set the {@link #packageInfo} without adding this SolutionComponent instance on the passed {@link #packageInfo}
-     */
-    public void setPackageInfo(PackageInfo packageInfo) {
-        this.packageInfo = packageInfo;
-    }
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
-    public SolutionComponent packageInfo(PackageInfo packageInfo) {
-        setPackageInfo(packageInfo);
-        return this;
-    }
+	@Override
+	public int hashCode() {
+		return identifiableHashBuilder.hash(log, this, name);
+	}
 
-    /**
-     * Apply the default values.
-     */
-    public SolutionComponent withDefaults() {
-        return this;
-    }
-
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof SolutionComponent && hashCode() == other.hashCode());
-    }
-
-    private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
-
-    @Override
-    public int hashCode() {
-        return identifiableHashBuilder.hash(log, this, name);
-    }
-
-    /**
-     * Construct a readable string representation for this SolutionComponent instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("name", getName()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this SolutionComponent
+	 * instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("name", getName()) //
+				.toString();
+	}
 }

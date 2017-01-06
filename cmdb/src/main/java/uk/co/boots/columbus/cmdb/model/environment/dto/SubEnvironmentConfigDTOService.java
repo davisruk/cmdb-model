@@ -2,7 +2,6 @@ package uk.co.boots.columbus.cmdb.model.environment.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -18,8 +17,6 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
-import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
@@ -32,9 +29,7 @@ public class SubEnvironmentConfigDTOService {
 	private SubEnvironmentRepository subEnvironmentRepository;
 	@Inject
 	private SubEnvironmentDTOService subEnvironmentDTOService;
-	@Inject 
-	private GlobalconfigDTOService gcDTOService;
-
+	
 	@Transactional(readOnly = true)
 	public SubEnvironmentConfigDTO findOne(Long id, int depth) {
 		return toDTO(subEnvironmentConfigRepository.findOne(id), depth);
@@ -84,27 +79,7 @@ public class SubEnvironmentConfigDTOService {
 		return subConList;
 	}
 
-	public List<SubEnvironmentConfigDTO> getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(
-			SubEnvironmentDTO seDTO, List<ReleaseConfigDTO> relConfList, Set<Globalconfig>gcSet) {
-		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
-		List<SubEnvironmentConfigDTO> subConList = new ArrayList<SubEnvironmentConfigDTO>();
-		for (ReleaseConfigDTO rDTO : relConfList) {
-			if (rDTO.recursiveBySubEnv.booleanValue()) {
-				SubEnvironmentConfigDTO dto = new SubEnvironmentConfigDTO();
-				dto.hieraAddress = rDTO.hieraAddress.replaceAll("\\{ParamName\\}", rDTO.getParameter());
-				dto.hieraAddress = dto.hieraAddress.replaceAll("\\{ENVID\\}", seDTO.environment.name);
-				if (allowSensitive){
-					dto.value = rDTO.value.replaceAll("\\{ParamName\\}", rDTO.getParameter());
-					dto.value = dto.value.replaceAll("\\{ENVID\\}", seDTO.environment.name);
-				}else{
-					dto.value = "[SENSITIVE]";
-				}
-				subConList.add(dto);
-			}
-			
-		}
-		return subConList;
-	}
+	
 
 	@Transactional(readOnly = true)
 	public List<SubEnvironmentConfigDTO> findByTypeAndEnvironmentName(String typeName, String envName) {
@@ -114,12 +89,7 @@ public class SubEnvironmentConfigDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	@Transactional(readOnly = true)
-	public List<SubEnvironmentConfigDTO> findBySubEnvironmentReleaseName(String relName) {
-		List<SubEnvironmentConfig> results = subEnvironmentConfigRepository.findBySubEnvironment_Release_name(relName);
-		buildHieraAddresses(results);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
-	}
+	
 
 	/**
 	 * Converts the passed environmentConfig to a DTO.

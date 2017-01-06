@@ -4,12 +4,10 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
@@ -103,13 +101,6 @@ public class EnvironmentConfig implements Identifiable<Long>, Serializable {
 	@Transient
 	public boolean isIdSet() {
 		return id != null;
-	}
-
-	/**
-	 * Apply the default values.
-	 */
-	public EnvironmentConfig withDefaults() {
-		return this;
 	}
 
 	/**

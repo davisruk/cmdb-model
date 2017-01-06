@@ -37,32 +37,32 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	@Size(max = 50)
 	@Column(name = "RelConfigValue", length = 50)
 	private String value;
-	
+
 	@Size(max = 50)
 	@Column(name = "RelConfigHieraAddress", length = 50)
 	private String hieraAddress;
-	
-	@Column(name = "RecursiveByEnv")	
+
+	@Column(name = "RecursiveByEnv")
 	private Boolean recursiveByEnv;
-	
+
 	@Column(name = "RecursiveBySubEnv")
 	private Boolean recursiveBySubEnv;
 
 	@Column(name = "ReleaseConfigNotes")
-    private String notes;
+	private String notes;
 
-    @Column(name = "ReleaseConfigIsSensitive")
-    private Boolean sensitive;
+	@Column(name = "ReleaseConfigIsSensitive")
+	private Boolean sensitive;
 
 	@NotNull
 	@JoinColumn(name = "ReleaseID", nullable = false)
 	@ManyToOne
-    private Release release;
+	private Release release;
 
 	@Transient
 	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
-    @Override
+	@Override
 	public String entityClassName() {
 		return ReleaseConfig.class.getSimpleName();
 	}
@@ -77,11 +77,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	@Override
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public ReleaseConfig id(Long id) {
-		setId(id);
-		return this;
 	}
 
 	@Override
@@ -99,12 +94,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 		this.parameter = parameter;
 	}
 
-	public ReleaseConfig parameter(String parameter) {
-		setParameter(parameter);
-		return this;
-	}
-	// -- [value] ------------------------
-
 	public String getValue() {
 		return value;
 	}
@@ -113,23 +102,12 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 		this.value = value;
 	}
 
-	public ReleaseConfig value(String value) {
-		setValue(value);
-		return this;
-	}
-	// -- [hieraAddress] ------------------------
-
 	public String getHieraAddress() {
 		return hieraAddress;
 	}
 
 	public void setHieraAddress(String hieraAddress) {
 		this.hieraAddress = hieraAddress;
-	}
-
-	public ReleaseConfig hieraAddress(String hieraAddress) {
-		setHieraAddress(hieraAddress);
-		return this;
 	}
 
 	// -----------------------------------------------------------------
@@ -145,16 +123,11 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	}
 
 	/**
-	 * Set the {@link #release} without adding this ReleaseConfig
-	 * instance on the passed {@link #release}
+	 * Set the {@link #release} without adding this ReleaseConfig instance on
+	 * the passed {@link #release}
 	 */
 	public void setRelease(Release release) {
 		this.release = release;
-	}
-
-	public ReleaseConfig release(Release release) {
-		setRelease(release);
-		return this;
 	}
 
 	public Boolean isRecursiveByEnv() {
@@ -179,13 +152,6 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
-	}
-
-	/**
-	 * Apply the default values.
-	 */
-	public ReleaseConfig withDefaults() {
-		return this;
 	}
 
 	/**

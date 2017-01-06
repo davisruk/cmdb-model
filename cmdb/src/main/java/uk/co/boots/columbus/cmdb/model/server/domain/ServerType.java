@@ -28,15 +28,14 @@ import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 @Entity
 @Table(name = "cm_servertype")
 public class ServerType implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(ServerType.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(ServerType.class.getName());
 
-    // Raw attributes
-    private Long id;
-    private String name;
+	// Raw attributes
+	private Long id;
+	private String name;
 
-    
-    public ServerType() {
+	public ServerType() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -47,94 +46,78 @@ public class ServerType implements Identifiable<Long>, Serializable {
 	}
 
 	@Override
-    public String entityClassName() {
-        return ServerType.class.getSimpleName();
-    }
+	public String entityClassName() {
+		return ServerType.class.getSimpleName();
+	}
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
-    @Override
-    @Column(name = "ServerTypeID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
-        return id;
-    }
+	@Override
+	@Column(name = "ServerTypeID", precision = 19)
+	@GeneratedValue
+	@Id
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public ServerType id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
+	// -- [name] ------------------------
 
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
+	@NotEmpty
+	@Size(max = 50)
+	@Column(name = "ServerTypeName", nullable = false, unique = true, length = 50)
+	public String getName() {
+		return name;
+	}
 
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "ServerTypeName", nullable = false, unique = true, length = 50)
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof ServerType && hashCode() == other.hashCode());
+	}
 
-    public ServerType name(String name) {
-        setName(name);
-        return this;
-    }
+	@Transient
+	private volatile int previousHashCode = 0;
 
-    /**
-     * Apply the default values.
-     */
-    public ServerType withDefaults() {
-        return this;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = Objects.hashCode(getName());
 
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof ServerType && hashCode() == other.hashCode());
-    }
+		if (previousHashCode != 0 && previousHashCode != hashCode) {
+			log.warning("DEVELOPER: hashCode has changed!." //
+					+ "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
+					+ getClass().getCanonicalName());
+		}
 
-    @Transient
-    private volatile int previousHashCode = 0;
+		previousHashCode = hashCode;
+		return hashCode;
+	}
 
-    @Override
-    public int hashCode() {
-        int hashCode = Objects.hashCode(getName());
-
-        if (previousHashCode != 0 && previousHashCode != hashCode) {
-            log.warning("DEVELOPER: hashCode has changed!." //
-                    + "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
-                    + getClass().getCanonicalName());
-        }
-
-        previousHashCode = hashCode;
-        return hashCode;
-    }
-
-    /**
-     * Construct a readable string representation for this ServerType instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("name", getName()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this ServerType instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("name", getName()) //
+				.toString();
+	}
 }

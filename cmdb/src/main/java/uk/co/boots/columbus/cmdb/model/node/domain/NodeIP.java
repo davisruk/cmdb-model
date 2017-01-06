@@ -74,9 +74,7 @@ public class NodeIP implements Identifiable<Long>, Serializable {
 		super();
 	}
 
-	public NodeIP withDefaults() {
-        return this;
-    }
+	
     
     @Override
     public String entityClassName() {

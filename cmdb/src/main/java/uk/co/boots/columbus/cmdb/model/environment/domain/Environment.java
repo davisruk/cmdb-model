@@ -9,8 +9,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -47,26 +45,9 @@ public class Environment implements Identifiable<Long>, Serializable {
 	@JoinColumn(name="EnvironmentTypeID")
 	private EnvironmentType environmentType;
 
-	//bi-directional many-to-many association to Server
-/*	
-	@ManyToMany
-	@JoinTable(
-		name="cm_server_environment"
-		, joinColumns={
-			@JoinColumn(name="EnvironmentID")
-			}
-		, inverseJoinColumns={
-			@JoinColumn(name="ServerID")
-			}
-		)
-*/
 	@Transient // change this later
 	private List<Server> servers;
 	
-	//bi-directional many-to-one association to EnvironmentConfig
-	//@OneToMany(mappedBy="environment")
-	//private List<EnvironmentConfig> environmentConfigs;
-
 	//bi-directional many-to-one association to SubEnvironment
 	@OneToMany(mappedBy="environment")
 	private List<SubEnvironment> subEnvironments;
@@ -119,36 +100,6 @@ public class Environment implements Identifiable<Long>, Serializable {
 		this.subEnvironments = subEnvironments;
 	}
 
-
-/*
-	public EnvironmentConfig addEnvironmentConfig(EnvironmentConfig cmEnvironmentconfig) {
-		getEnvironmentConfigs().add(cmEnvironmentconfig);
-		cmEnvironmentconfig.setEnvironment(this);
-
-		return cmEnvironmentconfig;
-	}
-
-	public EnvironmentConfig removeEnvironmentConfig(EnvironmentConfig cmEnvironmentconfig) {
-		getEnvironmentConfigs().remove(cmEnvironmentconfig);
-		cmEnvironmentconfig.setEnvironment(null);
-
-		return cmEnvironmentconfig;
-	}
-*/
-	public SubEnvironment addSubEnvironment(SubEnvironment cmSubenvironment) {
-		getSubEnvironments().add(cmSubenvironment);
-		cmSubenvironment.setEnvironment(this);
-
-		return cmSubenvironment;
-	}
-
-	public SubEnvironment removeSubEnvironment(SubEnvironment cmSubenvironment) {
-		getSubEnvironments().remove(cmSubenvironment);
-		cmSubenvironment.setEnvironment(null);
-
-		return cmSubenvironment;
-	}
-
 	@Override
 	public String entityClassName() {
 		return Environment.class.getSimpleName();
@@ -161,13 +112,6 @@ public class Environment implements Identifiable<Long>, Serializable {
     }
     // -- [name] ------------------------
 
-
-    /**
-     * Apply the default values.
-     */
-    public Environment withDefaults() {
-        return this;
-    }
 
     /**
      * Equals implementation using a business key.

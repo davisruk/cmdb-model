@@ -25,7 +25,6 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
-import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
@@ -67,7 +66,7 @@ public class GlobalconfigDTOService {
 	// the list you pass in should only be for repeating hiera - the method does not check this
 	// the utility can be used at global, env, subenv and release levels you must pass in the
 	// relevant domain objects for the level
-	public void buildHieraAddresses(List<Globalconfig> cl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO r, Set<Globalconfig> gcSet) {
+	private void buildHieraAddresses(List<Globalconfig> cl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO r, Set<Globalconfig> gcSet) {
 		String addr;
 		String value;
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
@@ -146,12 +145,7 @@ public class GlobalconfigDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	@Transactional(readOnly = true)
-	public List<GlobalconfigDTO> findAndReplaceHieraForRelease() {
-		List<Globalconfig> results = globalconfigRepository.findByRecursiveByRel(true);
-		buildHieraAddresses(results);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
-	}
+	
 
 	@Transactional(readOnly = true)
 	public List<GlobalconfigDTO> findAndReplaceHieraForRelease(SubEnvironmentDTO seDTO, Set<Globalconfig> gcSet) {
@@ -161,11 +155,7 @@ public class GlobalconfigDTOService {
 	}
 
 	
-	@Transactional(readOnly = true)
-	public List<GlobalconfigDTO> findRepeatingGCByRelease() {
-		List<Globalconfig> results = globalconfigRepository.findByRecursiveByRel(true);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
-	}
+	
 
 	@Transactional(readOnly = true)
 	public List<GlobalconfigDTO> complete(String query, int maxResults) {

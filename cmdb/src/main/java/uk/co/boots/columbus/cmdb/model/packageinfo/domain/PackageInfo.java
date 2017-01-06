@@ -32,177 +32,149 @@ import uk.co.boots.columbus.cmdb.model.server.domain.ServerType;
 @Entity
 @Table(name = "cm_package")
 public class PackageInfo implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(PackageInfo.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(PackageInfo.class.getName());
 
-    // Raw attributes
-    private Long id;
-    private String name;
+	// Raw attributes
+	private Long id;
+	private String name;
 
-    // Many to one
-    private PackageType packageType;
-    private ServerType serverType;
-    private Release release;
+	// Many to one
+	private PackageType packageType;
+	private ServerType serverType;
+	private Release release;
 
-    @Override
-    public String entityClassName() {
-        return PackageInfo.class.getSimpleName();
-    }
+	@Override
+	public String entityClassName() {
+		return PackageInfo.class.getSimpleName();
+	}
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
-    @Override
-    @Column(name = "PackageID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
-        return id;
-    }
+	@Override
+	@Column(name = "PackageID", precision = 19)
+	@GeneratedValue
+	@Id
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public PackageInfo id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
+	// -- [name] ------------------------
 
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
+	@NotEmpty
+	@Size(max = 50)
+	@Column(name = "PackageName", nullable = false, unique = true, length = 50)
+	public String getName() {
+		return name;
+	}
 
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "PackageName", nullable = false, unique = true, length = 50)
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	// -----------------------------------------------------------------
+	// Many to One support
+	// -----------------------------------------------------------------
 
-    public PackageInfo name(String name) {
-        setName(name);
-        return this;
-    }
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// many-to-one: PackageInfo.packageType ==> PackageType.id
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    // -----------------------------------------------------------------
-    // Many to One support
-    // -----------------------------------------------------------------
+	@JoinColumn(name = "PackageTypeID")
+	@ManyToOne
+	public PackageType getPackageType() {
+		return packageType;
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: PackageInfo.packageType ==> PackageType.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	/**
+	 * Set the {@link #packageType} without adding this PackageInfo instance on
+	 * the passed {@link #packageType}
+	 */
+	public void setPackageType(PackageType packageType) {
+		this.packageType = packageType;
+	}
 
-    @JoinColumn(name = "PackageTypeID")
-    @ManyToOne
-    public PackageType getPackageType() {
-        return packageType;
-    }
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// many-to-one: PackageInfo.serverType ==> ServerType.id
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    /**
-     * Set the {@link #packageType} without adding this PackageInfo instance on the passed {@link #packageType}
-     */
-    public void setPackageType(PackageType packageType) {
-        this.packageType = packageType;
-    }
+	@JoinColumn(name = "ServerTypeID")
+	@ManyToOne
+	public ServerType getServerType() {
+		return serverType;
+	}
 
-    public PackageInfo packageType(PackageType packageType) {
-        setPackageType(packageType);
-        return this;
-    }
+	/**
+	 * Set the {@link #serverType} without adding this PackageInfo instance on
+	 * the passed {@link #serverType}
+	 */
+	public void setServerType(ServerType serverType) {
+		this.serverType = serverType;
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: PackageInfo.serverType ==> ServerType.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	// many-to-one: PackageInfo.release ==> Release.id
+	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    @JoinColumn(name = "ServerTypeID")
-    @ManyToOne
-    public ServerType getServerType() {
-        return serverType;
-    }
+	@JoinColumn(name = "ReleaseID")
+	@ManyToOne
+	public Release getRelease() {
+		return release;
+	}
 
-    /**
-     * Set the {@link #serverType} without adding this PackageInfo instance on the passed {@link #serverType}
-     */
-    public void setServerType(ServerType serverType) {
-        this.serverType = serverType;
-    }
+	/**
+	 * Set the {@link #release} without adding this PackageInfo instance on the
+	 * passed {@link #release}
+	 */
+	public void setRelease(Release release) {
+		this.release = release;
+	}
 
-    public PackageInfo serverType(ServerType serverType) {
-        setServerType(serverType);
-        return this;
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof PackageInfo && hashCode() == other.hashCode());
+	}
 
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    // many-to-one: PackageInfo.release ==> Release.id
-    // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	@Transient
+	private volatile int previousHashCode = 0;
 
-    @JoinColumn(name = "ReleaseID")
-    @ManyToOne
-    public Release getRelease() {
-        return release;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = Objects.hashCode(getName());
 
-    /**
-     * Set the {@link #release} without adding this PackageInfo instance on the passed {@link #release}
-     */
-    public void setRelease(Release release) {
-        this.release = release;
-    }
+		if (previousHashCode != 0 && previousHashCode != hashCode) {
+			log.warning("DEVELOPER: hashCode has changed!." //
+					+ "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
+					+ getClass().getCanonicalName());
+		}
 
-    public PackageInfo release(Release release) {
-        setRelease(release);
-        return this;
-    }
+		previousHashCode = hashCode;
+		return hashCode;
+	}
 
-    /**
-     * Apply the default values.
-     */
-    public PackageInfo withDefaults() {
-        return this;
-    }
-
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof PackageInfo && hashCode() == other.hashCode());
-    }
-
-    @Transient
-    private volatile int previousHashCode = 0;
-
-    @Override
-    public int hashCode() {
-        int hashCode = Objects.hashCode(getName());
-
-        if (previousHashCode != 0 && previousHashCode != hashCode) {
-            log.warning("DEVELOPER: hashCode has changed!." //
-                    + "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
-                    + getClass().getCanonicalName());
-        }
-
-        previousHashCode = hashCode;
-        return hashCode;
-    }
-
-    /**
-     * Construct a readable string representation for this PackageInfo instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("name", getName()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this PackageInfo instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("name", getName()) //
+				.toString();
+	}
 }

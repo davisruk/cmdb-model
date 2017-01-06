@@ -22,8 +22,6 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentType;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentTypeRepository;
-import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
-import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
@@ -40,11 +38,11 @@ public class EnvironmentDTOService {
 	@Inject
 	private EnvironmentTypeRepository environmentTypeRepository;
 	@Inject
-	ServerDTOService serverDTOService;
-	private @Inject
-	ServerRepository serverRepo;
+	private ServerDTOService serverDTOService;
 	@Inject
-	SubEnvironmentDTOService subEnvironmentDTOService;
+	private ServerRepository serverRepo;
+	@Inject
+	private SubEnvironmentDTOService subEnvironmentDTOService;
 
 
 	@Transactional(readOnly = true)
@@ -193,21 +191,10 @@ public class EnvironmentDTOService {
 		return toDTO(environment, 2);
 	}
 
-	@Transactional
-	public List<EnvironmentDTO> findEnvironmentsNotInList(List<Environment> envs) {
-		List<Environment> results = environmentRepository.findAll();
-		if (envs != null) {
-			for (Environment env : envs) {
-				results.remove(env);
-			}
-		}
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
-	}
-
 	/**
 	 * Converts the passed environment to a DTO.
 	 */
-	public EnvironmentDTO toDTO(Environment environment) {
+	EnvironmentDTO toDTO(Environment environment) {
 		return toDTO(environment, 1);
 	}
 
@@ -224,7 +211,7 @@ public class EnvironmentDTOService {
 	 *            xToOne associations of xToOne associations will be serialized,
 	 *            etc.
 	 */
-	public EnvironmentDTO toDTO(Environment environment, int depth) {
+	EnvironmentDTO toDTO(Environment environment, int depth) {
 		if (environment == null) {
 			return null;
 		}

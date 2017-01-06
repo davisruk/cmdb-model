@@ -26,91 +26,76 @@ import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 @Entity
 @Table(name = "cm_releasedatatype")
 public class ReleaseDataType implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(ReleaseDataType.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(ReleaseDataType.class.getName());
 
-    // Raw attributes
-    private Long id;
-    private String name;
+	// Raw attributes
+	private Long id;
+	private String name;
 
-    @Override
-    public String entityClassName() {
-        return ReleaseDataType.class.getSimpleName();
-    }
+	@Override
+	public String entityClassName() {
+		return ReleaseDataType.class.getSimpleName();
+	}
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
-    @Override
-    @Column(name = "DataTypeID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
-        return id;
-    }
+	@Override
+	@Column(name = "DataTypeID", precision = 19)
+	@GeneratedValue
+	@Id
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public ReleaseDataType id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
+	// -- [name] ------------------------
 
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
+	@Size(max = 50)
+	@Column(name = "DataTypeName", unique = true, length = 50)
+	public String getName() {
+		return name;
+	}
 
-    @Size(max = 50)
-    @Column(name = "DataTypeName", unique = true, length = 50)
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof ReleaseDataType && hashCode() == other.hashCode());
+	}
 
-    public ReleaseDataType name(String name) {
-        setName(name);
-        return this;
-    }
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
-    /**
-     * Apply the default values.
-     */
-    public ReleaseDataType withDefaults() {
-        return this;
-    }
+	@Override
+	public int hashCode() {
+		return identifiableHashBuilder.hash(log, this, name);
+	}
 
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof ReleaseDataType && hashCode() == other.hashCode());
-    }
-
-    private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
-
-    @Override
-    public int hashCode() {
-        return identifiableHashBuilder.hash(log, this, name);
-    }
-
-    /**
-     * Construct a readable string representation for this ReleaseDataType instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("name", getName()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this ReleaseDataType
+	 * instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("name", getName()) //
+				.toString();
+	}
 }

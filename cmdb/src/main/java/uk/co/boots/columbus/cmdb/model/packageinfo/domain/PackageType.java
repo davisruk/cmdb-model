@@ -55,10 +55,7 @@ public class PackageType implements Identifiable<Long>, Serializable {
         this.id = id;
     }
 
-    public PackageType id(Long id) {
-        setId(id);
-        return this;
-    }
+    
 
     @Override
     @Transient
@@ -76,18 +73,6 @@ public class PackageType implements Identifiable<Long>, Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public PackageType name(String name) {
-        setName(name);
-        return this;
-    }
-
-    /**
-     * Apply the default values.
-     */
-    public PackageType withDefaults() {
-        return this;
     }
 
     /**

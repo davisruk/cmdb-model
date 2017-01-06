@@ -28,118 +28,101 @@ import com.google.common.base.Objects;
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 
-
 @Entity
 @Table(name = "cm_release")
 public class Release implements Identifiable<Long>, Serializable {
-    private static final long serialVersionUID = 1L;
-    private static final Logger log = Logger.getLogger(Release.class.getName());
+	private static final long serialVersionUID = 1L;
+	private static final Logger log = Logger.getLogger(Release.class.getName());
 
-    @Column(name = "ReleaseID", precision = 19)
-    @GeneratedValue
-    @Id
-    private Long id;
-    
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "ReleaseName", nullable = false, unique = true, length = 50)
-    private String name;
+	@Column(name = "ReleaseID", precision = 19)
+	@GeneratedValue
+	@Id
+	private Long id;
 
-	//bi-directional many-to-one association to ReleaseConfig
-	@OneToMany(mappedBy="release")
+	@NotEmpty
+	@Size(max = 50)
+	@Column(name = "ReleaseName", nullable = false, unique = true, length = 50)
+	private String name;
+
+	// bi-directional many-to-one association to ReleaseConfig
+	@OneToMany(mappedBy = "release")
 	private List<ReleaseConfig> releaseConfigs;
 
-	//bi-directional many-to-one association to ReleaseData
-	@OneToMany(mappedBy="release")
+	// bi-directional many-to-one association to ReleaseData
+	@OneToMany(mappedBy = "release")
 	private List<ReleaseData> releaseData;
 
-	//bi-directional many-to-one association to SubEnvironment
-	@OneToMany(mappedBy="release")
+	// bi-directional many-to-one association to SubEnvironment
+	@OneToMany(mappedBy = "release")
 	private List<SubEnvironment> subEnvironments;
 
-    @Transient
-    private volatile int previousHashCode = 0;
+	@Transient
+	private volatile int previousHashCode = 0;
 
 	@Override
-    public String entityClassName() {
-        return Release.class.getSimpleName();
-    }
+	public String entityClassName() {
+		return Release.class.getSimpleName();
+	}
 
-    // -- [id] ------------------------
+	// -- [id] ------------------------
 
-    @Override
-    public Long getId() {
-        return id;
-    }
+	@Override
+	public Long getId() {
+		return id;
+	}
 
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
+	@Override
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public Release id(Long id) {
-        setId(id);
-        return this;
-    }
+	@Override
+	@Transient
+	public boolean isIdSet() {
+		return id != null;
+	}
+	// -- [name] ------------------------
 
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
+	public String getName() {
+		return name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	/**
+	 * Equals implementation using a business key.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return this == other || (other instanceof Release && hashCode() == other.hashCode());
+	}
 
-    public Release name(String name) {
-        setName(name);
-        return this;
-    }
+	@Override
+	public int hashCode() {
+		int hashCode = Objects.hashCode(getName());
 
-    /**
-     * Apply the default values.
-     */
-    public Release withDefaults() {
-        return this;
-    }
+		if (previousHashCode != 0 && previousHashCode != hashCode) {
+			log.warning("DEVELOPER: hashCode has changed!." //
+					+ "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
+					+ getClass().getCanonicalName());
+		}
 
-    /**
-     * Equals implementation using a business key.
-     */
-    @Override
-    public boolean equals(Object other) {
-        return this == other || (other instanceof Release && hashCode() == other.hashCode());
-    }
+		previousHashCode = hashCode;
+		return hashCode;
+	}
 
-    @Override
-    public int hashCode() {
-        int hashCode = Objects.hashCode(getName());
-
-        if (previousHashCode != 0 && previousHashCode != hashCode) {
-            log.warning("DEVELOPER: hashCode has changed!." //
-                    + "If you encounter this message you should take the time to carefuly review equals/hashCode for: " //
-                    + getClass().getCanonicalName());
-        }
-
-        previousHashCode = hashCode;
-        return hashCode;
-    }
-
-    /**
-     * Construct a readable string representation for this Release instance.
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this) //
-                .add("id", getId()) //
-                .add("name", getName()) //
-                .toString();
-    }
+	/**
+	 * Construct a readable string representation for this Release instance.
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this) //
+				.add("id", getId()) //
+				.add("name", getName()) //
+				.toString();
+	}
 }

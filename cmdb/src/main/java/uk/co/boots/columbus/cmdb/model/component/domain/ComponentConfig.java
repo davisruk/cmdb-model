@@ -80,11 +80,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
         this.id = id;
     }
 
-    public ComponentConfig id(Long id) {
-        setId(id);
-        return this;
-    }
-
     @Override
     @Transient
     public boolean isIdSet() {
@@ -100,10 +95,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
         this.parameter = parameter;
     }
 
-    public ComponentConfig parameter(String parameter) {
-        setParameter(parameter);
-        return this;
-    }
     // -- [value] ------------------------
 
     public String getValue() {
@@ -114,10 +105,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
         this.value = value;
     }
 
-    public ComponentConfig value(String value) {
-        setValue(value);
-        return this;
-    }
     // -- [hieraAddress] ------------------------
 
     public String getHieraAddress() {
@@ -126,11 +113,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
 
     public void setHieraAddress(String hieraAddress) {
         this.hieraAddress = hieraAddress;
-    }
-
-    public ComponentConfig hieraAddress(String hieraAddress) {
-        setHieraAddress(hieraAddress);
-        return this;
     }
 
     // -----------------------------------------------------------------
@@ -150,18 +132,6 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
      */
     public void setSolutionComponent(SolutionComponent solutionComponent) {
         this.solutionComponent = solutionComponent;
-    }
-
-    public ComponentConfig my_component(SolutionComponent solutionComponent) {
-        setSolutionComponent(solutionComponent);
-        return this;
-    }
-
-    /**
-     * Apply the default values.
-     */
-    public ComponentConfig withDefaults() {
-        return this;
     }
 
     /**

@@ -24,7 +24,7 @@ import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubEnvironmentConfig.class.getName());
-	
+
 	@Column(name = "SubEnvConfigID", precision = 19)
 	@GeneratedValue
 	@Id
@@ -44,11 +44,11 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	private String value;
 
 	@Column(name = "SubEnvConfigNotes")
-    private String notes;
+	private String notes;
 
-    @Column(name = "SubEnvConfigIsSensitive")
-    private Boolean sensitive;
-	
+	@Column(name = "SubEnvConfigIsSensitive")
+	private Boolean sensitive;
+
 	// bi-directional many-to-one association to SubEnvironment
 	@ManyToOne
 	@JoinColumn(name = "SubEnvironmentID")
@@ -99,6 +99,7 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	public void setSubEnvironment(SubEnvironment subEnvironment) {
 		this.subEnvironment = subEnvironment;
 	}
+
 	@Override
 	public String entityClassName() {
 		return SubEnvironmentConfig.class.getSimpleName();
@@ -110,13 +111,6 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	@Transient
 	public boolean isIdSet() {
 		return id != null;
-	}
-
-	/**
-	 * Apply the default values.
-	 */
-	public SubEnvironmentConfig withDefaults() {
-		return this;
 	}
 
 	/**
@@ -163,5 +157,5 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
-	
+
 }
