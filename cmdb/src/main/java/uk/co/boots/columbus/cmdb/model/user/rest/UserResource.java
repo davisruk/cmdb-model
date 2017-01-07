@@ -12,21 +12,24 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
+import uk.co.boots.columbus.cmdb.model.core.storage.StorageService;
 import uk.co.boots.columbus.cmdb.model.user.dto.UserDTO;
 import uk.co.boots.columbus.cmdb.model.user.dto.UserDTOService;
 import uk.co.boots.columbus.cmdb.model.user.repository.UserRepository;
@@ -39,6 +42,8 @@ public class UserResource {
 	private UserRepository userRepo;
 	@Inject
 	private UserDTOService userDTOService;
+	@Inject 
+	private StorageService storageService;
 	
     private final Logger log = LoggerFactory.getLogger(UserResource.class);	
 	/**
@@ -122,5 +127,11 @@ public class UserResource {
             // todo: dig exception, most likely org.hibernate.exception.ConstraintViolationException
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+    
+    @RequestMapping(value = "/photoUpload", method = POST, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> handleUpload(@RequestParam("photo[]") MultipartFile file, HttpServletRequest request) throws URISyntaxException {
+    	storageService.store(file);
+    	return new ResponseEntity<String>("Success!", CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
 }

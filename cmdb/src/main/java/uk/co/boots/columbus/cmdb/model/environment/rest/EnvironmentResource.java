@@ -52,7 +52,6 @@ public class EnvironmentResource {
     private EnvironmentDTOService environmentDTOService;
     @Inject
     private SubEnvironmentDTOService subEnvironmentDTOService;
-
     @Inject
     private HieraDTOService hieraDTOService;
     
