@@ -30,16 +30,16 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
 	@Id
 	private Long id;
 
-	@Size(max = 50)
-	@Column(name = "ServConfigParameter", length = 50)
+	@Size(max = 255)
+	@Column(name = "ServConfigParameter", length = 255)
 	private String parameter;
 
-	@Size(max = 50)
-	@Column(name = "ServConfigValue", length = 50)
+	@Size(max = 255)
+	@Column(name = "ServConfigValue", length = 255)
 	private String value;
 
-	@Size(max = 45)
-	@Column(name = "ServConfigHieraAddress", length = 45)
+	@Size(max = 255)
+	@Column(name = "ServConfigHieraAddress", length = 255)
 	private String hieraAddress;
 
 	@Column(name = "ServerConfigNotes")

@@ -32,15 +32,15 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 
 	// @NotEmpty
 	// @Size(max = 50)
-	@Column(name = "SubEnvConfigHieraAddress", nullable = false, unique = true, length = 50)
+	@Column(name = "SubEnvConfigHieraAddress", nullable = false, unique = true, length = 255)
 	private String hieraAddress;
 	// @NotEmpty
 	// @Size(max = 50)
-	@Column(name = "SubEnvConfigParameter", nullable = false, unique = true, length = 50)
+	@Column(name = "SubEnvConfigParameter", nullable = false, unique = true, length = 255)
 	private String parameter;
 	// @NotEmpty
 	// @Size(max = 50)
-	@Column(name = "SubEnvConfigValue", nullable = false, unique = true, length = 50)
+	@Column(name = "SubEnvConfigValue", nullable = false, unique = true, length = 255)
 	private String value;
 
 	@Column(name = "SubEnvConfigNotes")
