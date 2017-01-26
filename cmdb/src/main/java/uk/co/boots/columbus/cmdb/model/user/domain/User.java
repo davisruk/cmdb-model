@@ -15,6 +15,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
@@ -26,6 +27,7 @@ import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
  * 
  */
 @Entity
+@Table (name="user")
 @NamedQuery(name="User.findAll", query="SELECT u FROM User u")
 public class User implements Identifiable<Integer>, Serializable {
 	private static final long serialVersionUID = 1L;

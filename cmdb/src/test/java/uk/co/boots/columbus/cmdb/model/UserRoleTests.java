@@ -65,7 +65,7 @@ public class UserRoleTests {
 	@Autowired
 	private RoleRepository roleRepo;
 
-	//@Test
+	@Test
 	public void testUserRoleEntityPersistence() throws Exception {
 		// Create a new User
 		User user = new User();

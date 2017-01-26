@@ -6,17 +6,22 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -130,8 +135,19 @@ public class UserResource {
     }
     
     @RequestMapping(value = "/photoUpload", method = POST, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> handleUpload(@RequestParam("photo[]") MultipartFile file, HttpServletRequest request) throws URISyntaxException {
+    public ResponseEntity<String> handleUpload(@RequestParam("photo[]") MultipartFile file) throws URISyntaxException {
     	storageService.store(file);
     	return new ResponseEntity<String>("Success!", CORSSupport.createCORSHeaders(), HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/photoDownload", method = GET)
+    public ResponseEntity<byte[]> getPhoto() throws IOException {
+        Resource res = storageService.loadAsResource("ms_store_BS!!.png");
+        File imgPath = res.getFile();
+        byte[] image = Files.readAllBytes(imgPath.toPath());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.setContentLength(image.length);
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
+    }    
 }

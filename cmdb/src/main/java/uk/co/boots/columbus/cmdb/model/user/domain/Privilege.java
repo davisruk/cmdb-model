@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import uk.co.boots.columbus.cmdb.model.component.domain.ComponentConfig;
@@ -17,6 +18,7 @@ import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 
 @Entity
+@Table (name="privilege")
 public class Privilege implements Identifiable<Integer>, Serializable {
 	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(ComponentConfig.class.getName());

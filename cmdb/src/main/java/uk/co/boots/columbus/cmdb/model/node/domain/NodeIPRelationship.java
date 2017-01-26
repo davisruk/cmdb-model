@@ -27,14 +27,14 @@ public class NodeIPRelationship implements Serializable {
 	@Column(name="RelationshipID")
 	private String id;
 	
-	@Column(name = "endPort", precision = 19)
+	@Column(name = "EndPort", precision = 19)
 	private Long endPort;
 
 	@Column (name = "Protocol")
 	@Enumerated(EnumType.STRING)
 	private Protocol protocol;
 
-	@Column(name = "startPort", precision = 19)
+	@Column(name = "StartPort", precision = 19)
 	private Long startPort;
 
 	@ManyToOne
