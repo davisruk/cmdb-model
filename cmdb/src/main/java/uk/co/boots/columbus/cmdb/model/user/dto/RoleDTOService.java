@@ -1,7 +1,10 @@
 package uk.co.boots.columbus.cmdb.model.user.dto;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -14,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.user.domain.Role;
-import uk.co.boots.columbus.cmdb.model.user.domain.User;
 import uk.co.boots.columbus.cmdb.model.user.repository.RoleRepository;
 
 @Service
@@ -35,6 +37,11 @@ public class RoleDTOService {
         List<Role> results = roleRepository.complete(query, maxResults);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
+
+	@Transactional(readOnly = true)
+	public List<RoleDTO> getAll() {
+		return toDTO(roleRepository.findAll(), 2);
+	}
 
     @Transactional(readOnly = true)
     public PageResponse<RoleDTO> findAll(PageRequestByExample<RoleDTO> req) {
@@ -71,7 +78,7 @@ public class RoleDTOService {
         return dto;
     }
     @Transactional
-    public List<RoleDTO> findRolesNotInList(List<Role> roles) {
+    public List<RoleDTO> findRolesNotInList(Set<Role> roles) {
 	    List<Role> results = roleRepository.findAll();        
 	        for (Role role : roles){
 	 		results.remove(role);
@@ -99,7 +106,7 @@ public class RoleDTOService {
         return dto;
     }
 	
-	public List<RoleDTO> toDTO(List<Role> roles, int depth) {
+	public List<RoleDTO> toDTO(Collection<Role> roles, int depth) {
         if (roles == null) {
             return null;
         }
@@ -111,6 +118,8 @@ public class RoleDTOService {
         }
         return dtoList;
     }
+	
+	
 	
 	public Role toEntity(RoleDTO dto) {
 		return toEntity(dto, 1);
@@ -137,12 +146,12 @@ public class RoleDTOService {
         return role;
     }
 
-	public List<Role> toEntity(List<RoleDTO> roles, int depth) {
+	public Set<Role> toEntity(List<RoleDTO> roles, int depth) {
         if (roles == null) {
             return null;
         }
 
-        List<Role> roleList = new ArrayList<Role>();
+        Set<Role> roleList = new HashSet<Role>();
 
         for (RoleDTO roleDTO : roles ){
         	roleList.add(toEntity(roleDTO, depth));

@@ -1,8 +1,9 @@
 package uk.co.boots.columbus.cmdb.model.user.domain;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.persistence.Column;
@@ -57,7 +58,7 @@ public class User implements Identifiable<Integer>, Serializable {
 			@JoinColumn(name="role_id")
 			}
 		)
-	private List<Role> roles;
+	private Set<Role> roles;
 
 	public User() {
 	}
@@ -102,11 +103,11 @@ public class User implements Identifiable<Integer>, Serializable {
 		this.userName = userName;
 	}
 
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return this.roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
     
@@ -130,13 +131,13 @@ public class User implements Identifiable<Integer>, Serializable {
 
 	public void addRole(Role role){
 		if (roles == null)
-			roles = new ArrayList<Role>();
+			roles = new HashSet<Role>();
 		roles.add(role);
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", email=" + email + ", enabled=" + enabled + ", password=" + password + ", userName="
+		return "User [id=" + id + ", email=" + email + ", enabled=" + enabled + ", password=" + password + ", username="
 				+ userName + ", roles=" + roles + ", identifiableHashBuilder=" + identifiableHashBuilder + "]";
 	}
 	

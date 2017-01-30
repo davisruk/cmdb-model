@@ -19,7 +19,7 @@ public class UserDTO implements UserDetails {
 	public String email;
 	public Boolean enabled;
 	public String password;
-	public String userName;
+	public String username;
 	public List<RoleDTO> roles;
 
 	public UserDTO(Integer id, String email, Boolean enabled, String password, String userName, List<RoleDTO> list) {
@@ -28,7 +28,7 @@ public class UserDTO implements UserDetails {
 		this.email = email;
 		this.enabled = enabled;
 		this.password = password;
-		this.userName = userName;
+		this.username = userName;
 		this.roles = list;
 	}
 
@@ -44,7 +44,7 @@ public class UserDTO implements UserDetails {
 	@Override
 	public String toString() {
 		return "UserDTO [id=" + id + ", email=" + email + ", enabled=" + enabled + ", password=" + password
-				+ ", userName=" + userName + ", roles=" + roles + "]";
+				+ ", username=" + username + ", roles=" + roles + "]";
 	}
 	
 	public void addRole(RoleDTO role){
@@ -67,7 +67,7 @@ public class UserDTO implements UserDetails {
 	@Override
 	public String getUsername() {
 		// TODO Auto-generated method stub
-		return userName;
+		return username;
 	}
 
 	@Override

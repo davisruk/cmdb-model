@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 import uk.co.boots.columbus.cmdb.model.user.dto.RoleDTO;
 import uk.co.boots.columbus.cmdb.model.user.dto.RoleDTOService;
 import uk.co.boots.columbus.cmdb.model.user.repository.RoleRepository;
@@ -105,6 +109,16 @@ public class RoleResource {
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/all", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<RoleDTO>> findAll(HttpServletRequest request, 
+            HttpServletResponse response) throws URISyntaxException {
+
+        log.debug("Find All Roles");
+        List<RoleDTO> results = roleDTOService.getAll();
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }    
 
     /**
      * Delete by id ${}entity.model.type}.

@@ -10,6 +10,7 @@ package uk.co.boots.columbus.cmdb.model.security.jwt.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -72,7 +73,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         return ud;        
     }
 
-    private Collection<GrantedAuthority> toGrantedAuthorities(List<Role> roles) {
+    private Collection<GrantedAuthority> toGrantedAuthorities(Set<Role> roles) {
         List<GrantedAuthority> result = new ArrayList<GrantedAuthority>();
         for (Role role : roles) {
             result.add(new SimpleGrantedAuthority(role.getName()));

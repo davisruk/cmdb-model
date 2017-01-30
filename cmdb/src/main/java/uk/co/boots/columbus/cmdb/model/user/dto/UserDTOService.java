@@ -112,7 +112,7 @@ public class UserDTOService {
         UserDTO dto = new UserDTO();
 
         dto.id = user.getId();
-        dto.userName = user.getUserName();
+        dto.username = user.getUserName();
         dto.email = user.getEmail();
         dto.password = user.getPassword();
         dto.enabled = user.getEnabled();
@@ -154,7 +154,7 @@ public class UserDTOService {
         }
 
         user.setId(dto.id);
-        user.setUserName(dto.userName);
+        user.setUserName(dto.username);
         user.setEmail(dto.email);
         // check passwords are different - if so BCrypt the dto password;
         String entityPassword = user.getPassword(); 

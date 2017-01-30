@@ -1,14 +1,13 @@
 package uk.co.boots.columbus.cmdb.model.user.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import uk.co.boots.columbus.cmdb.model.user.domain.Role;
 import uk.co.boots.columbus.cmdb.model.user.domain.Role_;
