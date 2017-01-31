@@ -11,10 +11,8 @@ public class CORSConfigurer extends WebMvcConfigurerAdapter{
 	
 	@Value("${jwt.header}")
 	private String authHeader; 
-	@Value("${cors.origin.host}")
-	private String corsOriginHost;
-	@Value("${cors.origin.port}")
-	private String corsOriginPort;
+	@Value("${cors.origin.hosts}")
+	private String[] corsOriginHosts;
 	
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
@@ -24,8 +22,9 @@ public class CORSConfigurer extends WebMvcConfigurerAdapter{
 	}
 
 	private void addToRegistry(String patternPath, CorsRegistry registry){
+
 		registry.addMapping(patternPath)
-		.allowedOrigins("http://localhost:3000", "http://" + corsOriginHost + ":" + corsOriginPort)
+		.allowedOrigins(corsOriginHosts)
 		.allowedMethods("PUT", "DELETE", "GET", "POST", "OPTIONS")
 		.allowedHeaders("Content-Type", "Accept", "X-Requested-With", "remember-me", authHeader)
 		.allowCredentials(true).maxAge(3600);		
