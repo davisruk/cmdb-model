@@ -7,8 +7,14 @@
  */
 package uk.co.boots.columbus.cmdb.model.globalconfig.dto;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -19,12 +25,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
@@ -300,5 +315,77 @@ public class GlobalconfigDTOService {
 		globalconfig.setNotes(dto.notes);
 
 		return globalconfig;
+	}
+
+
+	public String getConfigAsYaml(){
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		StringWriter sw = new StringWriter();
+		//mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		List<GlobalconfigDTO> allGlobals = findAllReplaceHiera();
+		Comparator<? super CoreConfigDTO> comparator = (CoreConfigDTO c1, CoreConfigDTO c2)->c1.getHieraAddress().compareTo(c2.getHieraAddress());
+		allGlobals.sort(comparator);
+		JsonNode root = mapper.createObjectNode();
+		for (int i = 0; i < allGlobals.size(); i++){
+			processYAMLTree (mapper, root, allGlobals, i);			
+		}
+
+		try{
+			JsonGenerator generator = mapper.getFactory().createGenerator(sw);
+			mapper.writeTree(generator, root);
+			System.out.println(sw.toString());
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		return sw.toString();
+	}
+	
+	private void processYAMLTree(ObjectMapper mapper, JsonNode root, List<? extends CoreConfigDTO> configList, int index){
+		// break the address down into nodes
+		CoreConfigDTO cc = configList.get(index);
+		List<String> nodes = Arrays.asList(cc.getHieraAddress().split(":"));
+		JsonNode base = root;
+		for (int i = 0; i<nodes.size()-1;i++){
+			String nodeName = nodes.get(i);
+			if (! nodeName.equals("ROOT")){
+				JsonNode traverser = base.get(nodeName); 
+				if (traverser == null){
+					JsonNode node = mapper.createObjectNode();
+					((ObjectNode)base).set(nodeName, node);
+					base = node;
+				}
+				else
+					base = traverser;
+			}
+		}
+		
+		// check if this field needs to be setup as an array
+		String nodeName = nodes.get(nodes.size()-1);
+		JsonNode fieldNode = base.get(nodeName);
+		JsonNode arrayNode = null;
+		if (fieldNode != null){
+			arrayNode = fieldNode;
+			// the field already exists
+			// we need to convert it to an array
+			// check it first though as we may have already created it
+			if (!arrayNode.isArray()){
+				// create the array
+				((ObjectNode)base).remove(nodeName);
+				arrayNode = mapper.createArrayNode();
+				((ObjectNode)base).set(nodeName, arrayNode);
+				((ArrayNode)arrayNode).add(fieldNode);
+				
+			}
+			// at this point we have an array node
+			// add the value to it - this only works with a depth of 1!
+			// if the array needs to contain a node it won't work!
+			((ArrayNode)arrayNode).add(cc.getValue());
+		}
+		else{
+			// we aren't dealing with an array - yet
+			// just add the value to the node.
+			((ObjectNode)base).put(nodeName, cc.getValue());			
+		}
 	}
 }

@@ -104,13 +104,18 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownloadall/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAllPost(@PathVariable Long id) throws IOException {
-    	return new CsvResponse(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(id, new HashSet<HieraDTO>()), "HieraData_Complete.csv");
+    	return new CsvResponse(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(id, new HashSet<HieraDTO>()), "HieraData_Env.csv");
     }
 
     @RequestMapping(value = "/configdownloadall", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsAllPost() throws IOException {
+    public CsvResponse downloadConfigsAllEnvironmentsPost() throws IOException {
     	return new CsvResponse(hieraDTOService.getHieraForAllEnvsWithSubstitution(), "HieraData_Complete.csv");
+    }
+
+    @RequestMapping(value = "/config/yaml", method = POST)
+    public ResponseEntity<String> downloadConfigsAllEnvironmentsAsYAML() throws IOException {
+    	return new ResponseEntity<String> (hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()), new HttpHeaders(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)
