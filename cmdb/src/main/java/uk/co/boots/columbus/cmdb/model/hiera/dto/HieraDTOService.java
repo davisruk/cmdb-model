@@ -197,7 +197,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		try{
 			JsonGenerator generator = mapper.getFactory().createGenerator(sw);
 			mapper.writeTree(generator, root);
-			System.out.println(sw.toString());
 		}
 		catch (Exception e){
 			e.printStackTrace();
