@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvMessageConverter;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.YAMLMessageConverter;
 
 @Configuration
 public class MessageConverterConfig extends WebMvcConfigurerAdapter{
@@ -16,6 +17,7 @@ public class MessageConverterConfig extends WebMvcConfigurerAdapter{
         ByteArrayHttpMessageConverter byteConverter = new ByteArrayHttpMessageConverter();
         converters.add(byteConverter);        
     	converters.add(new CsvMessageConverter());
+    	converters.add(new YAMLMessageConverter());
         super.configureMessageConverters(converters);
     }
 }

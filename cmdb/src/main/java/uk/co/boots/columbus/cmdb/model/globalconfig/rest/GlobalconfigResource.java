@@ -137,10 +137,4 @@ public class GlobalconfigResource {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
-    
-    @RequestMapping(value = "/yaml", method = GET)
-    public ResponseEntity<String> showYAML() throws URISyntaxException {
-        return new ResponseEntity<String> (globalconfigDTOService.getConfigAsYaml(), new HttpHeaders(), HttpStatus.OK);
-    }
-    
 }

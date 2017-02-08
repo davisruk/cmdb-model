@@ -31,6 +31,7 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.YAMLResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentTypeDTO;
@@ -113,8 +114,14 @@ public class EnvironmentResource {
     	return new CsvResponse(hieraDTOService.getHieraForAllEnvsWithSubstitution(), "HieraData_Complete.csv");
     }
 
+    @RequestMapping(value = "/configdownloadyaml", method = POST, produces = "text/plain")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public YAMLResponse downloadConfigsAllEnvironmentsAsYAML() throws IOException {
+    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()));
+    }
+
     @RequestMapping(value = "/config/yaml", method = POST)
-    public ResponseEntity<String> downloadConfigsAllEnvironmentsAsYAML() throws IOException {
+    public ResponseEntity<String> getConfigsAllEnvironmentsAsYAML() throws IOException {
     	return new ResponseEntity<String> (hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()), new HttpHeaders(), HttpStatus.OK);
     }
 
