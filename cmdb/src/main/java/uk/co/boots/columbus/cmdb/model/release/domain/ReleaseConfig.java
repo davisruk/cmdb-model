@@ -30,16 +30,13 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	@Id
 	private Long id;
 
-	@Size(max = 255)
-	@Column(name = "RelConfigParameter", length = 255)
+	@Column(name = "RelConfigParameter")
 	private String parameter;
 
-	@Size(max = 255)
-	@Column(name = "RelConfigValue", length = 255)
+	@Column(name = "RelConfigValue")
 	private String value;
 
-	@Size(max = 255)
-	@Column(name = "RelConfigHieraAddress", length = 255)
+	@Column(name = "RelConfigHieraAddress")
 	private String hieraAddress;
 
 	@Column(name = "RecursiveByEnv")
