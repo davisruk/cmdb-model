@@ -125,6 +125,13 @@ public class EnvironmentResource {
     	return new ResponseEntity<String> (hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()), new HttpHeaders(), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/yaml/{name}", method = POST, produces = "text/plain")
+    @ResponseBody // indicate to use a compatible HttpMessageConverter
+    public YAMLResponse downloadConfigsForEnvironmentsAsYAML(@PathVariable String name) throws IOException {
+    	EnvironmentDTO dto = environmentDTOService.findOne(name);
+    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>())));
+    }
+
     @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnvironmentDTO>> all() throws URISyntaxException {
 

@@ -52,6 +52,12 @@ public class EnvironmentDTOService {
 	}
 
 	@Transactional(readOnly = true)
+	public EnvironmentDTO findOne(String name) {
+		// return toDTO(environmentRepository.findOne(id));
+		return toDTO(environmentRepository.getByName(name), 0);
+	}
+
+	@Transactional(readOnly = true)
 	public List<EnvironmentDTO> complete(String query, int maxResults) {
 		List<Environment> results = environmentRepository.complete(query, maxResults);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
