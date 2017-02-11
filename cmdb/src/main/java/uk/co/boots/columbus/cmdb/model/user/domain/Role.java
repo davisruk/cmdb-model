@@ -17,6 +17,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.CascadeType;
 
 import uk.co.boots.columbus.cmdb.model.component.domain.ComponentConfig;
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
@@ -45,7 +46,7 @@ public class Role implements Identifiable<Integer>, Serializable {
 	private List<User> users;
 
 	//bi-directional many-to-many association to Role
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinTable(
 		name="role_privilege"
 		, joinColumns={

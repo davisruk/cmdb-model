@@ -2,10 +2,10 @@ package uk.co.boots.columbus.cmdb.model.user.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,7 +48,7 @@ public class User implements Identifiable<Integer>, Serializable {
 	private String userName;
 
 	//bi-directional many-to-many association to Role
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
 	@JoinTable(
 		name="user_role"
 		, joinColumns={
