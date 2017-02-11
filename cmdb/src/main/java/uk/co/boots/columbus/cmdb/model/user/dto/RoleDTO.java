@@ -9,6 +9,7 @@ public class RoleDTO {
 	public Integer id;
 	public String name;
 	public List<UserDTO> users;
+	public List<PrivilegeDTO> privileges;
 	
 	@JsonIgnore
     public boolean isIdSet() {
@@ -17,7 +18,7 @@ public class RoleDTO {
 
 	@Override
 	public String toString() {
-		return "RoleDTO [id=" + id + ", name=" + name + ", users=" + users + "]";
+		return "RoleDTO [id=" + id + ", name=" + name + ", users=" + users + ", privileges=" + privileges + "]";
 	}
 	
 	public void addUser(UserDTO user) {
@@ -26,4 +27,10 @@ public class RoleDTO {
 		users.add(user);
 	}
 
+	public void addPrivilege(PrivilegeDTO priv) {
+		if (privileges == null)
+			privileges = new ArrayList<PrivilegeDTO>();
+		privileges.add(priv);
+	}
+	
 }

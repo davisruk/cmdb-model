@@ -26,6 +26,8 @@ public class RoleDTOService {
     private RoleRepository roleRepository;
     @Inject
     private UserDTOService userDTOService;
+    @Inject
+    private PrivilegeDTOService privilegeDTOService;
 
     @Transactional(readOnly = true)
     public RoleDTO findOne(Integer id) {
@@ -101,6 +103,7 @@ public class RoleDTOService {
         dto.name = role.getName();
         if (depth-- > 0) {
             dto.users = userDTOService.toDTO(role.getUsers(), depth);
+            dto.privileges = privilegeDTOService.toDTO(role.getPrivileges(), depth);
         }
 
         return dto;
@@ -114,7 +117,7 @@ public class RoleDTOService {
         List<RoleDTO> dtoList = new ArrayList<RoleDTO>();
 
         for (Role role : roles ){
-        	dtoList.add(toDTO(role, 1));
+        	dtoList.add(toDTO(role, depth));
         }
         return dtoList;
     }
@@ -141,6 +144,7 @@ public class RoleDTOService {
 
         if (depth-- > 0) {
             role.setUsers(userDTOService.toEntity(dto.users, depth));
+            role.setPrivileges(privilegeDTOService.toEntity(dto.privileges, depth));
         }
 
         return role;

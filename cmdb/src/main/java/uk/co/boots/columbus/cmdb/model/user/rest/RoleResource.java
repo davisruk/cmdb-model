@@ -29,7 +29,8 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CORSSupport;
-import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
+import uk.co.boots.columbus.cmdb.model.user.dto.PrivilegeDTO;
+import uk.co.boots.columbus.cmdb.model.user.dto.PrivilegeDTOService;
 import uk.co.boots.columbus.cmdb.model.user.dto.RoleDTO;
 import uk.co.boots.columbus.cmdb.model.user.dto.RoleDTOService;
 import uk.co.boots.columbus.cmdb.model.user.repository.RoleRepository;
@@ -42,6 +43,8 @@ public class RoleResource {
 	private RoleRepository roleRepo;
 	@Inject
 	private RoleDTOService roleDTOService;
+	@Inject
+	private PrivilegeDTOService privilegeDTOService;
 	
     private final Logger log = LoggerFactory.getLogger(RoleResource.class);	
 	/**
@@ -136,5 +139,25 @@ public class RoleResource {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
     }
+
+    @RequestMapping(value = "/privileges/all", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PrivilegeDTO>> findAllPrivileges() throws URISyntaxException {
+
+        log.debug("Find all privileges for Role id: {}");
+        List<PrivilegeDTO> results = privilegeDTOService.getAllPrivileges();
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/unassignedprivileges/{id}", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<PrivilegeDTO>> findUnassignedRoles(@PathVariable Integer id, HttpServletRequest request, 
+            HttpServletResponse response) throws URISyntaxException {
+
+        log.debug("Find privileges for Role id: {}", id);
+        List<PrivilegeDTO> results = privilegeDTOService.getUnassignedPrivilegesForRole(id);
+
+        return new ResponseEntity<>(results, CORSSupport.createCORSHeaders(), HttpStatus.OK);
+    }
+
 
 }

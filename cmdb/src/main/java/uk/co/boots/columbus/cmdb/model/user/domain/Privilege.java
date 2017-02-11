@@ -55,7 +55,7 @@ public class Privilege implements Identifiable<Integer>, Serializable {
 		return this.roles;
 	}
 
-	public void setUsers(Set<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 
