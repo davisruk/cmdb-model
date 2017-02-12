@@ -29,11 +29,15 @@ public class SwaggerConfiguration {
         log.debug("Starting Swagger");
         StopWatch watch = new StopWatch();
         watch.start();
-        Docket docket = new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any()).paths(PathSelectors.any()).build().pathMapping("/")
+        Docket docket = new Docket(DocumentationType.SWAGGER_2).
+        		select().
+        		apis(RequestHandlerSelectors.any()).
+        		paths(PathSelectors.any()).
+        		build().
+        		pathMapping("/")
                 .genericModelSubstitutes(ResponseEntity.class);
         watch.stop();
         log.debug("Started Swagger in {} ms", watch.getTotalTimeMillis());
         return docket;
     }
-
 }

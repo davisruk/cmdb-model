@@ -56,12 +56,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				// let all CORS HTTP Option pre-flight messages go
 				// our Filter will still get called though so we
 				// ignore it and pass it on down the chain
+				// also allow all swagger requests through
 				antMatchers(HttpMethod.OPTIONS, "/**").
 				antMatchers("/"). //
-				antMatchers("/*.{js,html}"). //
-				antMatchers("/img/**"). //
-				antMatchers("/node_modules/**"). //
-				antMatchers("/**/*.{js,html,css}");
+				antMatchers("/*.{js,html}").
+				antMatchers("/v2/api-docs").
+				antMatchers("/swagger-ui*").
+				antMatchers("/swagger-resources*").
+				antMatchers("/swagger-resources/**");
 	}
 
 	@Override
@@ -77,10 +79,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			antMatchers("/api/users/**").hasRole("ADMIN").
 			antMatchers("/api/roles/**").hasRole("ADMIN").
 			antMatchers("/**").hasRole("USER").
-			antMatchers("/swagger-ui*").permitAll().
-			antMatchers("/swagger-resources/configuration/ui").permitAll().
-			antMatchers("/swagger-resources/configuration/ui/**").permitAll().
-			antMatchers("/webjars/springfox-swagger-ui/**").permitAll().
 			anyRequest().hasRole("USER").and().httpBasic();
 
 		// Spring doesn't support JWT yet so we must add our Token check
