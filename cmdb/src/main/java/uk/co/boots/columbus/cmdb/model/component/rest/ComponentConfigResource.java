@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import javax.inject.Inject;
+import javax.persistence.OptimisticLockException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,7 +86,7 @@ public class ComponentConfigResource {
      * Update ComponentConfig.
      */
     @RequestMapping(value = "/", method = PUT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComponentConfigDTO> update(@RequestBody ComponentConfigDTO componentConfigDTO) throws URISyntaxException {
+    public ResponseEntity<ComponentConfigDTO> update(@RequestBody ComponentConfigDTO componentConfigDTO) throws URISyntaxException, OptimisticLockException{
 
         log.debug("Update ComponentConfigDTO : {}", componentConfigDTO);
 
@@ -94,6 +95,7 @@ public class ComponentConfigResource {
         }
 
         ComponentConfigDTO result = componentConfigDTOService.save(componentConfigDTO);
+
 
         return ResponseEntity.ok().body(result);
     }

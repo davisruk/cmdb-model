@@ -1,5 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.environment.dto;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrlPattern;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +60,13 @@ public class SubEnvironmentConfigDTOService {
 		}
 	}
 
+	// Awful, awful method that understands the context in which it is being called i.e. the list
+	// it returns will be added to a Set to guarantee uniqueness of the generated hiera strings.
+	// It is possible for ConfigItems at this level to override any recursive items such as ReleaseConfig
+	// Due to the fact substitution is done here the resulting Set (outside this method!) will allow the
+	// original config AND the overridden config into the collection because they are both unique
+	// This entire mechanism needs overhauling - probably add the substituted HieraAddress to the config items
+	// and store these in the Set.
 	public List<SubEnvironmentConfigDTO> getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(
 			SubEnvironmentDTO seDTO, List<ReleaseConfigDTO> relConfList) {
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
@@ -73,7 +82,12 @@ public class SubEnvironmentConfigDTOService {
 				}else{
 					dto.value = "[SENSITIVE]";
 				}
-				subConList.add(dto);
+				// only add to the list if not already overridden
+				// grossly inefficient and slow but ultimately we are using 
+				// athe final SET will allow the 
+				List<SubEnvironmentConfig> secList = subEnvironmentConfigRepository.findByHieraAddressAndId(rDTO.hieraAddress, seDTO.id);
+				if (secList == null || secList.size() == 0)
+					subConList.add(dto);
 			}
 		}
 		return subConList;

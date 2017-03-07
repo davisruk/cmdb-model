@@ -18,6 +18,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -26,18 +27,20 @@ import com.google.common.base.MoreObjects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
+import uk.co.boots.columbus.cmdb.model.core.domain.LockableEntity;
 import uk.co.boots.columbus.cmdb.model.packageinfo.domain.PackageInfo;
 
 @Entity
 @Table(name = "cm_component")
-public class SolutionComponent implements Identifiable<Long>, Serializable {
+public class SolutionComponent implements Identifiable<Long>, LockableEntity, Serializable {
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SolutionComponent.class.getName());
 
 	// Raw attributes
 	private Long id;
 	private String name;
-
+	private Long version;
+	
 	// Many to one
 	private PackageInfo packageInfo;
 
@@ -61,6 +64,7 @@ public class SolutionComponent implements Identifiable<Long>, Serializable {
 		this.id = id;
 	}
 
+
 	@Override
 	@Transient
 	public boolean isIdSet() {
@@ -79,6 +83,15 @@ public class SolutionComponent implements Identifiable<Long>, Serializable {
 		this.name = name;
 	}
 
+	@Column(name="Version")
+	@Version
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}	
 	// -----------------------------------------------------------------
 	// Many to One support
 	// -----------------------------------------------------------------

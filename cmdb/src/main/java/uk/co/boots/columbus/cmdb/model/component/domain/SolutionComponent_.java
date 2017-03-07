@@ -18,6 +18,7 @@ public abstract class SolutionComponent_ {
     // Raw attributes
     public static volatile SingularAttribute<SolutionComponent, Long> id;
     public static volatile SingularAttribute<SolutionComponent, String> name;
+    public static volatile SingularAttribute<SolutionComponent, String> version;
 
     // Many to one
     public static volatile SingularAttribute<SolutionComponent, PackageInfo> packageInfo;

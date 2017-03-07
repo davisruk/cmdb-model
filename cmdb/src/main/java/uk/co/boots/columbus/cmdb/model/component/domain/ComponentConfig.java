@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -18,10 +19,11 @@ import com.google.common.base.MoreObjects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
 import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
+import uk.co.boots.columbus.cmdb.model.core.domain.LockableEntity;
 
 @Entity
 @Table(name = "cm_componentconfig")
-public class ComponentConfig implements Identifiable<Long>, Serializable {
+public class ComponentConfig implements Identifiable<Long>, LockableEntity, Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(ComponentConfig.class.getName());
 
@@ -53,6 +55,10 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
     @ManyToOne
     private SolutionComponent solutionComponent;
 
+    @Column(name="Version")
+    @Version
+    private Long version;
+    
     @Transient
     private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
     
@@ -168,5 +174,13 @@ public class ComponentConfig implements Identifiable<Long>, Serializable {
 
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
+	}
+
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
 	}
 }
