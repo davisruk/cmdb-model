@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -20,20 +20,17 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
+import uk.co.boots.columbus.cmdb.model.core.domain.BaseEntity;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 
 
 @Entity
 @Table(name = "cm_environment")
-public class Environment implements Identifiable<Long>, Serializable {
+@AttributeOverride(name = "id", column = @Column(name = "EnvironmentID"))
+public class Environment extends BaseEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(Environment.class.getName());
-	@Column(name = "EnvironmentID", precision = 19)
-	@GeneratedValue
-	@Id 
-	private Long id;
 
     @NotEmpty
     @Size(max = 50)
@@ -45,20 +42,9 @@ public class Environment implements Identifiable<Long>, Serializable {
 	@JoinColumn(name="EnvironmentTypeID")
 	private EnvironmentType environmentType;
 
-	@Transient // change this later
-	private List<Server> servers;
-	
 	//bi-directional many-to-one association to SubEnvironment
 	@OneToMany(mappedBy="environment")
 	private List<SubEnvironment> subEnvironments;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
 
 	public String getName() {
 		return name;
@@ -76,22 +62,6 @@ public class Environment implements Identifiable<Long>, Serializable {
 		this.environmentType = environmentType;
 	}
 
-	public List<Server> getServers() {
-		return servers;
-	}
-
-	public void setServers(List<Server> servers) {
-		this.servers = servers;
-	}
-/*
-	public List<EnvironmentConfig> getEnvironmentConfigs() {
-		return environmentConfigs;
-	}
-
-	public void setEnvironmentConfigs(List<EnvironmentConfig> environmentConfigs) {
-		this.environmentConfigs = environmentConfigs;
-	}
-*/
 	public List<SubEnvironment> getSubEnvironments() {
 		return subEnvironments;
 	}
@@ -104,13 +74,6 @@ public class Environment implements Identifiable<Long>, Serializable {
 	public String entityClassName() {
 		return Environment.class.getSimpleName();
 	}
-
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
 
 
     /**

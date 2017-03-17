@@ -3,10 +3,9 @@ package uk.co.boots.columbus.cmdb.model.environment.domain;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -17,17 +16,20 @@ import org.hibernate.validator.constraints.NotEmpty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
+import uk.co.boots.columbus.cmdb.model.core.domain.BaseEntity;
+import uk.co.boots.columbus.cmdb.model.core.domain.IdentifiableHashBuilder;
 
 @Entity
 @Table(name="cm_environmenttype")
 @NamedQuery(name="EnvironmentType.findAll", query="SELECT e FROM EnvironmentType e")
-public class EnvironmentType implements Identifiable<Long>, Serializable {
+@AttributeOverride(name = "id", column = @Column(name = "EnvironmentTypeID"))
+public class EnvironmentType extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(EnvironmentType.class.getName());
 
-    // Raw attributes
-    private Long id;
+    @NotEmpty
+    @Size(max = 50)
+    @Column(name = "EnvironmentTypeName", nullable = false, unique = true, length = 50)
     private String name;
 
     @Override
@@ -35,33 +37,6 @@ public class EnvironmentType implements Identifiable<Long>, Serializable {
         return EnvironmentType.class.getSimpleName();
     }
 
-    // -- [id] ------------------------
-
-    @Override
-    @Column(name = "EnvironmentTypeID", precision = 19)
-    @GeneratedValue
-    @Id
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    
-
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
-    // -- [name] ------------------------
-
-    @NotEmpty
-    @Size(max = 50)
-    @Column(name = "EnvironmentTypeName", nullable = false, unique = true, length = 50)
     public String getName() {
         return name;
     }
@@ -75,10 +50,20 @@ public class EnvironmentType implements Identifiable<Long>, Serializable {
      */
     @Override
     public boolean equals(Object other) {
-        return this == other || (other instanceof EnvironmentType && hashCode() == other.hashCode());
+        boolean ret = (this == other || (other instanceof EnvironmentType && hashCode() == other.hashCode())); 
+    	return ret;
     }
 
-    @Transient
+	@Transient
+	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
+
+	@Override
+	public int hashCode() {
+		return identifiableHashBuilder.hash(log, this, name + id + version);
+	}
+    
+/*
+	@Transient
     private volatile int previousHashCode = 0;
 
     @Override
@@ -94,7 +79,7 @@ public class EnvironmentType implements Identifiable<Long>, Serializable {
         previousHashCode = hashCode;
         return hashCode;
     }
-
+*/
     /**
      * Construct a readable string representation for this ServerType instance.
      * @see java.lang.Object#toString()

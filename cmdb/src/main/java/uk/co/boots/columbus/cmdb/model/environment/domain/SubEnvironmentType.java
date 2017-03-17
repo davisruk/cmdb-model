@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,22 +17,18 @@ import javax.persistence.Transient;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
+import uk.co.boots.columbus.cmdb.model.core.domain.BaseEntity;
 
 
 @Entity
 @Table(name="cm_subenvironmenttype")
 @NamedQuery(name="SubEnvironmentType.findAll", query="SELECT s FROM SubEnvironmentType s")
-public class SubEnvironmentType implements Identifiable<Long>, Serializable {
+@AttributeOverride(name = "id", column = @Column(name = "SubEnvironmentTypeID"))
+public class SubEnvironmentType extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
     private static final Logger log = Logger.getLogger(SubEnvironmentType.class.getName());
-    
-	@Column(name = "SubEnvironmentTypeID", precision = 19)
-	@GeneratedValue
-	@Id 
-	private Long id;
 
-//  @NotEmpty
+    //  @NotEmpty
 //  @Size(max = 50)
 	@Column(name = "SubEnvironmentTypeName", nullable = false, unique = true, length = 50)
 	private String name;
@@ -58,17 +55,6 @@ public class SubEnvironmentType implements Identifiable<Long>, Serializable {
 		return cmSubenvironment;
 	}
 
-
-	public Long getId() {
-		return id;
-	}
-
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-
 	public String getName() {
 		return name;
 	}
@@ -93,11 +79,6 @@ public class SubEnvironmentType implements Identifiable<Long>, Serializable {
         return SubEnvironmentType.class.getSimpleName();
     }
     
-    @Override
-    @Transient
-    public boolean isIdSet() {
-        return id != null;
-    }
     @Override
     public boolean equals(Object other) {
         return this == other || (other instanceof SubEnvironmentType && hashCode() == other.hashCode());

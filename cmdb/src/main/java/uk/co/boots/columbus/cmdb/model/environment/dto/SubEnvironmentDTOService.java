@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.domain.LockStrategy;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
@@ -32,6 +33,7 @@ import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
 @Service
@@ -54,6 +56,8 @@ public class SubEnvironmentDTOService {
 	private EnvironmentDTOService envDTOService;
 	@Inject
 	NodeSubEnvRepository nseRepo;
+	@Inject
+	private LockStrategy lockStrategy;
 
 	@Transactional(readOnly = true)
 	public SubEnvironmentDTO findOne(Long id, int depth) {
@@ -139,7 +143,7 @@ public class SubEnvironmentDTOService {
 	@Transactional
 	public SubEnvironmentDTO save(SubEnvironmentDTO dto) {
 		boolean inserting = false;
-
+		boolean dirty = false;
 		if (dto == null) {
 			return null;
 		}
@@ -147,8 +151,10 @@ public class SubEnvironmentDTOService {
 		SubEnvironment subEnvironment;
 		if (dto.isIdSet()) {
 			subEnvironment = subEnvironmentRepository.findOne(dto.id);
+			lockStrategy.lockEntity(subEnvironment, dto);
 		} else {
 			subEnvironment = new SubEnvironment();
+			subEnvironment.setVersion(0L);
 			inserting = true;
 		}
 
@@ -158,6 +164,7 @@ public class SubEnvironmentDTOService {
 			Release release = subEnvironment.getRelease();
 			if (release == null || (release.getId().compareTo(dto.release.id) != 0)) {
 				subEnvironment.setRelease(releaseRepository.findOne(dto.release.id));
+				dirty = true;
 			}
 		}
 
@@ -167,6 +174,7 @@ public class SubEnvironmentDTOService {
 			SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
 			if (set == null || (set.getId().compareTo(dto.subEnvironmentType.id) != 0)) {
 				subEnvironment.setSubEnvironmentType(subEnvironmentTypeRepository.findOne(dto.subEnvironmentType.id));
+				dirty = true;
 			}
 		}
 
@@ -176,13 +184,14 @@ public class SubEnvironmentDTOService {
 			Environment env = subEnvironment.getEnvironment();
 			if (env == null || (env.getId().compareTo(dto.environment.id) != 0)) {
 				subEnvironment.setEnvironment(environmentRepository.findOne(dto.environment.id));
+				dirty = true;
 			}
 		}
 
 		Set<? extends Node> nodes = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(dto.id);
 		Set<NodeSubEnvironment> nses = subEnvironment.getNodeSubEnvironments();
 
-		subEnvironment = subEnvironmentRepository.save(subEnvironment);
+//		subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		// This is slow and clunky but if we are to remain stateless
 		// there's no real alternative
 		// Add any new servers
@@ -196,8 +205,10 @@ public class SubEnvironmentDTOService {
 					nsesToAdd.add(nse);
 				}
 			}
-			if (!nsesToAdd.isEmpty())
+			if (!nsesToAdd.isEmpty()){
 				nseRepo.save(nsesToAdd);
+				dirty = true;
+			}
 		}
 		// Remove any old nodes
 		// Only need to check this if updating
@@ -212,10 +223,15 @@ public class SubEnvironmentDTOService {
 					it.remove();
 				}
 			}
-			if (!nsesToDelete.isEmpty())
+			if (!nsesToDelete.isEmpty()){
 				nseRepo.delete(nsesToDelete);
+				dirty = true;
+			}
 		}
-		// subEnvironmentRepository.save(subEnvironment);
+		if (dirty){
+			dto.version = subEnvironment.incrementVersion();
+			subEnvironmentRepository.save(subEnvironment);
+		}
 		return dto;
 	}
 
@@ -275,6 +291,7 @@ public class SubEnvironmentDTOService {
 		SubEnvironmentTypeDTO setDTO = new SubEnvironmentTypeDTO();
 		setDTO.id = set.getId();
 		setDTO.name = set.getName();
+		setDTO.version = set.getVersion();
 		return setDTO;
 	}
 
@@ -307,6 +324,7 @@ public class SubEnvironmentDTOService {
 
 		dto.id = subEnvironment.getId();
 		dto.subEnvironmentType = new SubEnvironmentTypeDTO();
+		dto.version = subEnvironment.getVersion();
 		SubEnvironmentType set = subEnvironment.getSubEnvironmentType();
 		// type could be null if we are in depth situation > 1
 		if (set != null) {
@@ -335,7 +353,7 @@ public class SubEnvironmentDTOService {
 
 	/**
 	 * Converts the passed dto to a SubEnvironment. Convenient for query by
-	 * example.
+	 * example. Not used for persistence!!
 	 */
 	public SubEnvironment toEntity(SubEnvironmentDTO dto, int depth) {
 		if (dto == null) {
@@ -346,11 +364,8 @@ public class SubEnvironmentDTOService {
 
 		subEnvironment.setId(dto.id);
 		if (depth-- > 0) {
-			// Move to SubSubEnvironment
-			// subEnvironment.setRelease(releaseDTOService.toEntity(dto.release,
-			// depth));
-			// subEnvironment.setServers(serverDTOService.toEntity(dto.servers,
-			// depth));
+			 subEnvironment.setRelease(releaseDTOService.toEntity(dto.release, depth));
+			 //subEnvironment.setServers(serverDTOService.toEntity(dto.servers, depth));
 		}
 
 		return subEnvironment;

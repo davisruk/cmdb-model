@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.domain.LockStrategy;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
@@ -43,7 +44,8 @@ public class EnvironmentDTOService {
 	private ServerRepository serverRepo;
 	@Inject
 	private SubEnvironmentDTOService subEnvironmentDTOService;
-
+    @Inject
+    private LockStrategy lockStrategy;
 
 	@Transactional(readOnly = true)
 	public EnvironmentDTO findOne(Long id) {
@@ -81,13 +83,18 @@ public class EnvironmentDTOService {
 		EnvironmentTypeDTO eDTO = new EnvironmentTypeDTO();
 		eDTO.id = et.getId();
 		eDTO.name = et.getName();
+		eDTO.version = et.getVersion();
 		return eDTO;
 	}	
 	
-	private EnvironmentType envTypeDTOToEntity (EnvironmentTypeDTO etDTO){
+	private EnvironmentType envTypeDTOToEntity (EnvironmentTypeDTO etDTO, EnvironmentType et){
 		if (etDTO == null)
 			return null;
-		EnvironmentType et = new EnvironmentType();
+		// check the domain object - creating one here will create a detached transient instance
+		// that hibernate will try to insert into the EnvironmentType table which we don't want
+		// unless it truly is a new Environment Type (which is almost never)
+		if (et == null)
+			et = new EnvironmentType();
 		et.setId(etDTO.id);
 		et.setName(etDTO.name);
 		return et;
@@ -129,7 +136,6 @@ public class EnvironmentDTOService {
 	 */
 	@Transactional
 	public EnvironmentDTO save(EnvironmentDTO dto) {
-		boolean inserting = false;
 
 		if (dto == null) {
 			return null;
@@ -138,62 +144,16 @@ public class EnvironmentDTOService {
 		Environment environment;
 		if (dto.isIdSet()) {
 			environment = environmentRepository.findOne(dto.id);
+			lockStrategy.lockEntity(environment, dto);
 		} else {
 			environment = new Environment();
 		}
 
 		environment.setName(dto.name);
-		environment.setEnvironmentType(envTypeDTOToEntity(dto.type));
-/* Move to SubEnvironment
-		if (dto.release == null) {
-			environment.setRelease(null);
-		} else {
-			Release release = environment.getRelease();
-			if (release == null || (release.getId().compareTo(dto.release.id) != 0)) {
-				environment.setRelease(releaseRepository.findOne(dto.release.id));
-			}
-		}
-*/		
+		environment.setEnvironmentType(envTypeDTOToEntity(dto.type, environment.getEnvironmentType()));
+
 		environmentRepository.save(environment);
 		
-		List<Server> servers = environment.getServers();
-		if (servers == null) {
-			servers = new ArrayList<>();
-			environment.setServers(servers);
-			inserting=true;
-		}
-
-		// This is slow and clunky but if we are to remain stateless
-		// there's no real alternative
-		// Add any new servers
-		if (dto.servers != null){
-			for (ServerDTO sDTO : dto.servers) {
-				Optional<Server> optional = servers.stream().filter(x -> x.getId().equals(sDTO.id)).findFirst();
-				if (!optional.isPresent()) {
-					// Add the server to the environment
-					// We need to do this because Server owns the M:M relationship
-					// Environment will not persist changes to the join table
-					Server s = serverDTOService.toEntity(sDTO, 1);
-					//s.addEnvironment(environment);
-					serverRepo.save(s);
-					environment.getServers().add(s);
-				}
-			}
-		}
-		// Remove any old servers
-		// Only need to check this if updating
-		if (!inserting) {
-			for (Iterator<Server> it = servers.iterator(); it.hasNext();) {
-				Server s = it.next();
-				Optional<ServerDTO> optional = dto.servers.stream().filter(x -> x.id.equals(s.getId())).findFirst();
-				if (!optional.isPresent()) {
-					// same as above - we need to ensure we persist the M:M relationships
-					//s.removeEnvironment(environment);
-					serverRepo.save(s);
-					it.remove();
-				}
-			}
-		}
 		return toDTO(environment, 2);
 	}
 
@@ -226,11 +186,9 @@ public class EnvironmentDTOService {
 
 		dto.id = environment.getId();
 		dto.name = environment.getName();
+		dto.version = environment.getVersion();
 		dto.type = envTypeToDTO(environment.getEnvironmentType());
 		if (depth-- > 0) {
-			// Move to SubEnvironment
-			//dto.release = releaseDTOService.toDTO(environment.getRelease(), depth);
-			//dto.servers = serverDTOService.toDTO(environment.getServers(), depth);
 			dto.subEnvironments = subEnvironmentDTOService.toDTO(environment.getSubEnvironments(), depth);
 		}
 

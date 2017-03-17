@@ -7,28 +7,14 @@
  */
 package uk.co.boots.columbus.cmdb.model.component.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import uk.co.boots.columbus.cmdb.model.core.dto.BaseDTO;
 import uk.co.boots.columbus.cmdb.model.core.dto.LockableDTO;
 import uk.co.boots.columbus.cmdb.model.packageinfo.dto.PackageInfoDTO;
 
 /**
  * Simple DTO for SolutionComponent.
  */
-public class SolutionComponentDTO implements LockableDTO{
-    public Long id;
+public class SolutionComponentDTO extends BaseDTO implements LockableDTO{
     public String name;
     public PackageInfoDTO packageInfo;
-    public Long version;
-
-    @JsonIgnore
-    public boolean isIdSet() {
-        return id != null;
-    }
-
-	@Override
-	public Long getVersion() {
-		// TODO Auto-generated method stub
-		return version;
-	}
 }

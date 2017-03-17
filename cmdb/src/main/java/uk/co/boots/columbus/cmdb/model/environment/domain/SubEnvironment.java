@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,13 +23,15 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
 import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
+import uk.co.boots.columbus.cmdb.model.core.domain.LockableEntity;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 
 @Entity
 @Table(name = "cm_subenvironment")
-public class SubEnvironment implements Identifiable<Long>, Serializable {
+@AttributeOverride(name = "id", column = @Column(name = "SubEnvironmentID"))
+public class SubEnvironment implements LockableEntity, Identifiable<Long>, Serializable {
 	public SubEnvironment() {
 		super();
 		nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
@@ -37,11 +40,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger log = Logger.getLogger(SubEnvironment.class.getName());
-
-	@Column(name = "SubEnvironmentID", precision = 19)
-	@GeneratedValue
-	@Id
-	private Long id;
 
 	// bi-directional many-to-one association to Environment
 	@ManyToOne
@@ -66,6 +64,15 @@ public class SubEnvironment implements Identifiable<Long>, Serializable {
 	@OneToMany(mappedBy = "subEnvironment")
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
+	
+	@Column(precision = 19)
+    @GeneratedValue
+    @Id
+    private Long id;
+
+	@Column
+	private Long version;
+
 	public Long getId() {
 		return id;
 	}
@@ -74,6 +81,24 @@ public class SubEnvironment implements Identifiable<Long>, Serializable {
 		this.id = id;
 	}
 
+	public Long getVersion() {
+		return version;
+	}
+
+	public void setVersion(Long version) {
+		this.version = version;
+	}
+	
+	public Long incrementVersion(){
+		version++;
+		return version;
+	}
+
+    @Override
+    @Transient
+    public boolean isIdSet() {
+        return id != null;
+    }	
 	public Release getRelease() {
 		return release;
 	}
@@ -160,12 +185,6 @@ public class SubEnvironment implements Identifiable<Long>, Serializable {
 	@Override
 	public String entityClassName() {
 		return SubEnvironment.class.getSimpleName();
-	}
-
-	@Override
-	@Transient
-	public boolean isIdSet() {
-		return id != null;
 	}
 
 	public Set<NodeSubEnvironment> getNodeSubEnvironments() {
