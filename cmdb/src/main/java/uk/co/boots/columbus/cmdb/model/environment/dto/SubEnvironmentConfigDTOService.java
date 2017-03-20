@@ -1,7 +1,5 @@
 package uk.co.boots.columbus.cmdb.model.environment.dto;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrlPattern;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
