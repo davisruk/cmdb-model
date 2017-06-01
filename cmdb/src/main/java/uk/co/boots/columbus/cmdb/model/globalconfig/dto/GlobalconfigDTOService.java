@@ -22,6 +22,7 @@ import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,22 +184,6 @@ public class GlobalconfigDTOService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<GlobalconfigDTO> findAll(PageRequestByExample<GlobalconfigDTO> req) {
-/*
-		Example<Globalconfig> example = null;
-		Globalconfig globalconfig = toEntity(req.example);
-
-		if (globalconfig != null) {
-			example = Example.of(globalconfig);
-		}
-
-		Page<Globalconfig> page;
-		if (example != null) {
-			page = globalconfigRepository.findAll(example, req.toPageable());
-		} else {
-			page = globalconfigRepository.findAll(req.toPageable());
-		}
-*/
-		
 		Example<Globalconfig> example = null;
 		Page<Globalconfig> page;
 		if (req.example == null)
@@ -206,7 +191,7 @@ public class GlobalconfigDTOService {
 		else
 		{
 			Globalconfig gc = toEntity(req.example);
-			example = Example.of(gc);			
+						
 			if (gc != null) {
 				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null && req.lazyLoadEvent.filters.size() > 0){
 					// build the Matcher for this page request
@@ -215,10 +200,14 @@ public class GlobalconfigDTOService {
 					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
 						FilterMetadata filter = entry.getValue();
 						// setup the matcher for contains / starts with or ends with
-						 matcher = matcher.withMatcher(entry.getKey(), match->filter.getMatcher(match));
+						matcher = matcher.withMatcher(entry.getKey(), match->filter.getMatcher(match));
 					}
 					example = Example.of(gc, matcher);
 				}
+			}
+			else
+			{
+				example = Example.of(gc);
 			}
 			page = globalconfigRepository.findAll(example, req.toPageable());
 		}

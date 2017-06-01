@@ -34,8 +34,8 @@ public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLRespo
 	       yaml = yaml.replace("\"'", "\""); // replace "' with "
 	       yaml = yaml.replace("'''", "'");
 	       // end of shitty fix
-	       System.out.println("YAML config:");
-	       System.out.println(yaml);
+	       //System.out.println("YAML config:");
+	       //System.out.println(yaml);
 	       IOUtils.write(yaml, out, Charset.forName("utf-8"));
 	       out.flush();
 	       out.close();

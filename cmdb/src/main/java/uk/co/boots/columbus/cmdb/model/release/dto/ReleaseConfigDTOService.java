@@ -91,24 +91,6 @@ public class ReleaseConfigDTOService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<ReleaseConfigDTO> findAll(PageRequestByExample<ReleaseConfigDTO> req) {
-/*
-		Example<ReleaseConfig> example = null;
-		ReleaseConfig releaseConfig = toEntity(req.example);
-
-		if (releaseConfig != null) {
-			example = Example.of(releaseConfig);
-		}
-
-		Page<ReleaseConfig> page;
-		if (example != null) {
-			page = releaseConfigRepository.findAll(example, req.toPageable());
-		} else {
-			page = releaseConfigRepository.findAll(req.toPageable());
-		}
-
-		List<ReleaseConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
-		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
-*/
 		Example<ReleaseConfig> example = null;
 		Page<ReleaseConfig> page;
 		if (req.example == null)
