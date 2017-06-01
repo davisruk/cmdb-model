@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
@@ -40,6 +42,7 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
+import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
@@ -180,6 +183,7 @@ public class GlobalconfigDTOService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<GlobalconfigDTO> findAll(PageRequestByExample<GlobalconfigDTO> req) {
+/*
 		Example<Globalconfig> example = null;
 		Globalconfig globalconfig = toEntity(req.example);
 
@@ -193,7 +197,32 @@ public class GlobalconfigDTOService {
 		} else {
 			page = globalconfigRepository.findAll(req.toPageable());
 		}
-
+*/
+		
+		Example<Globalconfig> example = null;
+		Page<Globalconfig> page;
+		if (req.example == null)
+			page = globalconfigRepository.findAll(req.toPageable());
+		else
+		{
+			Globalconfig gc = toEntity(req.example);
+			example = Example.of(gc);			
+			if (gc != null) {
+				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null && req.lazyLoadEvent.filters.size() > 0){
+					// build the Matcher for this page request
+					// probably a little overkill but should cope with all use cases
+					ExampleMatcher matcher = ExampleMatcher.matching();
+					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
+						FilterMetadata filter = entry.getValue();
+						// setup the matcher for contains / starts with or ends with
+						 matcher = matcher.withMatcher(entry.getKey(), match->filter.getMatcher(match));
+					}
+					example = Example.of(gc, matcher);
+				}
+			}
+			page = globalconfigRepository.findAll(example, req.toPageable());
+		}
+		
 		List<GlobalconfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
 	}

@@ -13,6 +13,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 
 import uk.co.boots.columbus.cmdb.model.component.dto.ComponentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
@@ -183,7 +185,7 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 	}
 	
 	public String getConfigAsYaml(Set<HieraDTO> dataSet){
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(Feature.MINIMIZE_QUOTES));
 		StringWriter sw = new StringWriter();
 		List<HieraDTO> dl = new ArrayList<HieraDTO>(dataSet);
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);

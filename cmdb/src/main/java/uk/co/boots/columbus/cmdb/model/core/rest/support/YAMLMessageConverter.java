@@ -27,7 +27,16 @@ public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLRespo
 	       output.getHeaders().setContentType(MEDIA_TYPE);
 	       output.getHeaders().set("Content-Disposition", "attachment; filename=\"" + yamlResponse.getFilename() + "\"");
 	       OutputStream out = output.getBody();
-	       IOUtils.write(yamlResponse.getYAMLString(), out, Charset.forName("utf-8"));
+	       // shitty fix until I work out why ObjectMapper.writeTree is ignoring @JsonRawValue
+	       String yaml = yamlResponse.getYAMLString();
+	       yaml = yaml.replace("\\\\", "\\"); // replace \\ with \
+	       yaml = yaml.replace("'\"", "\""); // replace '" with "
+	       yaml = yaml.replace("\"'", "\""); // replace "' with "
+	       yaml = yaml.replace("'''", "'");
+	       // end of shitty fix
+	       System.out.println("YAML config:");
+	       System.out.println(yaml);
+	       IOUtils.write(yaml, out, Charset.forName("utf-8"));
 	       out.flush();
 	       out.close();
 	   }

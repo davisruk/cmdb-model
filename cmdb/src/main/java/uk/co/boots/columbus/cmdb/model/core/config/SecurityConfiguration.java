@@ -64,6 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				antMatchers("/swagger-ui*").
 				antMatchers("/swagger-resources*").
 				antMatchers("/swagger-resources/**").
+				antMatchers("/swagger-resources/configuration/security"). // token entry field
 				antMatchers("/webjars/**");
 		
 	}

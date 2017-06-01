@@ -1,7 +1,12 @@
 package uk.co.boots.columbus.cmdb.model.hiera.dto;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 public class HieraDTO {
+	// added JsonRawValue to stop ObjectMapper creating escape sequence in string e.g. stop \= rendering as \\= 
+	@JsonRawValue
 	public String value;
+	@JsonRawValue
 	public String address;
 	
 	public HieraDTO(String value, String address) {

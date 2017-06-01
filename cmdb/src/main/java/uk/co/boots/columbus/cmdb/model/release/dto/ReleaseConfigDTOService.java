@@ -2,12 +2,14 @@ package uk.co.boots.columbus.cmdb.model.release.dto;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,8 +17,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
+import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
@@ -86,6 +91,7 @@ public class ReleaseConfigDTOService {
 
 	@Transactional(readOnly = true)
 	public PageResponse<ReleaseConfigDTO> findAll(PageRequestByExample<ReleaseConfigDTO> req) {
+/*
 		Example<ReleaseConfig> example = null;
 		ReleaseConfig releaseConfig = toEntity(req.example);
 
@@ -102,6 +108,35 @@ public class ReleaseConfigDTOService {
 
 		List<ReleaseConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
 		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+*/
+		Example<ReleaseConfig> example = null;
+		Page<ReleaseConfig> page;
+		if (req.example == null)
+			page = releaseConfigRepository.findAll(req.toPageable());
+		else
+		{
+			ReleaseConfig rc = toEntity(req.example);
+			example = Example.of(rc);			
+			if (rc != null) {
+				if (req.lazyLoadEvent != null && req.lazyLoadEvent.filters != null && req.lazyLoadEvent.filters.size() > 0){
+					// build the Matcher for this page request
+					// probably a little overkill but should cope with all use cases
+					ExampleMatcher matcher = ExampleMatcher.matching();
+					for (Map.Entry<String, FilterMetadata> entry : req.lazyLoadEvent.filters.entrySet()){
+						FilterMetadata filter = entry.getValue();
+						// setup the matcher for contains / starts with or ends with
+						 matcher = matcher.withMatcher(entry.getKey(), match->filter.getMatcher(match));
+					}
+					example = Example.of(rc, matcher);
+				}
+			}
+			page = releaseConfigRepository.findAll(example, req.toPageable());
+		}
+
+		List<ReleaseConfigDTO> content = page.getContent().stream().map(this::toDTO).collect(Collectors.toList());
+		return new PageResponse<>(page.getTotalPages(), page.getTotalElements(), content);
+		
+		
 	}
 
 	/**
