@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -253,8 +254,9 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 			// special case for Boolean values - some values are Boolean and some are Strings
 			// if they're held in the database with quotes then they will be treated as a String
 			// if they don't have quotes then treat them as proper Booleans
-			if (Boolean.parseBoolean(cc.value))
-				((ObjectNode)base).put(nodeName, new Boolean(cc.value));
+			Boolean bool = BooleanUtils.toBooleanObject(cc.value); 
+			if (bool != null)
+				((ObjectNode)base).put(nodeName, bool);
 			else
 				((ObjectNode)base).put(nodeName, cc.value);
 		}
