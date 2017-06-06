@@ -13,15 +13,15 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator.Feature;
 
 import uk.co.boots.columbus.cmdb.model.component.dto.ComponentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
@@ -185,7 +185,8 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 	}
 	
 	public String getConfigAsYaml(Set<HieraDTO> dataSet){
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(Feature.MINIMIZE_QUOTES));
+		//ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(Feature.MINIMIZE_QUOTES));
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory().enable(Feature.ALLOW_SINGLE_QUOTES));
 		StringWriter sw = new StringWriter();
 		List<HieraDTO> dl = new ArrayList<HieraDTO>(dataSet);
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -240,7 +241,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 				arrayNode = mapper.createArrayNode();
 				((ObjectNode)base).set(nodeName, arrayNode);
 				((ArrayNode)arrayNode).add(fieldNode);
-				
 			}
 			// at this point we have an array node
 			// add the value to it - this only works with a depth of 1!
@@ -250,7 +250,13 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		else{
 			// we aren't dealing with an array - yet
 			// just add the value to the node.
-			((ObjectNode)base).put(nodeName, cc.value);			
+			// special case for Boolean values - some values are Boolean and some are Strings
+			// if they're held in the database with quotes then they will be treated as a String
+			// if they don't have quotes then treat them as proper Booleans
+			if (Boolean.parseBoolean(cc.value))
+				((ObjectNode)base).put(nodeName, new Boolean(cc.value));
+			else
+				((ObjectNode)base).put(nodeName, cc.value);
 		}
 	}
 	

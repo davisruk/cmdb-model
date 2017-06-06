@@ -11,8 +11,6 @@ import java.util.logging.Logger;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,8 +20,7 @@ import javax.persistence.Transient;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 
-import uk.co.boots.columbus.cmdb.model.core.domain.Identifiable;
-import uk.co.boots.columbus.cmdb.model.core.domain.LockableEntity;
+import uk.co.boots.columbus.cmdb.model.core.domain.BaseEntity;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
@@ -31,7 +28,7 @@ import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 @Entity
 @Table(name = "cm_subenvironment")
 @AttributeOverride(name = "id", column = @Column(name = "SubEnvironmentID"))
-public class SubEnvironment implements LockableEntity, Identifiable<Long>, Serializable {
+public class SubEnvironment extends BaseEntity implements Serializable {
 	public SubEnvironment() {
 		super();
 		nodeSubEnvironments = new HashSet<NodeSubEnvironment>();
@@ -64,31 +61,6 @@ public class SubEnvironment implements LockableEntity, Identifiable<Long>, Seria
 	@OneToMany(mappedBy = "subEnvironment")
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
-	
-	@Column(precision = 19)
-    @GeneratedValue
-    @Id
-    private Long id;
-
-	@Column
-	private Long version;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getVersion() {
-		return version;
-	}
-
-	public void setVersion(Long version) {
-		this.version = version;
-	}
-	
 	public Long incrementVersion(){
 		version++;
 		return version;
