@@ -61,11 +61,6 @@ public class SubEnvironment extends BaseEntity implements Serializable {
 	@OneToMany(mappedBy = "subEnvironment")
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
-	public Long incrementVersion(){
-		version++;
-		return version;
-	}
-
     @Override
     @Transient
     public boolean isIdSet() {

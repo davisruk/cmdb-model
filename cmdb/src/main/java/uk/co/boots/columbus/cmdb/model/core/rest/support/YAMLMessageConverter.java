@@ -15,6 +15,7 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLResponse> {
 
 	public static final MediaType MEDIA_TYPE = new MediaType("text", "plain", Charset.forName("utf-8"));
+	public static final String EMPTY_STRING = "[EMPTY_STRING]";
 	   public YAMLMessageConverter() {
 	       super(MEDIA_TYPE);
 	   }
@@ -30,15 +31,10 @@ public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLRespo
 	       // shitty fix until I work out why ObjectMapper.writeTree is ignoring @JsonRawValue
 	       String yaml = yamlResponse.getYAMLString();
 	       yaml = yaml.replace("\\\\", "\\"); // replace \\ with \
-	       /*
 	       yaml = yaml.replace("'\"", "\""); // replace '" with "
 	       yaml = yaml.replace("\"'", "\""); // replace "' with "
 	       yaml = yaml.replace("'''", "'"); // replace ''' with '
-	       */
-	       yaml = yaml.replace("\"", "'"); // replace ''' with '
-	       yaml = yaml.replace("'''", "'"); // replace ''' with '
-	       yaml = yaml.replace("''", "'"); // replace ''' with '
-	       
+	       yaml = yaml.replace(EMPTY_STRING, ""); // replace [EMPTY_STRING] with ""       
 	       // end of shitty fix
 	       IOUtils.write(yaml, out, Charset.forName("utf-8"));
 	       out.flush();

@@ -37,6 +37,14 @@ public abstract class BaseEntity implements LockableEntity, Identifiable<Long>{
 	public void setVersion(Long version) {
 		this.version = version;
 	}
+	
+	public Long inrementVersion(){
+		if (version == null)
+			version = new Long(0L);
+		else 
+			version++;
+		return version;
+	}
 
     @Override
     @Transient

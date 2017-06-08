@@ -140,7 +140,6 @@ public class EnvironmentDTOService {
 		if (dto == null) {
 			return null;
 		}
-
 		Environment environment;
 		if (dto.isIdSet()) {
 			environment = environmentRepository.findOne(dto.id);
@@ -150,10 +149,13 @@ public class EnvironmentDTOService {
 		}
 
 		environment.setName(dto.name);
-		environment.setEnvironmentType(envTypeDTOToEntity(dto.type, environment.getEnvironmentType()));
+		if (!dto.isIdSet() || dto.type.id != environment.getEnvironmentType().getId())
+			environment.setEnvironmentType(environmentTypeRepository.findOne(dto.type.id));
+		else
+			environment.setEnvironmentType(envTypeDTOToEntity(dto.type, environment.getEnvironmentType()));
 
-		environmentRepository.save(environment);
-		
+		dto.version = environment.inrementVersion();
+		environment = environmentRepository.save(environment);
 		return toDTO(environment, 2);
 	}
 

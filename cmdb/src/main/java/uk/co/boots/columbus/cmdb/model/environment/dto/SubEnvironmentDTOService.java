@@ -33,7 +33,6 @@ import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
-import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
 @Service
@@ -188,6 +187,12 @@ public class SubEnvironmentDTOService {
 			}
 		}
 
+		if (inserting){
+			//dto.version = subEnvironment.incrementVersion();
+			subEnvironment = subEnvironmentRepository.save(subEnvironment);
+			dirty = false;
+		}
+		
 		Set<? extends Node> nodes = serverRepo.findByNodeSubEnvironments_SubEnvironment_id(dto.id);
 		Set<NodeSubEnvironment> nses = subEnvironment.getNodeSubEnvironments();
 
@@ -229,7 +234,7 @@ public class SubEnvironmentDTOService {
 			}
 		}
 		if (dirty){
-			dto.version = subEnvironment.incrementVersion();
+			dto.version = subEnvironment.inrementVersion();
 			subEnvironmentRepository.save(subEnvironment);
 		}
 		return dto;

@@ -26,12 +26,6 @@ public interface SubEnvironmentRepository extends JpaRepository<SubEnvironment, 
 
 	List<SubEnvironment> findByIdNotIn(List<Long> subEnvironmentIds);
 
-	// below doesn't work - sub select generates invalid select but value inner
-	// joins and where
-	// @Query("SELECT se FROM SubEnvironment se WHERE se not in (select
-	// s.subEnvironments from Server s where s.id = :id)")
-	// List<SubEnvironment>findSubEnvsWithoutServer(@Param("id") Long id);
-
 	default List<SubEnvironment> complete(Long query, int maxResults) {
 		SubEnvironment probe = new SubEnvironment();
 		probe.setId(query);

@@ -26,6 +26,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import uk.co.boots.columbus.cmdb.model.component.dto.ComponentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.YAMLMessageConverter;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOService;
@@ -257,8 +258,14 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 			Boolean bool = BooleanUtils.toBooleanObject(cc.value); 
 			if (bool != null)
 				((ObjectNode)base).put(nodeName, bool);
-			else
-				((ObjectNode)base).put(nodeName, cc.value);
+			else{
+				if (cc.value == null || cc.value.length() == 0)
+					// special case for empty strings to ease dealing with quotes in the HTTP response later
+					((ObjectNode)base).put(nodeName, YAMLMessageConverter.EMPTY_STRING);
+				else
+					((ObjectNode)base).put(nodeName, cc.value);
+			}
+				
 		}
 	}
 	
