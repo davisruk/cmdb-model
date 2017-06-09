@@ -30,11 +30,10 @@ public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLRespo
 	       OutputStream out = output.getBody();
 	       // shitty fix until I work out why ObjectMapper.writeTree is ignoring @JsonRawValue
 	       String yaml = yamlResponse.getYAMLString();
-	       yaml = yaml.replace("\\\\", "\\"); // replace \\ with \
-	       yaml = yaml.replace("'\"", "\""); // replace '" with "
-	       yaml = yaml.replace("\"'", "\""); // replace "' with "
+	       yaml = yaml.replaceAll("(.*?): \"(.*?)\"", "$1: '$2'");
+	       yaml = yaml.replaceAll("(\\s*?)- \"(.*?)\"", "$1- '$2'");
+	       yaml = yaml.replace(EMPTY_STRING, "''"); // replace [EMPTY_STRING] with ''
 	       yaml = yaml.replace("'''", "'"); // replace ''' with '
-	       yaml = yaml.replace(EMPTY_STRING, ""); // replace [EMPTY_STRING] with ""       
 	       // end of shitty fix
 	       IOUtils.write(yaml, out, Charset.forName("utf-8"));
 	       out.flush();
