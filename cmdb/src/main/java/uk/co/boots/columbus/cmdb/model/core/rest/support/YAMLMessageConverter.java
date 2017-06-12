@@ -32,8 +32,12 @@ public class YAMLMessageConverter extends AbstractHttpMessageConverter<YAMLRespo
 	       String yaml = yamlResponse.getYAMLString();
 	       yaml = yaml.replaceAll("(.*?): \"(.*?)\"", "$1: '$2'");
 	       yaml = yaml.replaceAll("(\\s*?)- \"(.*?)\"", "$1- '$2'");
+	       
 	       yaml = yaml.replace(EMPTY_STRING, "''"); // replace [EMPTY_STRING] with ''
 	       yaml = yaml.replace("'''", "'"); // replace ''' with '
+	       yaml = yaml.replaceAll("(\\s*?): ''(.*?)''", "$1: '$2'");
+	       yaml = yaml.replaceAll("(\\s*?)grant: 'ALL'", "$1grant:\r$1- 'ALL'");
+	       //yaml = yaml.replace("grant: 'ALL'", "grant:\r- 'ALL'"); // special case until array facility is added to CMDB
 	       // end of shitty fix
 	       IOUtils.write(yaml, out, Charset.forName("utf-8"));
 	       out.flush();
