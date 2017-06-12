@@ -234,7 +234,7 @@ public class SubEnvironmentDTOService {
 			}
 		}
 		if (dirty){
-			dto.version = subEnvironment.inrementVersion();
+			dto.version = subEnvironment.incrementVersion();
 			subEnvironmentRepository.save(subEnvironment);
 		}
 		return dto;
@@ -274,9 +274,11 @@ public class SubEnvironmentDTOService {
 	public List<SubEnvironmentTypeDTO> findAllSubEnvironmentTypesAvailableForEnv(EnvironmentDTO eDTO) {
 		List<SubEnvironmentType> results;
 		List<Long> idList = new ArrayList<Long>();
-		Environment e = environmentRepository.findOne(eDTO.id);
-		// if env has no sub environments then all sub env types are available
-		if (e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
+		Environment e = null;
+		if (eDTO.isIdSet())
+			e = environmentRepository.findOne(eDTO.id);
+		// if this is a new env or an env with no sub environments then all sub env types are available
+		if (e == null || e.getSubEnvironments() == null || e.getSubEnvironments().size() == 0)
 			return findAllSubEnvironmentTypes();
 
 		// otherwise we need to build a list of unavailable sub environment

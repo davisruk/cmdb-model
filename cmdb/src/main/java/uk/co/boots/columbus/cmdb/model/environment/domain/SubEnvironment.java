@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -54,11 +55,11 @@ public class SubEnvironment extends BaseEntity implements Serializable {
 	private SubEnvironmentType subEnvironmentType;
 
 	// bi-directional many-to-one association to SubEnvironmentConfig
-	@OneToMany(mappedBy = "subEnvironment")
+	@OneToMany(mappedBy = "subEnvironment", cascade=CascadeType.REMOVE)
 	private List<SubEnvironmentConfig> subEnvironmentConfigs;
 
 	// bi-directional many-to-one association to SubEnvironmentConfig
-	@OneToMany(mappedBy = "subEnvironment")
+	@OneToMany(mappedBy = "subEnvironment", cascade=CascadeType.REMOVE)
 	private Set<NodeSubEnvironment> nodeSubEnvironments;
 
     @Override

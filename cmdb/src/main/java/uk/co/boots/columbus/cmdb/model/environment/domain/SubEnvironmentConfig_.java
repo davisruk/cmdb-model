@@ -2,7 +2,7 @@ package uk.co.boots.columbus.cmdb.model.environment.domain;
 
 import javax.persistence.metamodel.SingularAttribute;
 
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
 
 public class SubEnvironmentConfig_ {
     public static volatile SingularAttribute<EnvironmentConfig, Long> id;

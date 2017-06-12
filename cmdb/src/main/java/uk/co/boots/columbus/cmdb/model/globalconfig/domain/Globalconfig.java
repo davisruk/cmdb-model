@@ -1,4 +1,4 @@
-package uk.co.boots.columbus.cmdb.model.golbalconfig.domain;
+package uk.co.boots.columbus.cmdb.model.globalconfig.domain;
 
 import java.io.Serializable;
 import java.util.logging.Logger;

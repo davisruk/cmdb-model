@@ -1,10 +1,8 @@
 package uk.co.boots.columbus.cmdb.model.environment.dto;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -21,10 +19,10 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.EnvironmentType;
+import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.EnvironmentTypeRepository;
-import uk.co.boots.columbus.cmdb.model.server.domain.Server;
-import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
+import uk.co.boots.columbus.cmdb.model.node.domain.NodeSubEnvironment;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerRepository;
 
@@ -76,6 +74,20 @@ public class EnvironmentDTOService {
 		List<EnvironmentType> results = environmentTypeRepository.findAll();
 		return results.stream().map((EnvironmentType et) -> envTypeToDTO(et)).collect(Collectors.toList());
 	}
+	
+/*
+	public void delete (Long envId){
+		Environment env = environmentRepository.findOne(envId);
+		if (env != null){
+			for (SubEnvironment se:env.getSubEnvironments()){
+				for (NodeSubEnvironment nse:se.getNodeSubEnvironments()){
+					
+				}
+			}
+		}
+		
+	}
+*/
 	
 	private EnvironmentTypeDTO envTypeToDTO (EnvironmentType et){
 		if (et == null)
@@ -154,7 +166,7 @@ public class EnvironmentDTOService {
 		else
 			environment.setEnvironmentType(envTypeDTOToEntity(dto.type, environment.getEnvironmentType()));
 
-		dto.version = environment.inrementVersion();
+		dto.version = environment.incrementVersion();
 		environment = environmentRepository.save(environment);
 		return toDTO(environment, 2);
 	}

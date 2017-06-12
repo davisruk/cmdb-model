@@ -10,7 +10,7 @@ package uk.co.boots.columbus.cmdb.model.component.domain;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
 
 @StaticMetamodel(ComponentConfig.class)
 public abstract class ComponentConfig_ {

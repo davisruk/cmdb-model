@@ -43,7 +43,7 @@ public class Environment extends BaseEntity implements Serializable {
 	private EnvironmentType environmentType;
 
 	//bi-directional many-to-one association to SubEnvironment
-	@OneToMany(mappedBy="environment")
+	@OneToMany(mappedBy="environment", cascade = CascadeType.REMOVE)
 	private List<SubEnvironment> subEnvironments;
 
 	public String getName() {

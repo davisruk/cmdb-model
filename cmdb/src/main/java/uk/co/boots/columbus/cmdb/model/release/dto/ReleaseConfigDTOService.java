@@ -22,7 +22,7 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;

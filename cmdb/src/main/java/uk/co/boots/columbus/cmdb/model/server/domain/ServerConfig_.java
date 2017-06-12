@@ -3,7 +3,7 @@ package uk.co.boots.columbus.cmdb.model.server.domain;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.persistence.metamodel.StaticMetamodel;
 
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
 
 @StaticMetamodel(ServerConfig.class)
 public abstract class ServerConfig_ {

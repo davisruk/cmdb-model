@@ -16,8 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig;
-import uk.co.boots.columbus.cmdb.model.golbalconfig.domain.Globalconfig_;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig_;
 
 public interface GlobalconfigRepository extends JpaRepository<Globalconfig, Long> {
 
