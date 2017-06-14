@@ -157,6 +157,7 @@ public class ReleaseConfigDTOService {
 		releaseConfig.setRecursiveByEnv(dto.recursiveByEnv);
 		releaseConfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
 		releaseConfig.setNotes(dto.notes);
+		releaseConfig.setArrayItem(dto.arrayItem);
 
 		if (dto.release == null) {
 			releaseConfig.setRelease(null);
@@ -211,6 +212,7 @@ public class ReleaseConfigDTOService {
 		dto.recursiveBySubEnv = releaseConfig.isRecursiveBySubEnv();
 		dto.notes = releaseConfig.getNotes();
 		dto.sensitive = releaseConfig.IsSensitive();
+		dto.arrayItem = releaseConfig.isArrayItem();
 
 		if (depth-- > 0) {
 			dto.release = releaseDTOService.toDTO(releaseConfig.getRelease(), depth);
@@ -246,6 +248,7 @@ public class ReleaseConfigDTOService {
 		releaseConfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
 		releaseConfig.setSensitive(dto.sensitive);
 		releaseConfig.setNotes(dto.notes);
+		releaseConfig.setArrayItem(dto.arrayItem);
 
 		if (depth-- > 0) {
 			releaseConfig.setRelease(releaseDTOService.toEntity(dto.release, depth));

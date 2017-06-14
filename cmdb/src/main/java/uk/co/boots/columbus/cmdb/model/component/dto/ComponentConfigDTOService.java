@@ -149,6 +149,7 @@ public class ComponentConfigDTOService {
         componentConfig.setParameter(dto.parameter);
         componentConfig.setHieraAddress(dto.hieraAddress);
         componentConfig.setNotes(dto.notes);
+        componentConfig.setArrayItem(dto.arrayItem);
         
         if (dto.my_component == null) {
             componentConfig.setSolutionComponent(null);
@@ -198,6 +199,7 @@ public class ComponentConfigDTOService {
 		dto.notes = componentConfig.getNotes();
 		dto.sensitive = componentConfig.IsSensitive();
         dto.version = componentConfig.getVersion();
+        dto.arrayItem = componentConfig.isArrayItem();
         if (depth-- > 0) {
             dto.my_component = solutionComponentDTOService.toDTO(componentConfig.getSolutionComponent(), depth);
         }
@@ -231,6 +233,7 @@ public class ComponentConfigDTOService {
         componentConfig.setSensitive(dto.sensitive);
         componentConfig.setNotes(dto.notes);
         componentConfig.setVersion(dto.version);
+        componentConfig.setArrayItem(dto.arrayItem);
         
         if (depth-- > 0) {
             componentConfig.setSolutionComponent(solutionComponentDTOService.toEntity(dto.my_component, depth));

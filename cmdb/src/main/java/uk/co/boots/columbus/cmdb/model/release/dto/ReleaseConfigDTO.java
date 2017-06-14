@@ -5,6 +5,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
 
 public class ReleaseConfigDTO implements CoreConfigDTO{
+
+	public Long id;
+    public String parameter;
+    public String value;
+    public String hieraAddress;
+    public ReleaseDTO release;
+    public Boolean recursiveByEnv;
+    public Boolean recursiveBySubEnv;
+    public String notes;
+    public Boolean sensitive;
+    public Boolean arrayItem;
+
+    @JsonIgnore
+    public boolean isIdSet() {
+        return id != null;
+    }
+    
     public Long getId() {
 		return id;
 	}
@@ -21,18 +38,8 @@ public class ReleaseConfigDTO implements CoreConfigDTO{
 		return hieraAddress;
 	}
 
-	public Long id;
-    public String parameter;
-    public String value;
-    public String hieraAddress;
-    public ReleaseDTO release;
-    public Boolean recursiveByEnv;
-    public Boolean recursiveBySubEnv;
-    public String notes;
-    public Boolean sensitive;
-
-    @JsonIgnore
-    public boolean isIdSet() {
-        return id != null;
-    }
+	public Boolean isArrayItem(){
+		return arrayItem;
+	}
+    
 }

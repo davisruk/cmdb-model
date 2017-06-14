@@ -15,6 +15,18 @@ import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
  * Simple DTO for Globalconfig.
  */
 public class GlobalconfigDTO implements CoreConfigDTO{
+
+    public Long id;
+    public String parameter;
+    public String value;
+    public String hieraAddress;
+    public Boolean recursiveByEnv;
+    public Boolean recursiveByRel;
+    public Boolean recursiveBySubEnv;
+    public String notes;
+    public Boolean sensitive;
+    public Boolean arrayItem;
+
     public Long getId() {
 		return id;
 	}
@@ -30,16 +42,10 @@ public class GlobalconfigDTO implements CoreConfigDTO{
 	public String getHieraAddress() {
 		return hieraAddress;
 	}
-
-    public Long id;
-    public String parameter;
-    public String value;
-    public String hieraAddress;
-    public Boolean recursiveByEnv;
-    public Boolean recursiveByRel;
-    public Boolean recursiveBySubEnv;
-    public String notes;
-    public Boolean sensitive;
+	
+	public Boolean isArrayItem(){
+		return arrayItem;
+	}
 
     @JsonIgnore
     public boolean isIdSet() {

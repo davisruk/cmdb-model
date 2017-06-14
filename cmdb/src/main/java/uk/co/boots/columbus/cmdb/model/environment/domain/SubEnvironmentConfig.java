@@ -43,6 +43,9 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	@Column(name = "SubEnvConfigValue", nullable = false, unique = true, length = 255)
 	private String value;
 
+	@Column(name = "isArrayItem")
+	private Boolean arrayItem;
+	
 	@Column(name = "SubEnvConfigNotes")
 	private String notes;
 
@@ -53,6 +56,7 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 	@ManyToOne
 	@JoinColumn(name = "SubEnvironmentID")
 	private SubEnvironment subEnvironment;
+
 
 	@Transient
 	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
@@ -156,6 +160,14 @@ public class SubEnvironmentConfig implements Identifiable<Long>, Serializable {
 
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
+	}
+
+	public Boolean isArrayItem() {
+		return arrayItem;
+	}
+
+	public void setArrayItem(Boolean arrayItem) {
+		this.arrayItem = arrayItem;
 	}
 
 }

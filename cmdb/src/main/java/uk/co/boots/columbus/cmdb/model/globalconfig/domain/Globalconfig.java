@@ -59,6 +59,9 @@ public class Globalconfig implements Identifiable<Long>, Serializable {
 	@Column(name = "GlobalConfigIsSensitive")
 	private Boolean sensitive;
 
+	@Column(name = "isArrayItem")
+	private Boolean arrayItem;
+
 	@Transient
 	private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
 
@@ -173,5 +176,13 @@ public class Globalconfig implements Identifiable<Long>, Serializable {
 
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
+	}
+
+	public Boolean isArrayItem() {
+		return arrayItem;
+	}
+
+	public void setArrayItem(Boolean arrayItem) {
+		this.arrayItem = arrayItem;
 	}
 }

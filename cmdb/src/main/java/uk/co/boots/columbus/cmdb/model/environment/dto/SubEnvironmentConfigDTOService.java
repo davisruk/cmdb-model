@@ -143,6 +143,7 @@ public class SubEnvironmentConfigDTOService {
 		dto.hieraAddress = subEnvironmentConfig.getHieraAddress();
 		dto.notes = subEnvironmentConfig.getNotes();
 		dto.sensitive = subEnvironmentConfig.IsSensitive();
+		dto.arrayItem = subEnvironmentConfig.isArrayItem();
 		
 		if (depth-- > 0) {
 			dto.subEnvironment = subEnvironmentDTOService.toDTO(subEnvironmentConfig.getSubEnvironment(), depth);
@@ -176,6 +177,7 @@ public class SubEnvironmentConfigDTOService {
 		subEnvironmentConfig.setHieraAddress(dto.hieraAddress);
 		subEnvironmentConfig.setSensitive(dto.sensitive);
 		subEnvironmentConfig.setNotes(dto.notes);
+		subEnvironmentConfig.setArrayItem(dto.arrayItem);
 		
 		if (depth-- > 0) {
 			subEnvironmentConfig.setSubEnvironment(subEnvironmentDTOService.toEntity(dto.subEnvironment, depth));
@@ -248,6 +250,7 @@ public class SubEnvironmentConfigDTOService {
         subEnvironmentConfig.setParameter(dto.parameter);
         subEnvironmentConfig.setHieraAddress(dto.hieraAddress);
         subEnvironmentConfig.setNotes(dto.notes);
+        subEnvironmentConfig.setArrayItem(dto.arrayItem);
         
         if (dto.subEnvironment == null) {
             subEnvironmentConfig.setSubEnvironment(null);

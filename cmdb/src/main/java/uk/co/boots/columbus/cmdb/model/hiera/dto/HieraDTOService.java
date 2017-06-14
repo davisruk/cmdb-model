@@ -60,14 +60,14 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 	// Each ConfigDTO implements CoreConfigDTO that exposes accessors
 	private List<HieraDTO> addToHieraDTOList(List<HieraDTO> hieraList, List<? extends CoreConfigDTO> fromList) {
 		for (CoreConfigDTO cDTO : fromList)
-			hieraList.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress()));
+			hieraList.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress(), cDTO.isArrayItem()));
 
 		return hieraList;
 	}
 
 	private Set<HieraDTO> addToHieraDTOSet(Set<HieraDTO> hieraSet, List<? extends CoreConfigDTO> fromList) {
 		for (CoreConfigDTO cDTO : fromList)
-			hieraSet.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress()));
+			hieraSet.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress(), cDTO.isArrayItem()));
 
 		return hieraSet;
 	}
@@ -228,30 +228,17 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 			}
 		}
 		
-		// check if this field needs to be setup as an array
 		String nodeName = nodes.get(nodes.size()-1);
-		JsonNode fieldNode = base.get(nodeName);
-		JsonNode arrayNode = null;
-		if (fieldNode != null){
-			arrayNode = fieldNode;
-			// the field already exists
-			// we need to convert it to an array
-			// check it first though as we may have already created it
-			if (!arrayNode.isArray()){
-				// create the array
-				((ObjectNode)base).remove(nodeName);
+		// check if this field needs to be setup as an array
+		if (cc.renderAsArray){
+			JsonNode arrayNode = base.get(nodeName);
+			if (arrayNode == null){
+				// the field already exists so just
 				arrayNode = mapper.createArrayNode();
 				((ObjectNode)base).set(nodeName, arrayNode);
-				((ArrayNode)arrayNode).add(fieldNode);
 			}
-			// at this point we have an array node
-			// add the value to it - this only works with a depth of 1!
-			// if the array needs to contain a node it won't work!
 			((ArrayNode)arrayNode).add(cc.value);
-		}
-		else{
-			// we aren't dealing with an array - yet
-			// just add the value to the node.
+		} else {
 			// special case for Boolean values - some values are Boolean and some are Strings
 			// if they're held in the database with quotes then they will be treated as a String
 			// if they don't have quotes then treat them as proper Booleans

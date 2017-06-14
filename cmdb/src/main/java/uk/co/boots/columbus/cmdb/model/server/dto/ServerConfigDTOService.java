@@ -159,6 +159,7 @@ public class ServerConfigDTOService {
         serverConfig.setParameter(dto.parameter);
         serverConfig.setHieraAddress(dto.hieraAddress);
         serverConfig.setNotes(dto.notes);
+        serverConfig.setArrayItem(dto.arrayItem);
         
         if (dto.server == null) {
             serverConfig.setServer(null);
@@ -207,6 +208,7 @@ public class ServerConfigDTOService {
         dto.hieraAddress = serverConfig.getHieraAddress();
 		dto.notes = serverConfig.getNotes();
 		dto.sensitive = serverConfig.IsSensitive();
+		dto.arrayItem = serverConfig.isArrayItem();
         
         if (depth-- > 0) {
             dto.server = serverDTOService.toDTO(serverConfig.getServer(), depth);
@@ -240,6 +242,7 @@ public class ServerConfigDTOService {
         serverConfig.setHieraAddress(dto.hieraAddress);
         serverConfig.setSensitive(dto.sensitive);
         serverConfig.setNotes(dto.notes);
+        serverConfig.setArrayItem(dto.arrayItem);
         
         if (depth-- > 0) {
             serverConfig.setServer(serverDTOService.toEntity(dto.server, depth));

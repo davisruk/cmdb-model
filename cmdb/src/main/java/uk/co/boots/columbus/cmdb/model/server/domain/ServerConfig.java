@@ -52,6 +52,9 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
 	@ManyToOne
 	private Server server;
 
+	@Column(name = "isArrayItem")
+	private Boolean arrayItem;
+
 	@Override
 	public String entityClassName() {
 		return ServerConfig.class.getSimpleName();
@@ -157,4 +160,13 @@ public class ServerConfig implements Identifiable<Long>, Serializable {
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
+	
+	public Boolean isArrayItem() {
+		return arrayItem;
+	}
+
+	public void setArrayItem(Boolean arrayItem) {
+		this.arrayItem = arrayItem;
+	}
+	
 }

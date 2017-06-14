@@ -16,4 +16,5 @@ public abstract class Globalconfig_ {
     public static volatile SingularAttribute<Globalconfig, Boolean> recursiveBySubEnv;
     public static volatile SingularAttribute<Globalconfig, String> notes;
     public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;
+    public static volatile SingularAttribute<Globalconfig, Boolean> arrayItem;
 }

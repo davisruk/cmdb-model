@@ -1,5 +1,6 @@
 package uk.co.boots.columbus.cmdb.model.hiera.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
 public class HieraDTO {
@@ -8,11 +9,14 @@ public class HieraDTO {
 	public String value;
 	@JsonRawValue
 	public String address;
+	@JsonIgnore
+	public Boolean renderAsArray;
 	
-	public HieraDTO(String value, String address) {
+	public HieraDTO(String value, String address, Boolean renderAsArray) {
 		super();
 		this.value = value;
 		this.address = address;
+		this.renderAsArray = renderAsArray;
 	}
 
 	@Override
@@ -48,7 +52,7 @@ public class HieraDTO {
 
 	@Override
 	public String toString() {
-		return "HieraDTO [value=" + value + ", address=" + address + "]";
+		return "HieraDTO [value=" + value + ", address=" + address + ", renderAsArray=" + renderAsArray + "]";
 	}
 
 	

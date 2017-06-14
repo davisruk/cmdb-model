@@ -16,7 +16,9 @@ public abstract class ReleaseConfig_ {
     public static volatile SingularAttribute<ReleaseConfig, Boolean> recursiveByEnv;
     public static volatile SingularAttribute<ReleaseConfig, Boolean> recursiveBySubEnv;
     public static volatile SingularAttribute<Globalconfig, String> notes;
-    public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;    
+    public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;
+    public static volatile SingularAttribute<Globalconfig, Boolean> arrayItem;
+    
     // Many to one
     public static volatile SingularAttribute<ReleaseConfig, Release> my_release;
 }

@@ -253,6 +253,7 @@ public class GlobalconfigDTOService {
 		globalconfig.setRecursiveByEnv(dto.recursiveByEnv);
 		globalconfig.setRecursiveByRel(dto.recursiveByRel);
 		globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
+		globalconfig.setArrayItem(dto.arrayItem);
 
 		return toDTO(globalconfigRepository.save(globalconfig));
 	}
@@ -299,6 +300,7 @@ public class GlobalconfigDTOService {
 		dto.recursiveBySubEnv = globalconfig.isRecursiveBySubEnv();
 		dto.notes = globalconfig.getNotes();
 		dto.sensitive = globalconfig.IsSensitive();
+		dto.arrayItem = globalconfig.isArrayItem();
 
 		return dto;
 	}
@@ -331,6 +333,7 @@ public class GlobalconfigDTOService {
 		globalconfig.setRecursiveBySubEnv(dto.recursiveBySubEnv);
 		globalconfig.setSensitive(dto.sensitive);
 		globalconfig.setNotes(dto.notes);
+		globalconfig.setArrayItem(dto.arrayItem);
 
 		return globalconfig;
 	}

@@ -15,7 +15,8 @@ public abstract class ServerConfig_ {
     public static volatile SingularAttribute<ServerConfig, String> hieraAddress;
     public static volatile SingularAttribute<Globalconfig, String> notes;
     public static volatile SingularAttribute<Globalconfig, Boolean> sensitive;
-
+    public static volatile SingularAttribute<Globalconfig, Boolean> arrayItem;
+    
     // Many to one
     public static volatile SingularAttribute<ServerConfig, Server> server;
 }

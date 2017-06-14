@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -129,7 +130,8 @@ public class EnvironmentResource {
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsForEnvironmentsAsYAML(@PathVariable String name) throws IOException {
     	EnvironmentDTO dto = environmentDTOService.findOne(name);
-    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>())));
+    	Set<HieraDTO> dtoSet = hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>()); 
+    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(dtoSet));
     }
 
     @RequestMapping(value = "/", method = GET, produces = APPLICATION_JSON_VALUE)

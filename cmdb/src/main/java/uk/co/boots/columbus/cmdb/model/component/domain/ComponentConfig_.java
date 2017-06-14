@@ -23,7 +23,8 @@ public abstract class ComponentConfig_ {
     public static volatile SingularAttribute<ComponentConfig, String> notes;
     public static volatile SingularAttribute<ComponentConfig, Boolean> sensitive;
     public static volatile SingularAttribute<ComponentConfig, Long> version;
-
+    public static volatile SingularAttribute<Globalconfig, Boolean> arrayItem;
+    
     // Many to one
     public static volatile SingularAttribute<ComponentConfig, SolutionComponent> solutionComponent;
 }

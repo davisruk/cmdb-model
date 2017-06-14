@@ -13,7 +13,8 @@ public class ComponentConfigDTO extends BaseDTO implements CoreConfigDTO {
     public String hieraAddress;
     public String notes;
     public Boolean sensitive;
-
+    public Boolean arrayItem;
+    
     public SolutionComponentDTO my_component;
 
 	public String getParameter() {
@@ -28,5 +29,8 @@ public class ComponentConfigDTO extends BaseDTO implements CoreConfigDTO {
 		return hieraAddress;
 	}
 
+	public Boolean isArrayItem(){
+		return arrayItem;
+	}
 
 }

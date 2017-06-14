@@ -12,7 +12,8 @@ public class SubEnvironmentConfigDTO implements CoreConfigDTO{
     public String notes;
     public Boolean sensitive;
     public SubEnvironmentDTO subEnvironment;
-
+    public Boolean arrayItem;
+    
     public Long getId() {
 		return id;
 	}
@@ -52,6 +53,11 @@ public class SubEnvironmentConfigDTO implements CoreConfigDTO{
 	public void setSubEnvironment(SubEnvironmentDTO subEnvironment) {
 		this.subEnvironment = subEnvironment;
 	}
+	
+	public Boolean isArrayItem(){
+		return arrayItem;
+	}
+	
 
     @JsonIgnore
     public boolean isIdSet() {

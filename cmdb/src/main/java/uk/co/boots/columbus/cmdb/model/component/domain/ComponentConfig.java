@@ -48,6 +48,9 @@ public class ComponentConfig extends BaseEntity implements Serializable {
     @ManyToOne
     private SolutionComponent solutionComponent;
 
+	@Column(name = "isArrayItem")
+	private Boolean arrayItem;
+    
     @Transient
     private IdentifiableHashBuilder identifiableHashBuilder = new IdentifiableHashBuilder();
     
@@ -149,4 +152,13 @@ public class ComponentConfig extends BaseEntity implements Serializable {
 	public void setSensitive(Boolean sensitive) {
 		this.sensitive = sensitive;
 	}
+	
+	public Boolean isArrayItem() {
+		return arrayItem;
+	}
+
+	public void setArrayItem(Boolean arrayItem) {
+		this.arrayItem = arrayItem;
+	}
+	
 }

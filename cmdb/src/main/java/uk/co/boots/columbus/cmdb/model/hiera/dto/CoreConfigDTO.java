@@ -8,4 +8,8 @@ public interface CoreConfigDTO {
 	public String getValue();
 
 	public String getHieraAddress();
+	
+	public default Boolean isArrayItem() {
+		return false;
+	}
 }

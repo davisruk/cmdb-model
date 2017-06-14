@@ -51,6 +51,9 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 	@Column(name = "ReleaseConfigIsSensitive")
 	private Boolean sensitive;
 
+	@Column(name = "isArrayItem")
+	private Boolean arrayItem;
+
 	@NotNull
 	@JoinColumn(name = "ReleaseID", nullable = false)
 	@ManyToOne
@@ -188,4 +191,12 @@ public class ReleaseConfig implements Identifiable<Long>, Serializable {
 		this.notes = notes;
 	}
 
+	public Boolean isArrayItem() {
+		return arrayItem;
+	}
+
+	public void setArrayItem(Boolean arrayItem) {
+		this.arrayItem = arrayItem;
+	}
+	
 }
