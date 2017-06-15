@@ -188,7 +188,6 @@ public class SubEnvironmentDTOService {
 		}
 
 		if (inserting){
-			//dto.version = subEnvironment.incrementVersion();
 			subEnvironment = subEnvironmentRepository.save(subEnvironment);
 			dirty = false;
 		}
@@ -235,9 +234,10 @@ public class SubEnvironmentDTOService {
 		}
 		if (dirty){
 			dto.version = subEnvironment.incrementVersion();
-			subEnvironmentRepository.save(subEnvironment);
+			subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		}
-		return dto;
+		// recreate the dto - insert will have created an id
+		return toDTO(subEnvironment,2);
 	}
 
 	@Transactional(readOnly = true)
