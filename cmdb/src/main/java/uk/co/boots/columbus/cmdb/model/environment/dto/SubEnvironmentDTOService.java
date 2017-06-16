@@ -236,8 +236,9 @@ public class SubEnvironmentDTOService {
 			dto.version = subEnvironment.incrementVersion();
 			subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		}
-		// recreate the dto - insert will have created an id
-		return toDTO(subEnvironment,2);
+		// set the dto id - insert will have created an id
+		dto.id = subEnvironment.getId();
+		return dto;
 	}
 
 	@Transactional(readOnly = true)
