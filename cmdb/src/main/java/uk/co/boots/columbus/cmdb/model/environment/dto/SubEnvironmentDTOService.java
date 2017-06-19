@@ -189,6 +189,7 @@ public class SubEnvironmentDTOService {
 
 		if (inserting){
 			subEnvironment = subEnvironmentRepository.save(subEnvironment);
+			dto.id = subEnvironment.getId();
 			dirty = false;
 		}
 		
@@ -237,7 +238,7 @@ public class SubEnvironmentDTOService {
 			subEnvironment = subEnvironmentRepository.save(subEnvironment);
 		}
 		// set the dto id - insert will have created an id
-		dto.id = subEnvironment.getId();
+		//dto.id = subEnvironment.getId();
 		return dto;
 	}
 
