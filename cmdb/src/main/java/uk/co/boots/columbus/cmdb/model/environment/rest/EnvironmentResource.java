@@ -118,8 +118,8 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownloadyaml", method = POST, produces = "text/plain")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsAllEnvironmentsAsYAML() throws IOException {
-    	hieraDTOService.getCompleteConfig();
-    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()));
+    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getCompleteConfig()));
+    	//return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()));
     }
 
     @RequestMapping(value = "/config/yaml", method = POST)

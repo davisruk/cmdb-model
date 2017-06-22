@@ -1,6 +1,8 @@
 package uk.co.boots.columbus.cmdb.model.release.dto;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -22,7 +24,9 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
+import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
 import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
@@ -69,6 +73,45 @@ public class ReleaseConfigDTOService {
 		}
 	}
 
+	public List<ReleaseConfigDTO> populateHieraAddresses(List<ReleaseConfigDTO> rl, EnvironmentDTO e, SubEnvironmentDTO se) {
+		String addr;
+		String value;
+		List<ReleaseConfigDTO> populatedConfig = new ArrayList<ReleaseConfigDTO>();
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		for (Iterator<ReleaseConfigDTO> it = rl.iterator(); it.hasNext();){
+			ReleaseConfigDTO conf = it.next();
+			ReleaseConfigDTO populatedConf = conf.getCopy();
+			addr = conf.getHieraAddress();
+			value = conf.getValue();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			if (e != null){
+				addr = addr.replaceAll("\\{ENVID\\}", e.name);
+				value = value.replaceAll("\\{ENVID\\}", e.name);
+			}
+			if (se != null){
+				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+			}
+
+			addr = addr.replaceAll("\\{Release\\}", conf.release.name);
+			value = value.replaceAll("\\{Release\\}", conf.release.name);
+
+
+			populatedConf.hieraAddress = addr;
+
+			if (value != null) {
+				if (!allowSensitive && conf.sensitive) {
+					value = "[SENSITIVE]";
+				}
+			}
+			populatedConf.value = value;
+			populatedConfig.add(populatedConf);
+		}
+		return populatedConfig;
+	}
+
 	@Transactional(readOnly = true)
 	public List<ReleaseConfigDTO> findByReleaseName(String relName) {
 		List<ReleaseConfig> results = releaseConfigRepository.findByRelease_name(relName);
@@ -82,6 +125,20 @@ public class ReleaseConfigDTOService {
 		buildHieraAddresses(results, envName);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
+
+	public List<ReleaseConfigDTO> getRepeatingReleaseConfigsForEnv(String envName) {
+		List<ReleaseConfig> results = releaseConfigRepository
+				.findByRecursiveByEnvAndRelease_subEnvironments_environment_name(true, envName);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	public List<ReleaseConfigDTO> getRepeatingReleaseConfigsForEnvAndSubEnv(Long envId, Boolean repeatsByEnv, Boolean repeatsBySubEnv) {
+		List<ReleaseConfig> results = releaseConfigRepository
+				.findByRecursiveByEnvAndRecursiveBySubEnvAndRelease_subEnvironments_environment_id(repeatsByEnv, repeatsBySubEnv, envId);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	
 
 	@Transactional(readOnly = true)
 	public List<ReleaseConfigDTO> complete(String query, int maxResults) {

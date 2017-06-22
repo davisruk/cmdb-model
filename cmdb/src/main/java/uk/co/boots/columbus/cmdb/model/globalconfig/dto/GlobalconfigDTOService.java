@@ -122,15 +122,65 @@ public class GlobalconfigDTOService {
 		}
 	}
 	
+	public List<GlobalconfigDTO> populateHieraAddresses(List<GlobalconfigDTO> cl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO r) {
+		String addr;
+		String value;
+		List<GlobalconfigDTO> populatedConfig = new ArrayList<GlobalconfigDTO>();
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		for (Iterator<GlobalconfigDTO> it = cl.iterator(); it.hasNext();){
+			GlobalconfigDTO conf = it.next();
+			GlobalconfigDTO populatedConf = conf.getCopy();
+			addr = conf.getHieraAddress();
+			value = conf.getValue();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			if (e != null){
+				addr = addr.replaceAll("\\{ENVID\\}", e.name);
+				value = value.replaceAll("\\{ENVID\\}", e.name);
+			}
+			if (se != null){
+				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+			}
+			if (r != null){
+				addr = addr.replaceAll("\\{Release\\}", r.name);
+				value = value.replaceAll("\\{Release\\}", r.name);
+			}
+
+			populatedConf.hieraAddress = addr;
+
+			if (value != null) {
+				if (!allowSensitive && conf.sensitive) {
+					value = "[SENSITIVE]";
+				}
+			}
+			populatedConf.value = value;
+			populatedConfig.add(populatedConf);
+/*
+ 			left over from previous - used to be a parameter Set<GlobalConfig> gcSet
+			if (!gcSet.add(conf))
+				it.remove();
+*/
+		}
+		return populatedConfig;
+	}	
+	
 	@Transactional(readOnly = true)
 	public List<GlobalconfigDTO> findAllNonRepeatingwithSubstition() {
-		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvOrRecursiveBySubEnvOrRecursiveByRel(false, false, false);
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvAndRecursiveBySubEnvAndRecursiveByRel(false, false, false);
 		buildHieraAddresses(results);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 	
+	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findNonRepeatingGlobalConfigs() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvAndRecursiveBySubEnvAndRecursiveByRel(false, false, false);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
 	public List<GlobalconfigDTO> findRepeatingGlobalConfigs(boolean byEnv, boolean bySubEnv, boolean byRelease) {
-		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvOrRecursiveBySubEnvOrRecursiveByRel(byEnv, bySubEnv, byRelease);
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvAndRecursiveBySubEnvAndRecursiveByRel(byEnv, bySubEnv, byRelease);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 

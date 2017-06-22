@@ -51,4 +51,22 @@ public class GlobalconfigDTO implements CoreConfigDTO{
     public boolean isIdSet() {
         return id != null;
     }
+
+    @JsonIgnore
+    public GlobalconfigDTO getCopy() {
+        GlobalconfigDTO copy = new GlobalconfigDTO();
+        copy.id = id;
+        copy.parameter = parameter;
+        copy.value = value;
+        copy.hieraAddress = hieraAddress;
+        copy.recursiveByEnv = recursiveByEnv;
+        copy.recursiveByRel = recursiveByRel;
+        copy.recursiveBySubEnv = recursiveBySubEnv;
+        copy.notes = notes;
+        copy.sensitive = sensitive;
+        copy.arrayItem = arrayItem;
+        return copy;
+
+    }
+    
 }

@@ -32,16 +32,13 @@ public class Globalconfig implements Identifiable<Long>, Serializable {
 	private Long id;
 
 	@NotEmpty
-	@Size(max = 255)
-	@Column(name = "GlobalConfigParameter", nullable = false, length = 255)
+	@Column(name = "GlobalConfigParameter", nullable = false)
 	private String parameter;
 
-	@Size(max = 255)
-	@Column(name = "GlobalConfigValue", length = 255)
+	@Column(name = "GlobalConfigValue")
 	private String value;
 
-	@Size(max = 255)
-	@Column(name = "GlobalConfigHieraAddress", length = 255)
+	@Column(name = "GlobalConfigHieraAddress")
 	private String hieraAddress;
 
 	@Column(name = "RecursiveByEnv")

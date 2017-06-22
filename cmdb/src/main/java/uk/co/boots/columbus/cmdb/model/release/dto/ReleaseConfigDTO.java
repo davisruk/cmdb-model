@@ -2,6 +2,7 @@ package uk.co.boots.columbus.cmdb.model.release.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
 import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
 
 public class ReleaseConfigDTO implements CoreConfigDTO{
@@ -42,4 +43,21 @@ public class ReleaseConfigDTO implements CoreConfigDTO{
 		return arrayItem;
 	}
     
+    @JsonIgnore
+    public ReleaseConfigDTO getCopy() {
+        ReleaseConfigDTO copy = new ReleaseConfigDTO();
+        copy.id = id;
+        copy.parameter = parameter;
+        copy.value = value;
+        copy.hieraAddress = hieraAddress;
+        copy.recursiveByEnv = recursiveByEnv;
+        copy.recursiveBySubEnv = recursiveBySubEnv;
+        copy.notes = notes;
+        copy.sensitive = sensitive;
+        copy.arrayItem = arrayItem;
+        copy.release = release;
+        return copy;
+
+    }
+	
 }
