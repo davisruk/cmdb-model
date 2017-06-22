@@ -24,6 +24,7 @@ public interface GlobalconfigRepository extends JpaRepository<Globalconfig, Long
 	List<Globalconfig> findByRecursiveByEnv(boolean recursiveByEnv);
 	List<Globalconfig> findByRecursiveBySubEnv(boolean recursiveBySubEnv);
 	List<Globalconfig> findByRecursiveByRel(boolean recursiveByRelease);
+	List<Globalconfig> findByRecursiveByEnvOrRecursiveBySubEnvOrRecursiveByRel(boolean recursiveByEnv, boolean recursiveBySubEnv, boolean recursiveByRelease);
 	
 	default List<Globalconfig> complete(String query, int maxResults) {
         Globalconfig probe = new Globalconfig();

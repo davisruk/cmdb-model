@@ -15,7 +15,6 @@ import org.apache.commons.lang.BooleanUtils;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +31,7 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTOService;
+import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTOService;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTOService;
@@ -130,6 +130,33 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		}		
 		return hDTOSet;
 	}
+	
+	public Set<HieraDTO> getCompleteConfig(){
+//		Get All non repeating configs
+//			Get All Environments
+//			Loop over Environments
+//				Get All repeating global configs for environments
+//				Loop over sub environments
+//					Get All repeating global configs for subenvironments
+//					Get All repeating release configs for subenvironments
+//					Get All subenvironmentconfigs for this subenv
+//					Get All repeating configs for releases
+//					Get All release configs for this subenv release
+		
+		Set<HieraDTO> hDTOSet = new HashSet<HieraDTO>();
+		addToHieraDTOSet(hDTOSet, gcService.findAllNonRepeatingwithSubstition());
+		ConfigContainer cc = new ConfigContainer(gcService, rcService);
+		List<EnvironmentDTO> dtoList = eDTOService.findAllEnvironments();
+		for (EnvironmentDTO dto:dtoList){
+//			hDTOSet.addAll(findCompleteConfigForEnvWithSubstitution(dto.id, gcForEnvs, gcForSubEnvs, gcForReleases));
+		}		
+		return hDTOSet;
+	}
+	
+	private List<HieraDTO> findCompleteConfigForEnvWithSubstitution(Long EnvId, ConfigContainer cc){
+		return null;
+	}
+	
 	
 	public Set<HieraDTO> getHieraCompleteInfoForEnvWithSubstitution(Long EnvId, Set<HieraDTO> hDTOSet) {
 		// we may have already added this, but the set will take care of it anyway and we may have repeating elements

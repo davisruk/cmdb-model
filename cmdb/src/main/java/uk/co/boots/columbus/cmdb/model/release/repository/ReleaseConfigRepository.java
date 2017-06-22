@@ -17,6 +17,7 @@ public interface ReleaseConfigRepository extends JpaRepository<ReleaseConfig, Lo
 
     public List<ReleaseConfig> findDistinctByRelease_subEnvironments_environment_name(String name);
     
+    //public List<ReleaseConfig> findByRecursiveByEnvAndRelease_subEnvironments(Long id, Boolean recurseByEnv, Boolean recurseBySubEnv)
     default List<ReleaseConfig> complete(String query, int maxResults) {
         ReleaseConfig probe = new ReleaseConfig();
         probe.setParameter(query);

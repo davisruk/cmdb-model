@@ -123,6 +123,18 @@ public class GlobalconfigDTOService {
 	}
 	
 	@Transactional(readOnly = true)
+	public List<GlobalconfigDTO> findAllNonRepeatingwithSubstition() {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvOrRecursiveBySubEnvOrRecursiveByRel(false, false, false);
+		buildHieraAddresses(results);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+	
+	public List<GlobalconfigDTO> findRepeatingGlobalConfigs(boolean byEnv, boolean bySubEnv, boolean byRelease) {
+		List<Globalconfig> results = globalconfigRepository.findByRecursiveByEnvOrRecursiveBySubEnvOrRecursiveByRel(byEnv, bySubEnv, byRelease);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
 	public List<GlobalconfigDTO> findAllReplaceHiera() {
 		List<Globalconfig> results = globalconfigRepository.findAll();
 		buildHieraAddresses(results);
