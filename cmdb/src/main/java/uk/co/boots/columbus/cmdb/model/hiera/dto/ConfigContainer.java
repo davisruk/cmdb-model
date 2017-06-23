@@ -15,6 +15,7 @@ public class ConfigContainer {
 	private List<GlobalconfigDTO> gcEnvRepeat;
 	private List<GlobalconfigDTO> gcSubEnvRepeat;
 	private List<GlobalconfigDTO> gcReleaseRepeat;
+	private List<ReleaseConfigDTO> relNonRepeat;
 	private List<ReleaseConfigDTO> relEnvRepeat;
 	private List<ReleaseConfigDTO> relSubEnvRepeat;
 
@@ -32,6 +33,7 @@ public class ConfigContainer {
 		this.gcReleaseRepeat = this.gcService.findRepeatingGlobalConfigs(false, false, true);
 		this.relEnvRepeat = null;
 		this.relSubEnvRepeat = null;
+		this.relNonRepeat = null;
 	}
 	
 	public List<GlobalconfigDTO> getGcNonRepeat() {
@@ -69,6 +71,14 @@ public class ConfigContainer {
 	}
 	public void setRelSubEnvRepeat(List<ReleaseConfigDTO> relSubEnvRepeat) {
 		this.relSubEnvRepeat = relSubEnvRepeat;
+	}
+
+	public List<ReleaseConfigDTO> getRelNonRepeat() {
+		return relNonRepeat;
+	}
+
+	public void setRelNonRepeat(List<ReleaseConfigDTO> relNonRepeat) {
+		this.relNonRepeat = relNonRepeat;
 	}
 	
 	

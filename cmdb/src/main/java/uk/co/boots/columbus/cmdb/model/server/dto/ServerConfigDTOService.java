@@ -1,5 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.server.dto;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
+import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
@@ -84,6 +89,46 @@ public class ServerConfigDTOService {
         }
     }
 
+	public List<ServerConfigDTO> populateHieraAddresses(List<ServerConfigDTO> scl, EnvironmentDTO e, SubEnvironmentDTO se) {
+		String addr;
+		String value;
+		List<ServerConfigDTO> populatedConfig = new ArrayList<ServerConfigDTO>();
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		for (Iterator<ServerConfigDTO> it = scl.iterator(); it.hasNext();){
+			ServerConfigDTO conf = it.next();
+			ServerConfigDTO populatedConf = conf.getCopy();
+			addr = conf.getHieraAddress();
+			value = conf.getValue();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			if (e != null){
+				addr = addr.replaceAll("\\{ENVID\\}", e.name);
+				value = value.replaceAll("\\{ENVID\\}", e.name);
+			}
+			if (se != null){
+				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+			}
+
+			addr = addr.replaceAll("\\{ServType\\}", conf.server.serverType.name);
+			value = value.replaceAll("\\{ServType\\}", conf.server.serverType.name);
+			addr = addr.replaceAll("\\{ServerName\\}", conf.server.name);
+			value = value.replaceAll("\\{ServerName\\}", conf.server.name);
+
+			populatedConf.hieraAddress = addr;
+
+			if (value != null) {
+				if (!allowSensitive && conf.sensitive) {
+					value = "[SENSITIVE]";
+				}
+			}
+			populatedConf.value = value;
+			populatedConfig.add(populatedConf);
+		}
+		return populatedConfig;
+	}
+
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByServerName(String query) {
         List<ServerConfig> results = serverConfigRepository.findByServerName(query);
@@ -103,6 +148,12 @@ public class ServerConfigDTOService {
     public List<ServerConfigDTO> findByDistinctServerSubEnvironmentEnvironment(Long envId) {
     	List<ServerConfig> results = serverConfigRepository.findDistinctByServer_nodeSubEnvironments_subEnvironment_environment_id(envId);
         buildHieraAddresses (results);
+        return results.stream().map(this::toDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ServerConfigDTO> getServerConfigsForSubEnvTypeAndEnv(Long envId, String subEnvType) {
+    	List<ServerConfig> results = serverConfigRepository.findDistinctByServer_nodeSubEnvironments_subEnvironment_subEnvironmentType_nameAndServer_nodeSubEnvironments_subEnvironment_environment_id(subEnvType, envId);
         return results.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
@@ -177,7 +228,8 @@ public class ServerConfigDTOService {
      * Converts the passed serverConfig to a DTO.
      */
     public ServerConfigDTO toDTO(ServerConfig serverConfig) {
-        return toDTO(serverConfig, 1);
+        //return toDTO(serverConfig, 1);
+    	return toDTO(serverConfig, 2);
     }
 
     /**

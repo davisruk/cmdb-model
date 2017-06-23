@@ -132,9 +132,9 @@ public class ReleaseConfigDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
-	public List<ReleaseConfigDTO> getRepeatingReleaseConfigsForEnvAndSubEnv(Long envId, Boolean repeatsByEnv, Boolean repeatsBySubEnv) {
+	public List<ReleaseConfigDTO> getReleaseConfigsForEnvAndSubEnvByRepeatsForEnvAndSubEnv(Long envId, Boolean repeatsByEnv, Boolean repeatsBySubEnv) {
 		List<ReleaseConfig> results = releaseConfigRepository
-				.findByRecursiveByEnvAndRecursiveBySubEnvAndRelease_subEnvironments_environment_id(repeatsByEnv, repeatsBySubEnv, envId);
+				.findDistinctByRecursiveByEnvAndRecursiveBySubEnvAndRelease_subEnvironments_environment_id(repeatsByEnv, repeatsBySubEnv, envId);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 

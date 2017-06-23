@@ -66,8 +66,12 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 	}
 
 	private Set<HieraDTO> addToHieraDTOSet(Set<HieraDTO> hieraSet, List<? extends CoreConfigDTO> fromList) {
-		for (CoreConfigDTO cDTO : fromList)
-			hieraSet.add(new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress(), cDTO.isArrayItem()));
+		for (CoreConfigDTO cDTO : fromList){
+			HieraDTO hDTO = new HieraDTO(cDTO.getValue(), cDTO.getHieraAddress(), cDTO.isArrayItem());
+			if (!hieraSet.add(hDTO))
+				System.out.println("Failed to add Hiera for: " + hDTO);
+		}
+			
 
 		return hieraSet;
 	}
@@ -157,18 +161,33 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 			addToHieraDTOSet(hDTOSet, gcService.populateHieraAddresses(cc.getGcEnvRepeat(), edto, null, null));
 			// Add the repeating ReleaseConfigs at the Env level
 			// cc.setRelEnvRepeat(rcService.getRepeatingReleaseConfigsForEnv(dto.name));
-			cc.setRelEnvRepeat(rcService.getRepeatingReleaseConfigsForEnvAndSubEnv(edto.id, true, false));
-			addToHieraDTOSet(hDTOSet, rcService.populateHieraAddresses(cc.getRelEnvRepeat(), edto, null));			
+			cc.setRelEnvRepeat(rcService.getReleaseConfigsForEnvAndSubEnvByRepeatsForEnvAndSubEnv(edto.id, true, false));
+			addToHieraDTOSet(hDTOSet, rcService.populateHieraAddresses(cc.getRelEnvRepeat(), edto, null));
+			cc.setRelNonRepeat(rcService.getReleaseConfigsForEnvAndSubEnvByRepeatsForEnvAndSubEnv(edto.id, false, false));
+			addToHieraDTOSet(hDTOSet, rcService.populateHieraAddresses(cc.getRelNonRepeat(), edto, null));
 			// Loop over subenvironments
 			for (SubEnvironmentDTO seDTO : edto.subEnvironments) {
 				seDTO.environment = edto;
 				// Add the repeating globals at the subenv level
 				addToHieraDTOSet(hDTOSet, gcService.populateHieraAddresses(cc.getGcSubEnvRepeat(), edto, seDTO, null));
 				// Add the repeating releases at the subenv level
-				cc.setRelSubEnvRepeat(rcService.getRepeatingReleaseConfigsForEnvAndSubEnv(edto.id, false, true));
+				cc.setRelSubEnvRepeat(rcService.getReleaseConfigsForEnvAndSubEnvByRepeatsForEnvAndSubEnv(edto.id, false, true));
 				addToHieraDTOSet(hDTOSet, rcService.populateHieraAddresses(cc.getRelSubEnvRepeat(), edto, seDTO));
 				// Add the subenv configs
-				// Add the release configs
+				
+				addToHieraDTOSet(hDTOSet, 
+								secDTOService.populateHieraAddresses(secDTOService.getSubEnvConfigByTypeAndEnvironmentName(seDTO.subEnvironmentType.name,
+																															edto.name
+																	)
+								)
+				);
+				// Add the server configs
+				addToHieraDTOSet(hDTOSet, 
+								scService.populateHieraAddresses(scService.getServerConfigsForSubEnvTypeAndEnv(edto.id, seDTO.subEnvironmentType.name),
+																	edto,
+																	seDTO
+								)
+				);
 			}		
 		}		
 		return hDTOSet;

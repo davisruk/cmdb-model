@@ -3,6 +3,7 @@ package uk.co.boots.columbus.cmdb.model.server.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 
 /**
  * Simple DTO for ServerConfig.
@@ -42,5 +43,19 @@ public class ServerConfigDTO implements CoreConfigDTO{
 	public Boolean isArrayItem(){
 		return arrayItem;
 	}
-   
+
+    @JsonIgnore
+    public ServerConfigDTO getCopy() {
+        ServerConfigDTO copy = new ServerConfigDTO();
+        copy.id = id;
+        copy.parameter = parameter;
+        copy.value = value;
+        copy.hieraAddress = hieraAddress;
+        copy.notes = notes;
+        copy.sensitive = sensitive;
+        copy.arrayItem = arrayItem;
+        copy.server = server;
+        return copy;
+
+    }	
 }

@@ -1,6 +1,7 @@
 package uk.co.boots.columbus.cmdb.model.environment.dto;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +18,9 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
 @Service
@@ -57,6 +60,39 @@ public class SubEnvironmentConfigDTOService {
 			conf.setValue(value);
 		}
 	}
+
+	public List<SubEnvironmentConfigDTO> populateHieraAddresses(List<SubEnvironmentConfigDTO> secl) {
+		String addr;
+		String value;
+		List<SubEnvironmentConfigDTO> populatedConfig = new ArrayList<SubEnvironmentConfigDTO>();
+		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
+		for (Iterator<SubEnvironmentConfigDTO> it = secl.iterator(); it.hasNext();){
+			SubEnvironmentConfigDTO conf = it.next();
+			SubEnvironmentConfigDTO populatedConf = conf.getCopy();
+			addr = conf.getHieraAddress();
+			value = conf.getValue();
+			// find Parameter in Hieara Address and replace with Parametername
+			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
+			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			addr = addr.replaceAll("\\{ENVID\\}", conf.subEnvironment.environment.name);
+			value = value.replaceAll("\\{ENVID\\}", conf.subEnvironment.environment.name);
+			addr = addr.replaceAll("\\{SubEnvType\\}", conf.subEnvironment.subEnvironmentType.name);
+			value = value.replaceAll("\\{SubEnvType\\}", conf.subEnvironment.subEnvironmentType.name);
+			addr = addr.replaceAll("\\{Release\\}", conf.subEnvironment.release.name);
+			value = value.replaceAll("\\{Release\\}", conf.subEnvironment.release.name);
+
+			populatedConf.hieraAddress = addr;
+
+			if (value != null) {
+				if (!allowSensitive && conf.sensitive) {
+					value = "[SENSITIVE]";
+				}
+			}
+			populatedConf.value = value;
+			populatedConfig.add(populatedConf);
+		}
+		return populatedConfig;
+	}	
 
 	// Awful, awful method that understands the context in which it is being called i.e. the list
 	// it returns will be added to a Set to guarantee uniqueness of the generated hiera strings.
@@ -101,13 +137,20 @@ public class SubEnvironmentConfigDTOService {
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
+	public List<SubEnvironmentConfigDTO> getSubEnvConfigByTypeAndEnvironmentName(String typeName, String envName) {
+		List<SubEnvironmentConfig> results = subEnvironmentConfigRepository
+				.findBySubEnvironment_subEnvironmentType_nameAndSubEnvironment_environment_name(typeName, envName);
+		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	}
 	
 
 	/**
 	 * Converts the passed environmentConfig to a DTO.
 	 */
 	public SubEnvironmentConfigDTO toDTO(SubEnvironmentConfig environmentConfig) {
-		return toDTO(environmentConfig, 1);
+		//return toDTO(environmentConfig, 1);
+		return toDTO(environmentConfig, 2);
 	}
 
 	/**
