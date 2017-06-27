@@ -18,6 +18,7 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.ConfigTokenHelper;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
@@ -88,45 +89,32 @@ public class ServerConfigDTOService {
     }
 
 	public List<ServerConfigDTO> populateHieraAddresses(List<ServerConfigDTO> scl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO rel) {
-		String addr;
-		String value;
 		List<ServerConfigDTO> populatedConfig = new ArrayList<ServerConfigDTO>();
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (Iterator<ServerConfigDTO> it = scl.iterator(); it.hasNext();){
 			ServerConfigDTO conf = it.next();
 			ServerConfigDTO populatedConf = conf.getCopy();
-			addr = conf.getHieraAddress();
-			value = conf.getValue();
 			// find Parameter in Hieara Address and replace with Parametername
-			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
-			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-			if (e != null){
-				addr = addr.replaceAll("\\{ENVID\\}", e.name);
-				value = value.replaceAll("\\{ENVID\\}", e.name);
-			}
-			if (se != null){
-				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
-				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
-			}
-			if (rel != null){
-				addr = addr.replaceAll("\\{Release\\}", rel.name);
-				value = value.replaceAll("\\{Release\\}", rel.name);
-			}
+			ConfigTokenHelper.replaceTags(populatedConf, "ParamName", conf.getParameter());
+			if (e != null)
+				ConfigTokenHelper.replaceTags(populatedConf, "ENVID", e.name);
+			
+			if (se != null)
+				ConfigTokenHelper.replaceTags(populatedConf, "SubEnvType", se.subEnvironmentType.name);
 				
-
-			addr = addr.replaceAll("\\{ServType\\}", conf.server.serverType.name);
-			value = value.replaceAll("\\{ServType\\}", conf.server.serverType.name);
-			addr = addr.replaceAll("\\{ServerName\\}", conf.server.name);
-			value = value.replaceAll("\\{ServerName\\}", conf.server.name);
-
-			populatedConf.hieraAddress = addr;
-
-			if (value != null) {
+			if (rel != null)
+				ConfigTokenHelper.replaceTags(populatedConf, "Release", rel.name);
+					
+	
+			ConfigTokenHelper.replaceTags(populatedConf, "ServType", conf.server.serverType.name);	
+			ConfigTokenHelper.replaceTags(populatedConf, "ServerName", conf.server.name);
+	
+			if (populatedConf.value != null) {
 				if (!allowSensitive && conf.sensitive) {
-					value = "[SENSITIVE]";
+					populatedConf.value = "[SENSITIVE]";
 				}
 			}
-			populatedConf.value = value;
+			
 			populatedConfig.add(populatedConf);
 		}
 		return populatedConfig;

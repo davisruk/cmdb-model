@@ -19,6 +19,7 @@ import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.ConfigTokenHelper;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseConfigRepository;
@@ -66,38 +67,27 @@ public class ReleaseConfigDTOService {
 	}
 
 	public List<ReleaseConfigDTO> populateHieraAddresses(List<ReleaseConfigDTO> rl, EnvironmentDTO e, SubEnvironmentDTO se) {
-		String addr;
-		String value;
 		List<ReleaseConfigDTO> populatedConfig = new ArrayList<ReleaseConfigDTO>();
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (Iterator<ReleaseConfigDTO> it = rl.iterator(); it.hasNext();){
 			ReleaseConfigDTO conf = it.next();
 			ReleaseConfigDTO populatedConf = conf.getCopy();
-			addr = conf.getHieraAddress();
-			value = conf.getValue();
 			// find Parameter in Hieara Address and replace with Parametername
-			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
-			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
+			ConfigTokenHelper.replaceTags(populatedConf, "ParamName", conf.getParameter());
 			if (e != null){
-				addr = addr.replaceAll("\\{ENVID\\}", e.name);
-				value = value.replaceAll("\\{ENVID\\}", e.name);
-			}
+				ConfigTokenHelper.replaceTags(populatedConf, "ENVID", e.name);			}
 			if (se != null){
-				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
-				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+				ConfigTokenHelper.replaceTags(populatedConf, "SubEnvType", se.subEnvironmentType.name);
 			}
 
-			addr = addr.replaceAll("\\{Release\\}", conf.release.name);
-			value = value.replaceAll("\\{Release\\}", conf.release.name);
-			
-			populatedConf.hieraAddress = addr;
+			ConfigTokenHelper.replaceTags(populatedConf, "Release", conf.release.name);
 
-			if (value != null) {
+			if (populatedConf.value != null) {
 				if (!allowSensitive && conf.sensitive) {
-					value = "[SENSITIVE]";
+					populatedConf.value = "[SENSITIVE]";
 				}
 			}
-			populatedConf.value = value;
+
 			populatedConfig.add(populatedConf);
 		}
 		return populatedConfig;

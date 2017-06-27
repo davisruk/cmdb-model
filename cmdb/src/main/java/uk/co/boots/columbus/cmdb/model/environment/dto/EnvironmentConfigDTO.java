@@ -41,4 +41,20 @@ public class EnvironmentConfigDTO implements CoreConfigDTO{
     public boolean isIdSet() {
         return id != null;
     }
+    
+	@Override
+	public void setParameter(String param) {
+		this.parameter = param;
+	}
+
+	@Override
+	public void setValue(String val) {
+		this.value = val;
+	}
+
+	@Override
+	public void setHieraAddress(String addr) {
+		this.hieraAddress = addr;
+	}
+    
 }

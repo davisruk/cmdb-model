@@ -44,7 +44,22 @@ public class ServerConfigDTO implements CoreConfigDTO{
 		return arrayItem;
 	}
 
-    @JsonIgnore
+	@Override
+	public void setParameter(String param) {
+		this.parameter = param;
+	}
+
+	@Override
+	public void setValue(String val) {
+		this.value = val;
+	}
+
+	@Override
+	public void setHieraAddress(String addr) {
+		this.hieraAddress = addr;
+	}
+
+	@JsonIgnore
     public ServerConfigDTO getCopy() {
         ServerConfigDTO copy = new ServerConfigDTO();
         copy.id = id;

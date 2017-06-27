@@ -43,7 +43,22 @@ public class ReleaseConfigDTO implements CoreConfigDTO{
 		return arrayItem;
 	}
     
-    @JsonIgnore
+	@Override
+	public void setParameter(String param) {
+		this.parameter = param;
+	}
+
+	@Override
+	public void setValue(String val) {
+		this.value = val;
+	}
+
+	@Override
+	public void setHieraAddress(String addr) {
+		this.hieraAddress = addr;
+	}
+
+	@JsonIgnore
     public ReleaseConfigDTO getCopy() {
         ReleaseConfigDTO copy = new ReleaseConfigDTO();
         copy.id = id;

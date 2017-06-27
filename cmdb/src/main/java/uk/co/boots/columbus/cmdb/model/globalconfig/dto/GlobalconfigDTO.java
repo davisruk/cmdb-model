@@ -68,5 +68,21 @@ public class GlobalconfigDTO implements CoreConfigDTO{
         return copy;
 
     }
+
+	@Override
+	public void setParameter(String param) {
+		this.parameter = param;
+	}
+
+	@Override
+	public void setValue(String val) {
+		this.value = val;
+	}
+
+	@Override
+	public void setHieraAddress(String addr) {
+		this.hieraAddress = addr;
+	}
+
     
 }

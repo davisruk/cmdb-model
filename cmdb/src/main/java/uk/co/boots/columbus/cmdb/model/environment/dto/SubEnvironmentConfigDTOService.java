@@ -19,6 +19,7 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironmentConfig;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentConfigRepository;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
 import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.ConfigTokenHelper;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
@@ -62,33 +63,23 @@ public class SubEnvironmentConfigDTOService {
 	}
 
 	public List<SubEnvironmentConfigDTO> populateHieraAddresses(List<SubEnvironmentConfigDTO> secl) {
-		String addr;
-		String value;
 		List<SubEnvironmentConfigDTO> populatedConfig = new ArrayList<SubEnvironmentConfigDTO>();
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (Iterator<SubEnvironmentConfigDTO> it = secl.iterator(); it.hasNext();){
 			SubEnvironmentConfigDTO conf = it.next();
 			SubEnvironmentConfigDTO populatedConf = conf.getCopy();
-			addr = conf.getHieraAddress();
-			value = conf.getValue();
 			// find Parameter in Hieara Address and replace with Parametername
-			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
-			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-			addr = addr.replaceAll("\\{ENVID\\}", conf.subEnvironment.environment.name);
-			value = value.replaceAll("\\{ENVID\\}", conf.subEnvironment.environment.name);
-			addr = addr.replaceAll("\\{SubEnvType\\}", conf.subEnvironment.subEnvironmentType.name);
-			value = value.replaceAll("\\{SubEnvType\\}", conf.subEnvironment.subEnvironmentType.name);
-			addr = addr.replaceAll("\\{Release\\}", conf.subEnvironment.release.name);
-			value = value.replaceAll("\\{Release\\}", conf.subEnvironment.release.name);
 
-			populatedConf.hieraAddress = addr;
+			ConfigTokenHelper.replaceTags(populatedConf, "ParamName", conf.getParameter());
+			ConfigTokenHelper.replaceTags(populatedConf, "ENVID", conf.subEnvironment.environment.name);
+			ConfigTokenHelper.replaceTags(populatedConf, "SubEnvType", conf.subEnvironment.subEnvironmentType.name);
+			ConfigTokenHelper.replaceTags(populatedConf, "Release", conf.subEnvironment.subEnvironmentType.name);
 
-			if (value != null) {
+			if (populatedConf.value != null) {
 				if (!allowSensitive && conf.sensitive) {
-					value = "[SENSITIVE]";
+					populatedConf.value = "[SENSITIVE]";
 				}
 			}
-			populatedConf.value = value;
 			populatedConfig.add(populatedConf);
 		}
 		return populatedConfig;

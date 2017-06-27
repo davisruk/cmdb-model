@@ -9,6 +9,12 @@ public interface CoreConfigDTO {
 
 	public String getHieraAddress();
 	
+	public void setParameter(String param);
+
+	public void setValue(String val);
+
+	public void setHieraAddress(String addr);
+	
 	public default Boolean isArrayItem() {
 		return false;
 	}

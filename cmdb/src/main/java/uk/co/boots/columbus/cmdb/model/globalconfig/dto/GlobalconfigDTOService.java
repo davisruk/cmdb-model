@@ -7,11 +7,7 @@
  */
 package uk.co.boots.columbus.cmdb.model.globalconfig.dto;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,18 +18,9 @@ import javax.inject.Inject;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
@@ -42,8 +29,7 @@ import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
 import uk.co.boots.columbus.cmdb.model.globalconfig.repository.GlobalconfigRepository;
-import uk.co.boots.columbus.cmdb.model.hiera.dto.CoreConfigDTO;
-import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
+import uk.co.boots.columbus.cmdb.model.hiera.dto.ConfigTokenHelper;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 
@@ -123,45 +109,30 @@ public class GlobalconfigDTOService {
 	}
 	
 	public List<GlobalconfigDTO> populateHieraAddresses(List<GlobalconfigDTO> cl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO r) {
-		String addr;
-		String value;
 		List<GlobalconfigDTO> populatedConfig = new ArrayList<GlobalconfigDTO>();
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
 		for (Iterator<GlobalconfigDTO> it = cl.iterator(); it.hasNext();){
 			GlobalconfigDTO conf = it.next();
 			GlobalconfigDTO populatedConf = conf.getCopy();
-			addr = conf.getHieraAddress();
-			value = conf.getValue();
+			ConfigTokenHelper.replaceTags(populatedConf, "ParamName", conf.getParameter());
+
 			// find Parameter in Hieara Address and replace with Parametername
-			addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
-			value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
 			if (e != null){
-				addr = addr.replaceAll("\\{ENVID\\}", e.name);
-				value = value.replaceAll("\\{ENVID\\}", e.name);
+				ConfigTokenHelper.replaceTags(populatedConf, "ENVID", e.name);
 			}
 			if (se != null){
-				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
-				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
+				ConfigTokenHelper.replaceTags(populatedConf, "SubEnvType", se.subEnvironmentType.name);				
 			}
 			if (r != null){
-				addr = addr.replaceAll("\\{Release\\}", r.name);
-				value = value.replaceAll("\\{Release\\}", r.name);
+				ConfigTokenHelper.replaceTags(populatedConf, "Release", r.name);
 			}
 
-			populatedConf.hieraAddress = addr;
-
-			if (value != null) {
+			if (populatedConf.value != null) {
 				if (!allowSensitive && conf.sensitive) {
-					value = "[SENSITIVE]";
+					populatedConf.value = "[SENSITIVE]";
 				}
 			}
-			populatedConf.value = value;
 			populatedConfig.add(populatedConf);
-/*
- 			left over from previous - used to be a parameter Set<GlobalConfig> gcSet
-			if (!gcSet.add(conf))
-				it.remove();
-*/
 		}
 		return populatedConfig;
 	}	
