@@ -3,7 +3,6 @@ package uk.co.boots.columbus.cmdb.model.server.dto;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -19,8 +18,7 @@ import uk.co.boots.columbus.cmdb.model.environment.domain.SubEnvironment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.repository.SubEnvironmentRepository;
-import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
-import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
+import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
 import uk.co.boots.columbus.cmdb.model.server.domain.Server;
 import uk.co.boots.columbus.cmdb.model.server.domain.ServerConfig;
@@ -89,7 +87,7 @@ public class ServerConfigDTOService {
         }
     }
 
-	public List<ServerConfigDTO> populateHieraAddresses(List<ServerConfigDTO> scl, EnvironmentDTO e, SubEnvironmentDTO se) {
+	public List<ServerConfigDTO> populateHieraAddresses(List<ServerConfigDTO> scl, EnvironmentDTO e, SubEnvironmentDTO se, ReleaseDTO rel) {
 		String addr;
 		String value;
 		List<ServerConfigDTO> populatedConfig = new ArrayList<ServerConfigDTO>();
@@ -110,6 +108,11 @@ public class ServerConfigDTOService {
 				addr = addr.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
 				value = value.replaceAll("\\{SubEnvType\\}", se.subEnvironmentType.name);
 			}
+			if (rel != null){
+				addr = addr.replaceAll("\\{Release\\}", rel.name);
+				value = value.replaceAll("\\{Release\\}", rel.name);
+			}
+				
 
 			addr = addr.replaceAll("\\{ServType\\}", conf.server.serverType.name);
 			value = value.replaceAll("\\{ServType\\}", conf.server.serverType.name);

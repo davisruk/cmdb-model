@@ -1,11 +1,9 @@
 package uk.co.boots.columbus.cmdb.model.release.dto;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -13,26 +11,20 @@ import javax.inject.Inject;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.FilterMetadata;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
-import uk.co.boots.columbus.cmdb.model.environment.domain.Environment;
 import uk.co.boots.columbus.cmdb.model.environment.dto.EnvironmentDTO;
 import uk.co.boots.columbus.cmdb.model.environment.dto.SubEnvironmentDTO;
-import uk.co.boots.columbus.cmdb.model.globalconfig.domain.Globalconfig;
-import uk.co.boots.columbus.cmdb.model.globalconfig.dto.GlobalconfigDTO;
-import uk.co.boots.columbus.cmdb.model.node.domain.Node;
 import uk.co.boots.columbus.cmdb.model.release.domain.Release;
 import uk.co.boots.columbus.cmdb.model.release.domain.ReleaseConfig;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseConfigRepository;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
 import uk.co.boots.columbus.cmdb.model.security.util.SecurityHelper;
+import uk.co.boots.columbus.cmdb.model.server.dto.ServerDTO;
 
 @Service
 public class ReleaseConfigDTOService {
@@ -97,8 +89,7 @@ public class ReleaseConfigDTOService {
 
 			addr = addr.replaceAll("\\{Release\\}", conf.release.name);
 			value = value.replaceAll("\\{Release\\}", conf.release.name);
-
-
+			
 			populatedConf.hieraAddress = addr;
 
 			if (value != null) {

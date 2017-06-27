@@ -52,9 +52,9 @@ public class EnvironmentDTOService {
 	}
 
 	@Transactional(readOnly = true)
-	public EnvironmentDTO findOne(String name) {
+	public EnvironmentDTO findOne(String name, int depth) {
 		// return toDTO(environmentRepository.findOne(id));
-		return toDTO(environmentRepository.getByName(name), 0);
+		return toDTO(environmentRepository.getByName(name), depth);
 	}
 
 	@Transactional(readOnly = true)
@@ -176,6 +176,7 @@ public class EnvironmentDTOService {
 	 */
 	EnvironmentDTO toDTO(Environment environment) {
 		return toDTO(environment, 1);
+		//return toDTO(environment, 2);
 	}
 
 	/**

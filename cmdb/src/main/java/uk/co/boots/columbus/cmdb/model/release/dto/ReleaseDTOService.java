@@ -36,6 +36,10 @@ public class ReleaseDTOService {
         return toDTO(releaseRepository.findOne(id));
     }
 
+    public ReleaseDTO findByEnvironmentAndSubEnvType(Long envId, Long subEnvTypeId){
+    	return toDTO(releaseRepository.findBysubEnvironments_Environment_idAndSubEnvironments_subEnvironmentType_id(envId, subEnvTypeId));
+    }
+    
     @Transactional(readOnly = true)
     public List<ReleaseDTO> complete(String query, int maxResults) {
         List<Release> results = releaseRepository.complete(query, maxResults);

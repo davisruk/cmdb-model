@@ -118,7 +118,7 @@ public class EnvironmentResource {
     @RequestMapping(value = "/configdownloadyaml", method = POST, produces = "text/plain")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsAllEnvironmentsAsYAML() throws IOException {
-    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getCompleteConfig()));
+    	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getCompleteConfigForAllEnvironments()));
     	//return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()));
     }
 
@@ -130,8 +130,9 @@ public class EnvironmentResource {
     @RequestMapping(value = "/yaml/{name}", method = POST, produces = "text/plain")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsForEnvironmentsAsYAML(@PathVariable String name) throws IOException {
-    	EnvironmentDTO dto = environmentDTOService.findOne(name);
-    	Set<HieraDTO> dtoSet = hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>()); 
+    	//EnvironmentDTO dto = environmentDTOService.findOne(name);
+    	//Set<HieraDTO> dtoSet = hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>()); 
+    	Set<HieraDTO> dtoSet = hieraDTOService.getCompleteConfigForEnv(name);
     	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(dtoSet));
     }
 

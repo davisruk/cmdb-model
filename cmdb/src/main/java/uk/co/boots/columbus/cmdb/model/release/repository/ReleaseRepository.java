@@ -28,7 +28,7 @@ public interface ReleaseRepository extends JpaRepository<Release, Long> {
      * @return the corresponding {@link Release} persistent instance or null
      */
     Release getByName(String name);
-
+    Release findBysubEnvironments_Environment_idAndSubEnvironments_subEnvironmentType_id(Long envId, Long subEnvTypeId);
     default List<Release> complete(String query, int maxResults) {
         Release probe = new Release();
         probe.setName(query);
