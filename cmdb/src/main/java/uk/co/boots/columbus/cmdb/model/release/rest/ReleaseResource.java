@@ -14,7 +14,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -32,14 +31,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.CsvResponse;
-import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTO;
-import uk.co.boots.columbus.cmdb.model.hiera.dto.HieraDTOService;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseRepository;
@@ -54,8 +50,6 @@ public class ReleaseResource {
     private ReleaseRepository releaseRepository;
     @Inject
     private ReleaseDTOService releaseDTOService;
-    @Inject
-    private HieraDTOService hieraDTOService;
 
     /**
      * Create a new Release.
@@ -84,29 +78,6 @@ public class ReleaseResource {
 
         return Optional.ofNullable(releaseDTOService.findOne(id)).map(releaseDTO -> new ResponseEntity<>(releaseDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-    
-    @RequestMapping(value = "/configs/{relName:.*}", method = GET, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<HieraDTO>> findConfigsByReleaseName(@PathVariable String relName) throws URISyntaxException {
-
-        log.debug("Find configs for this Release : {}", relName);
-
-        List<HieraDTO> result = hieraDTOService.findHieraInfoForRelease(relName);
-        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);   
-    }
-    
-    @RequestMapping(value = "/configdownloadall", method = GET, produces = "text/csv")
-    @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadAllConfigsForRelease(@PathVariable String relName) throws IOException {
-        return null;
-    	//return new CsvResponse(hieraDTOService.findHieraForAllReleases(), "HieraData_Release_Complete" + relName + ".csv");
-    }
-
-
-    @RequestMapping(value = "/configdownload/{relName:.*}", method = GET, produces = "text/csv")
-    @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsByReleaseName(@PathVariable String relName) throws IOException {
-        return new CsvResponse(hieraDTOService.findHieraInfoForRelease(relName), "HieraData_Release_" + relName + ".csv");
     }
     
     /**

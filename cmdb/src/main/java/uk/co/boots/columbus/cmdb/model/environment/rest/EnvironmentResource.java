@@ -9,7 +9,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -97,41 +96,34 @@ public class EnvironmentResource {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(value = "/subconfigdownload/{id}", method = POST, produces = "text/csv")
+    @RequestMapping(value = "/config/subconfig/csv/{id}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsBySubEnv(@PathVariable Long id) throws IOException {
     	return new CsvResponse(hieraDTOService.findHieraCompleteInfoForSubEnv(id, true), "HieraData_SubEnv.csv");
     }
 
-    @RequestMapping(value = "/configdownloadall/{id}", method = POST, produces = "text/csv")
+    @RequestMapping(value = "/config/csv/{name}", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
-    public CsvResponse downloadConfigsAllPost(@PathVariable Long id) throws IOException {
-    	return new CsvResponse(hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(id, new HashSet<HieraDTO>()), "HieraData_Env.csv");
+    public CsvResponse downloadConfigsAllPost(@PathVariable String name) throws IOException {
+    	return new CsvResponse(hieraDTOService.getCompleteConfigForEnv(name), "HieraData_Env.csv");
     }
 
-    @RequestMapping(value = "/configdownloadall", method = POST, produces = "text/csv")
+    @RequestMapping(value = "/config/csv/all", method = POST, produces = "text/csv")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public CsvResponse downloadConfigsAllEnvironmentsPost() throws IOException {
-    	return new CsvResponse(hieraDTOService.getHieraForAllEnvsWithSubstitution(), "HieraData_Complete.csv");
+    	//return new CsvResponse(hieraDTOService.getHieraForAllEnvsWithSubstitution(), "HieraData_Complete.csv");
+    	return new CsvResponse(hieraDTOService.getCompleteConfigForAllEnvironments(), "HieraData_Complete.csv");
     }
 
-    @RequestMapping(value = "/configdownloadyaml", method = POST, produces = "text/plain")
+    @RequestMapping(value = "/config/yaml/all", method = POST, produces = "text/plain")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsAllEnvironmentsAsYAML() throws IOException {
     	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getCompleteConfigForAllEnvironments()));
-    	//return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()));
     }
 
-    @RequestMapping(value = "/config/yaml", method = POST)
-    public ResponseEntity<String> getConfigsAllEnvironmentsAsYAML() throws IOException {
-    	return new ResponseEntity<String> (hieraDTOService.getConfigAsYaml(hieraDTOService.getHieraForAllEnvsWithSubstitution()), new HttpHeaders(), HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/yaml/{name}", method = POST, produces = "text/plain")
+    @RequestMapping(value = "/config/yaml/{name}", method = POST, produces = "text/plain")
     @ResponseBody // indicate to use a compatible HttpMessageConverter
     public YAMLResponse downloadConfigsForEnvironmentsAsYAML(@PathVariable String name) throws IOException {
-    	//EnvironmentDTO dto = environmentDTOService.findOne(name);
-    	//Set<HieraDTO> dtoSet = hieraDTOService.getHieraCompleteInfoForEnvWithSubstitution(dto.id, new HashSet<HieraDTO>()); 
     	Set<HieraDTO> dtoSet = hieraDTOService.getCompleteConfigForEnv(name);
     	return new YAMLResponse ("config.yaml", hieraDTOService.getConfigAsYaml(dtoSet));
     }

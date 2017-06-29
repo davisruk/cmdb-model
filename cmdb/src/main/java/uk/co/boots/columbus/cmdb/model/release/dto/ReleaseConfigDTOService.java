@@ -41,31 +41,6 @@ public class ReleaseConfigDTOService {
 		return toDTO(releaseConfigRepository.findOne(id));
 	}
 
-	private void buildHieraAddresses(List<ReleaseConfig> cl, String envName) {
-		String addr;
-		String value;
-		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
-		for (ReleaseConfig conf : cl) {
-			addr = conf.getHieraAddress();
-			value = conf.getValue();
-			if (addr != null) {
-				addr = addr.replaceAll("\\{Release\\}", conf.getRelease().getName());
-				addr = addr.replaceAll("\\{ParamName\\}", conf.getParameter());
-				addr = addr.replaceAll("\\{ENVID\\}", envName);
-				conf.setHieraAddress(addr);
-			}
-			if (value != null) {
-				value = value.replaceAll("\\{Release\\}", conf.getRelease().getName());
-				value = value.replaceAll("\\{ParamName\\}", conf.getParameter());
-				value = value.replaceAll("\\{ENVID\\}", envName);
-				if (!allowSensitive && conf.IsSensitive()){
-					value = "[SENSITIVE]";
-				}
-				conf.setValue(value);
-			}
-		}
-	}
-
 	public List<ReleaseConfigDTO> populateHieraAddresses(List<ReleaseConfigDTO> rl, EnvironmentDTO e, SubEnvironmentDTO se) {
 		List<ReleaseConfigDTO> populatedConfig = new ArrayList<ReleaseConfigDTO>();
 		boolean allowSensitive = SecurityHelper.userCanViewSensitiveData();
@@ -93,20 +68,18 @@ public class ReleaseConfigDTOService {
 		return populatedConfig;
 	}
 
-	@Transactional(readOnly = true)
-	public List<ReleaseConfigDTO> findByReleaseName(String relName) {
-		List<ReleaseConfig> results = releaseConfigRepository.findByRelease_name(relName);
-		buildHieraAddresses(results, relName);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
+	public void copyConfigForRelease(Long fromReleaseId, Long toReleaseId){
+		ReleaseDTO fromDTO = releaseDTOService.findOne(fromReleaseId);
+		ReleaseDTO toDTO = releaseDTOService.findOne(toReleaseId);
+		List<ReleaseConfig> fromConfigs = releaseConfigRepository.findByRelease_name(fromDTO.name);
+		for (ReleaseConfig rc:fromConfigs){
+			ReleaseConfigDTO dto = toDTO(rc);
+			dto.release = toDTO;
+			dto.id = null;
+			save(dto);
+		}
 	}
-
-	public List<ReleaseConfigDTO> getDistinctConfigsForEnv(String envName) {
-		List<ReleaseConfig> results = releaseConfigRepository
-				.findDistinctByRelease_subEnvironments_environment_name(envName);
-		buildHieraAddresses(results, envName);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
-	}
-
+	
 	public List<ReleaseConfigDTO> getRepeatingReleaseConfigsForEnv(String envName) {
 		List<ReleaseConfig> results = releaseConfigRepository
 				.findByRecursiveByEnvAndRelease_subEnvironments_environment_name(true, envName);
@@ -118,8 +91,6 @@ public class ReleaseConfigDTOService {
 				.findDistinctByRecursiveByEnvAndRecursiveBySubEnvAndRelease_subEnvironments_environment_id(repeatsByEnv, repeatsBySubEnv, envId);
 		return results.stream().map(this::toDTO).collect(Collectors.toList());
 	}
-
-	
 
 	@Transactional(readOnly = true)
 	public List<ReleaseConfigDTO> complete(String query, int maxResults) {

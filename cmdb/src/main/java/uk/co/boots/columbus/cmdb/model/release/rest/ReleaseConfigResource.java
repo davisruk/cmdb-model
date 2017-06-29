@@ -8,6 +8,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -105,6 +106,12 @@ public class ReleaseConfigResource {
         List<ReleaseConfigDTO> results = releaseConfigDTOService.complete(acq.query, acq.maxResults);
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/copy", method = PUT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> copyRelease(@RequestBody ArrayList<ReleaseConfigDTO> configs) throws URISyntaxException {
+    	releaseConfigDTOService.copyConfigForRelease(configs.get(0).id, configs.get(1).id);
+    	return ResponseEntity.ok().build();
     }
 
     /**

@@ -102,41 +102,6 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		
 		return hDTOList;
 	}
-
-	
-
-	private List<HieraDTO> findHieraCompleteInfoForEnv(Long EnvId, boolean includeGlobal) {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		if (includeGlobal)
-			addToHieraDTOList(hDTOList, gcService.findAllReplaceHiera());
-		else{
-			addToHieraDTOList(hDTOList, gcService.findAndReplaceHieraForEnv());
-		}
-			
-		EnvironmentDTO dto = eDTOService.findOne(EnvId);
-		List<ReleaseConfigDTO> relDTOs = rcService.getDistinctConfigsForEnv(dto.name);
-		// Check recursive flag and add to list for releases
-		addToHieraDTOList(hDTOList, relDTOs);
-		for (SubEnvironmentDTO seDTO : dto.subEnvironments) {
-			seDTO.environment = dto;
-			hDTOList.addAll(findHieraCompleteInfoForSubEnv(seDTO.id, false));
-			// add in recursive release config items here
-			addToHieraDTOList(hDTOList, secDTOService.getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(seDTO, relDTOs));
-		}
-		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
-		addToHieraDTOList(hDTOList, serverConfDTOs);
-		return hDTOList;
-	}
-	
-	public Set<HieraDTO> getHieraForAllEnvsWithSubstitution(){
-		Set<HieraDTO> hDTOSet = new HashSet<HieraDTO>();
-		addToHieraDTOSet(hDTOSet, gcService.findAllReplaceHiera());
-		List<EnvironmentDTO> dtoList = eDTOService.findAllEnvironments();
-		for (EnvironmentDTO dto:dtoList){
-			hDTOSet.addAll(findHieraCompleteInfoForEnv(dto.id, false));
-		}		
-		return hDTOSet;
-	}
 	
 /***
  * New Config Implementation
@@ -210,38 +175,14 @@ public class HieraDTOService implements Comparator<HieraDTO> {
 		}		
 		return hDTOSet;
 	}
-
+	
 /*
  * End of new Config Implementation
  */
 	
-	public Set<HieraDTO> getHieraCompleteInfoForEnvWithSubstitution(Long EnvId, Set<HieraDTO> hDTOSet) {
-		// we may have already added this, but the set will take care of it anyway and we may have repeating elements
-		addToHieraDTOSet(hDTOSet, gcService.findAllReplaceHiera());
-		EnvironmentDTO dto = eDTOService.findOne(EnvId);
-		List<ReleaseConfigDTO> relDTOs = rcService.getDistinctConfigsForEnv(dto.name);
-		// Check recursive flag and add to list for releases
-		addToHieraDTOSet(hDTOSet, relDTOs);
-		for (SubEnvironmentDTO seDTO : dto.subEnvironments) {
-			seDTO.environment = dto;
-			hDTOSet.addAll(findHieraCompleteInfoForSubEnv(seDTO.id, false));
-			// add in recursive release config items here
-			addToHieraDTOSet(hDTOSet, secDTOService.getSubEnvironmentDTOsWithHieraAddressesForRecursiveReleaseItems(seDTO, relDTOs));
-		}
-		List<ServerConfigDTO> serverConfDTOs = scService.findByDistinctServerSubEnvironmentEnvironment(dto.id);
-		addToHieraDTOSet(hDTOSet, serverConfDTOs);
-		return hDTOSet;
-	}
-	
 	public List<HieraDTO> findHieraInfoForServer(String serverName) {
 		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
 		addToHieraDTOList(hDTOList, scService.findByServerName(serverName));
-		return hDTOList;
-	}
-
-	public List<HieraDTO> findHieraInfoForRelease(String relName) {
-		List<HieraDTO> hDTOList = new ArrayList<HieraDTO>();
-		addToHieraDTOList(hDTOList, rcService.findByReleaseName(relName));
 		return hDTOList;
 	}
 

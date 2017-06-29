@@ -132,7 +132,7 @@ public class SubEnvironmentConfigDTOService {
 	public List<SubEnvironmentConfigDTO> getSubEnvConfigByTypeAndEnvironmentName(String typeName, String envName) {
 		List<SubEnvironmentConfig> results = subEnvironmentConfigRepository
 				.findBySubEnvironment_subEnvironmentType_nameAndSubEnvironment_environment_name(typeName, envName);
-		return results.stream().map(this::toDTO).collect(Collectors.toList());
+		return results.stream().map(a -> toDTO(a, 2)).collect(Collectors.toList());
 	}
 	
 
@@ -140,8 +140,7 @@ public class SubEnvironmentConfigDTOService {
 	 * Converts the passed environmentConfig to a DTO.
 	 */
 	public SubEnvironmentConfigDTO toDTO(SubEnvironmentConfig environmentConfig) {
-		//return toDTO(environmentConfig, 1);
-		return toDTO(environmentConfig, 2);
+		return toDTO(environmentConfig, 1);
 	}
 
 	/**
