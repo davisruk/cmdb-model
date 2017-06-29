@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.CopyContainer;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTO;
 import uk.co.boots.columbus.cmdb.model.server.dto.ServerConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.server.repository.ServerConfigRepository;
@@ -113,6 +114,13 @@ public class ServerConfigResource {
 
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
     }
+    
+    @RequestMapping(value = "/copy", method = PUT, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> copyRelease(@RequestBody CopyContainer configIds) throws URISyntaxException {
+    	serverConfigDTOService.copyConfigForServer(configIds.getFromId(), configIds.getToId());
+    	return ResponseEntity.ok().build();
+    }
+    
 
     /**
      * Delete by id ${}entity.model.type}.

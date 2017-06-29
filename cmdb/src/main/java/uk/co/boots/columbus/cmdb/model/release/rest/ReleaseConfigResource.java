@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageRequestByExample;
 import uk.co.boots.columbus.cmdb.model.core.dto.support.PageResponse;
 import uk.co.boots.columbus.cmdb.model.core.rest.support.AutoCompleteQuery;
+import uk.co.boots.columbus.cmdb.model.core.rest.support.CopyContainer;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTO;
 import uk.co.boots.columbus.cmdb.model.release.dto.ReleaseConfigDTOService;
 import uk.co.boots.columbus.cmdb.model.release.repository.ReleaseConfigRepository;
@@ -109,8 +110,8 @@ public class ReleaseConfigResource {
     }
 
     @RequestMapping(value = "/copy", method = PUT, produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> copyRelease(@RequestBody ArrayList<ReleaseConfigDTO> configs) throws URISyntaxException {
-    	releaseConfigDTOService.copyConfigForRelease(configs.get(0).id, configs.get(1).id);
+    public ResponseEntity<Void> copyRelease(@RequestBody CopyContainer configIds) throws URISyntaxException {
+    	releaseConfigDTOService.copyConfigForRelease(configIds.getFromId(), configIds.getToId());
     	return ResponseEntity.ok().build();
     }
 

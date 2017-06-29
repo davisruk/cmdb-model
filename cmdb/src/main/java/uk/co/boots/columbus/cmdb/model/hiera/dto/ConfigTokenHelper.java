@@ -7,6 +7,9 @@ public class ConfigTokenHelper {
 		// {} - asIs
 		// <> - toLower
 
+		if (original == null || original.length() == 0)
+			return null;
+
 		String retVal = original;
 
 		if (original.contains("{" + token + "}"))

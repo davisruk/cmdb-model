@@ -120,6 +120,18 @@ public class ServerConfigDTOService {
 		return populatedConfig;
 	}
 
+	public void copyConfigForServer(Long fromServerId, Long toServerId){
+		ServerDTO fromDTO = serverDTOService.findOne(fromServerId);
+		ServerDTO toDTO = serverDTOService.findOne(toServerId);
+		List<ServerConfig> fromConfigs = serverConfigRepository.findByServer_name(fromDTO.name);
+		for (ServerConfig sc:fromConfigs){
+			ServerConfigDTO dto = toDTO(sc);
+			dto.server = toDTO;
+			dto.id = null;
+			save(dto);
+		}
+	}
+	
     @Transactional(readOnly = true)
     public List<ServerConfigDTO> findByServerName(String query) {
         List<ServerConfig> results = serverConfigRepository.findByServerName(query);
