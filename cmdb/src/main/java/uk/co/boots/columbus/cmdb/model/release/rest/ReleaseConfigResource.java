@@ -109,7 +109,7 @@ public class ReleaseConfigResource {
         return new ResponseEntity<>(results, new HttpHeaders(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/copy", method = PUT, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/copy", method = POST, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> copyRelease(@RequestBody CopyContainer configIds) throws URISyntaxException {
     	releaseConfigDTOService.copyConfigForRelease(configIds.getFromId(), configIds.getToId());
     	return ResponseEntity.ok().build();
